@@ -524,9 +524,6 @@
   </div>
 </section>
 
-<!-- ERROR -->
-<div id="errorMsg" style="display:none;margin:24px auto;max-width:420px;padding:14px 20px;border-radius:12px;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;font-size:14px;font-weight:500;text-align:center;"></div>
-
 <!-- LOADER -->
 <div id="loader">
   <div class="loader-ring"></div>
@@ -606,76 +603,6 @@
 </div>
 
 <script>
-// ── AI ANALYSIS ──
-async function analyzeWithAI(url) {
-  const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0];
-  const prompt = `You are a senior design engineer. Analyze the design system of the website: ${cleanUrl}
-
-Use your knowledge of this website's actual visual design. Return ONLY valid JSON — no markdown, no explanation, no code fences. Exactly this structure:
-
-{
-  "name": "Site display name",
-  "url": "${cleanUrl}",
-  "emoji": "one relevant emoji",
-  "tech": "Primary tech stack (e.g. React + Next.js)",
-  "score": 85,
-  "fonts": [
-    { "pre": "Aa", "name": "Font name", "weights": "400,600", "role": "body", "tags": ["Sans-serif","Variable"] }
-  ],
-  "colors": [
-    { "hex": "#RRGGBB", "name": "Color name", "role": "Role label", "rc": "#light-bg-hex", "rt": "#readable-text-hex" }
-  ],
-  "stack": [
-    { "ico": "emoji", "name": "Tool name", "cat": "Category", "det": true }
-  ],
-  "pers": [
-    { "l": "Minimal", "r": "Maximal", "v": 40 },
-    { "l": "Playful", "r": "Serious", "v": 60 },
-    { "l": "Warm", "r": "Cool", "v": 55 },
-    { "l": "Classic", "r": "Modern", "v": 75 }
-  ],
-  "motion": [
-    { "n": "Default Ease", "v": "ease value or cubic-bezier" },
-    { "n": "Enter Duration", "v": "Xms" },
-    { "n": "Exit Duration", "v": "Xms" }
-  ],
-  "fp": [
-    { "k": "Border Radius", "v": "Xpx", "s": "Short description" },
-    { "k": "Base Font", "v": "Xpx", "s": "Short description" },
-    { "k": "Grid System", "v": "Xpt", "s": "Short description" },
-    { "k": "Shadow Depth", "v": "X×", "s": "Short description" }
-  ],
-  "sp": [
-    { "n": "xs", "v": 4 }, { "n": "sm", "v": 8 }, { "n": "md", "v": 16 },
-    { "n": "lg", "v": 24 }, { "n": "xl", "v": 40 }, { "n": "2xl", "v": 64 }
-  ]
-}
-
-Rules:
-- "rc" = a light background hex for the badge, "rt" = a readable text hex for that badge
-- font "role" must be one of: display, body, mono, ui
-- "score" is 0-100 design quality score
-- Include 2-3 fonts, 4-6 colors, 3-5 stack items
-- Return ONLY the JSON object. Nothing else.`;
-
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-
-  if (!resp.ok) throw new Error(`API ${resp.status}`);
-  const data = await resp.json();
-  const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-  // Strip any accidental markdown fences
-  const clean = text.replace(/^```[a-z]*\n?/m, '').replace(/```$/m, '').trim();
-  return JSON.parse(clean);
-}
-
 const DEMOS = {
   linear: {
     name:"Linear", url:"linear.app", emoji:"⚡", tech:"React", score:96,
@@ -843,84 +770,264 @@ const DEMOS = {
   }
 };
 
+// ── CONFIG ──────────────────────────────────────────────────────
+// Once your Railway API is live, replace this with your real URL:
+// e.g. 'https://glassdeck-api.up.railway.app'
+const API_URL = '/api/analyze';
+
+// ── DEMO FALLBACK ────────────────────────────────────────────────
 function loadDemo(k) {
   document.getElementById('urlInput').value = DEMOS[k].url;
   runAnalysis(k);
 }
 
-function showError(msg) {
-  document.getElementById('loader').classList.remove('on');
-  const errEl = document.getElementById('errorMsg');
-  errEl.textContent = msg || 'Analysis failed. Please try a different URL.';
-  errEl.style.display = 'block';
-  setTimeout(() => { errEl.style.display = 'none'; }, 6000);
-}
+// ── MAIN ANALYSIS ────────────────────────────────────────────────
+async function runAnalysis(demoKey) {
+  const rawUrl = document.getElementById('urlInput').value.trim();
+  if (!rawUrl) return;
 
-function animateSteps(steps, delay, onDone) {
-  let i = 0;
-  steps.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active','done'); });
-  function next() {
-    if (i < steps.length) {
-      if (i > 0) { const prev = document.getElementById(steps[i-1]); if(prev){prev.classList.remove('active');prev.classList.add('done');} }
-      const cur = document.getElementById(steps[i]); if(cur) cur.classList.add('active');
-      i++; setTimeout(next, delay);
-    } else {
-      const last = document.getElementById(steps[steps.length-1]); if(last){last.classList.remove('active');last.classList.add('done');}
-      setTimeout(onDone, 280);
-    }
-  }
-  next();
-}
-
-async function runAnalysis(dk) {
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url) return;
-
-  document.getElementById('errorMsg').style.display = 'none';
   document.getElementById('results').classList.remove('on');
-  document.getElementById('loader').classList.add('on');
+  showError(null);
 
-  // Check if it matches a preset demo
-  const presetKey = dk || Object.keys(DEMOS).find(k => url.toLowerCase().includes(DEMOS[k].url));
-  const steps = ['s1','s2','s3','s4','s5'];
+  const ldr = document.getElementById('loader');
+  ldr.classList.add('on');
+  resetSteps();
 
-  if (presetKey && DEMOS[presetKey]) {
-    // Fast path: use preset data
-    const d = DEMOS[presetKey];
-    animateSteps(steps, 380, () => {
-      document.getElementById('loader').classList.remove('on');
-      render(d);
-      document.getElementById('results').classList.add('on');
-      document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
-    });
+  // If API is configured AND this isn't a demo button click, hit the real API
+  const isDemo = typeof demoKey === 'string' && DEMOS[demoKey];
+  if (API_URL && !isDemo) {
+    await runLiveAnalysis(rawUrl, ldr);
   } else {
-    // AI path: call Claude API
-    // Run loader animation while waiting
-    let stepIdx = 0;
-    steps.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active','done'); });
-    const loaderInterval = setInterval(() => {
-      if (stepIdx > 0) { const prev = document.getElementById(steps[stepIdx-1]); if(prev){prev.classList.remove('active');prev.classList.add('done');} }
-      if (stepIdx < steps.length) { const cur = document.getElementById(steps[stepIdx]); if(cur) cur.classList.add('active'); stepIdx++; }
-    }, 700);
+    // Use demo data (pre-API or demo button)
+    const key = isDemo ? demoKey : (Object.keys(DEMOS).find(k => rawUrl.includes(DEMOS[k].url)) || 'linear');
+    await runDemoAnalysis(DEMOS[key] || DEMOS.linear, ldr);
+  }
+}
 
-    try {
-      const d = await analyzeWithAI(url);
-      clearInterval(loaderInterval);
-      // Finish remaining steps
-      steps.forEach(id => { const el = document.getElementById(id); if(el){el.classList.remove('active');el.classList.add('done');} });
-      setTimeout(() => {
-        document.getElementById('loader').classList.remove('on');
-        render(d);
-        document.getElementById('results').classList.add('on');
-        document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
-      }, 300);
-    } catch(err) {
-      clearInterval(loaderInterval);
-      showError('Analysis failed — please try one of the example sites or check your connection.');
+// ── LIVE API PATH ────────────────────────────────────────────────
+async function runLiveAnalysis(url, ldr) {
+  // Animate steps while API call runs in parallel
+  const stepPromise = animateSteps(true); // open-ended — resolves when we tell it to
+
+  try {
+    const res = await fetch(`${API_URL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Analysis failed.' }));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    completeSteps();
+
+    setTimeout(() => {
+      ldr.classList.remove('on');
+      render(adaptApiResponse(data));
+      document.getElementById('results').classList.add('on');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+
+  } catch (err) {
+    const demoKey = Object.keys(DEMOS).find(k => url.includes(DEMOS[k].url));
+    if (demoKey) {
+      await runDemoAnalysis(DEMOS[demoKey], ldr);
+    } else {
+      ldr.classList.remove('on');
+      resetSteps();
+      showError('Could not load that site. Try linear.app, vercel.com, or notion.so.');
     }
   }
 }
 
+// ── DEMO PATH ────────────────────────────────────────────────────
+async function runDemoAnalysis(d, ldr) {
+  await animateSteps(false);
+  setTimeout(() => {
+    ldr.classList.remove('on');
+    render(d);
+    document.getElementById('results').classList.add('on');
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 280);
+}
+
+// ── STEP ANIMATION ───────────────────────────────────────────────
+const STEPS = ['s1','s2','s3','s4','s5'];
+
+function resetSteps() {
+  STEPS.forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+}
+
+function animateSteps(keepOpen) {
+  return new Promise(resolve => {
+    let i = 0;
+    function next() {
+      if (i < STEPS.length) {
+        if (i > 0) {
+          document.getElementById(STEPS[i-1]).classList.remove('active');
+          document.getElementById(STEPS[i-1]).classList.add('done');
+        }
+        document.getElementById(STEPS[i]).classList.add('active');
+        i++;
+        // In live mode, pace slower so it doesn't finish before the API responds
+        setTimeout(next, keepOpen ? 1800 : 380);
+      } else {
+        completeSteps();
+        if (!keepOpen) resolve();
+      }
+    }
+    next();
+  });
+}
+
+function completeSteps() {
+  STEPS.forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active');
+    el.classList.add('done');
+  });
+}
+
+// ── ERROR DISPLAY ─────────────────────────────────────────────────
+function showError(msg) {
+  let el = document.getElementById('apiError');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'apiError';
+    el.style.cssText = 'max-width:580px;margin:16px auto 0;padding:14px 18px;border-radius:12px;background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;font-size:14px;text-align:center;';
+    document.querySelector('.hero').appendChild(el);
+  }
+  el.style.display = msg ? 'block' : 'none';
+  el.textContent = msg || '';
+}
+
+// ── API RESPONSE ADAPTER ──────────────────────────────────────────
+// Converts the real API shape → the shape render() expects
+function adaptApiResponse(d) {
+  const url = d.url || '';
+  const hostname = (() => { try { return new URL(url).hostname.replace('www.',''); } catch(e) { return url; } })();
+
+  // Fonts
+  const fonts = (d.fonts || []).map(f => ({
+    pre:  fontPreview(f.name, f.role),
+    name: f.name,
+    role: f.role || 'body',
+    tags: [f.source, f.weight ? `w${f.weight}` : null, f.size || null].filter(Boolean)
+  }));
+
+  // Colors — generate badge colors from hex
+  const colors = (d.colors || []).map(c => ({
+    hex:  c.hex,
+    name: c.name,
+    role: c.role,
+    rc:   badgeBg(c.hex),
+    rt:   badgeFg(c.hex)
+  }));
+
+  // Stack
+  const stack = (d.stack || []).map(s => ({
+    ico: s.emoji || '📦',
+    name: s.name,
+    cat: s.category,
+    det: true
+  }));
+
+  // Personality bars
+  const p = d.personality || {};
+  const pers = [
+    { l:'Minimal',  r:'Maximal', v: p.minimal  ?? 50 },
+    { l:'Playful',  r:'Serious', v: p.serious   ?? 50 },
+    { l:'Warm',     r:'Cool',    v: p.cool      ?? 50 },
+    { l:'Classic',  r:'Modern',  v: p.modern    ?? 50 },
+  ];
+
+  // Motion
+  const m = d.motion || {};
+  const motion = [
+    { n:'Default Ease',   v: m.defaultEasing  || '—' },
+    { n:'Enter Duration', v: m.enterDuration   || '—' },
+    { n:'Exit Duration',  v: m.exitDuration    || '—' },
+    m.slowDuration ? { n:'Slow Duration', v: m.slowDuration } : null,
+    m.style        ? { n:'Motion Style',  v: m.style        } : null,
+  ].filter(Boolean);
+
+  // Fingerprint
+  const fp = d.fingerprint || {};
+  const fpItems = [
+    { k:'Border Radius', v: fp.borderRadius || '—',     s: fp.radiusStyle   || '' },
+    { k:'Base Unit',     v: fp.baseUnit     || '—',     s: fp.gridSystem    || '' },
+    { k:'Layout',        v: fp.density      || '—',     s: `${d.spacing?.maxContainerWidth ? d.spacing.maxContainerWidth+'px max' : 'Fluid'}` },
+    { k:'Shadow Depth',  v: fp.shadowDepth?.split('—')[0].trim() || '—', s: fp.shadowDepth?.split('—')[1]?.trim() || '' },
+  ];
+
+  // Spacing scale
+  const scale = d.spacing?.scale || [];
+  const labels = ['xs','sm','md','lg','xl','2xl','3xl','4xl'];
+  const sp = scale.slice(0, 8).map((v, i) => ({ n: labels[i] || `t${i}`, v }));
+
+  // Primary tech chip
+  const mainFramework = (d.stack || []).find(s => s.category === 'Framework' || s.category === 'Meta-Framework');
+  const tech = mainFramework?.name || (d.stack?.[0]?.name) || 'Unknown stack';
+
+  return {
+    emoji: siteEmoji(hostname),
+    name:  d.meta?.title ? d.meta.title.split(/[|–—]/)[0].trim() : hostname,
+    url:   hostname,
+    tech,
+    score: d.score || 70,
+    fonts:  fonts.length  ? fonts  : DEMOS.linear.fonts,
+    colors: colors.length ? colors : DEMOS.linear.colors,
+    stack:  stack.length  ? stack  : DEMOS.linear.stack,
+    pers, motion,
+    fp: fpItems,
+    sp: sp.length ? sp : DEMOS.linear.sp
+  };
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function fontPreview(name, role) {
+  if (role === 'mono') return '<>'; 
+  const first = (name || '').charAt(0).toUpperCase();
+  return first || 'Aa';
+}
+
+function siteEmoji(hostname) {
+  const map = { 'linear.app':'⚡', 'stripe.com':'💳', 'vercel.com':'▲', 'notion.so':'📝',
+    'github.com':'🐙', 'figma.com':'🎨', 'apple.com':'🍎', 'google.com':'🔍',
+    'airbnb.com':'🏠', 'spotify.com':'🎵', 'netflix.com':'🎬', 'uber.com':'🚗' };
+  for (const [k, v] of Object.entries(map)) {
+    if (hostname.includes(k)) return v;
+  }
+  return '🌐';
+}
+
+function badgeBg(hex) {
+  const [r,g,b] = hexToRgb(hex);
+  const br = (r*299+g*587+b*114)/1000;
+  if (br > 200) return '#f0f0f2';
+  // tint the hex
+  const tr = Math.min(255, r + 180), tg = Math.min(255, g + 180), tb = Math.min(255, b + 180);
+  return `rgb(${tr},${tg},${tb})`;
+}
+function badgeFg(hex) {
+  const [r,g,b] = hexToRgb(hex);
+  const br = (r*299+g*587+b*114)/1000;
+  if (br > 200) return '#888';
+  const dr = Math.max(0, r - 60), dg = Math.max(0, g - 60), db = Math.max(0, b - 60);
+  return `rgb(${dr},${dg},${db})`;
+}
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+}
+
+// ── RENDER (unchanged shape) ──────────────────────────────────────
 function render(d) {
   document.getElementById('sIcon').textContent  = d.emoji;
   document.getElementById('sName').textContent  = d.name;
@@ -937,7 +1044,7 @@ function render(d) {
         <div class="f-name">${f.name}</div>
         <div class="f-tags">
           <span class="f-role r-${f.role}">${f.role}</span>
-          ${f.tags.map(t=>`<span class="f-tag">${t}</span>`).join('')}
+          ${(f.tags||[]).map(t=>`<span class="f-tag">${t}</span>`).join('')}
         </div>
       </div>
     </div>`).join('');
@@ -992,7 +1099,8 @@ function render(d) {
     </div>`).join('');
 
   // Spacing
-  const max = Math.max(...d.sp.map(s=>s.v));
+  const spVals = d.sp.map(s=>s.v).filter(v => v > 0);
+  const max = spVals.length ? Math.max(...spVals) : 1;
   document.getElementById('spRows').innerHTML = d.sp.map(s=>`
     <div class="sp-row">
       <div class="sp-name">${s.n}</div>
