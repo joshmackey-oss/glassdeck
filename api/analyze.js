@@ -76,6 +76,25 @@ function fetchRendered(url) {
   });
 }
 
+// Fetches the first external stylesheet linked in the HTML (catches self-hosted font @font-face)
+async function fetchFirstStylesheet(html, baseUrl) {
+  try {
+    const base = new URL(baseUrl.startsWith('http') ? baseUrl : 'https://' + baseUrl);
+    const linkRe = /<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']/gi;
+    let m;
+    while ((m = linkRe.exec(html)) !== null) {
+      const href = m[1];
+      if (href.includes('google') || href.includes('typekit')) continue; // skip known font CDNs
+      const cssUrl = href.startsWith('http') ? href : new URL(href, base).href;
+      try {
+        const css = await fetchRaw(cssUrl);
+        if (css && css.includes('@font-face')) return css;
+      } catch(e) {}
+    }
+  } catch(e) {}
+  return '';
+}
+
 
 // ── 2. FONT EXTRACTION ───────────────────────────────────────────
 
@@ -218,17 +237,31 @@ function extractColors(html) {
     if (hex) bump(hex, 1);
   }
 
+  // Deduplicate perceptually similar colors (avoids '3× near-black' problem)
+  function hexToRgb(h) {
+    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  }
+  function colorDist(a, b) {
+    const [r1,g1,b1] = hexToRgb(a), [r2,g2,b2] = hexToRgb(b);
+    return Math.sqrt((r1-r2)**2 + (g1-g2)**2 + (b1-b2)**2);
+  }
+
+  const sorted = Object.keys(freq).sort((a, b) => freq[b] - freq[a]);
+  const deduped = [];
+  for (const hex of sorted) {
+    const tooClose = deduped.some(kept => colorDist(hex, kept) < 45);
+    if (!tooClose) deduped.push(hex);
+    if (deduped.length === 5) break;
+  }
+
   const ROLES = ['Background','Primary','Accent','Surface','Muted'];
-  return Object.keys(freq)
-    .sort((a, b) => freq[b] - freq[a])
-    .slice(0, 5)
-    .map((hex, i) => ({
-      hex,
-      name: colorName(hex),
-      role: ROLES[i] || 'Color',
-      rc:   '#f0f0f2',
-      rt:   '#888'
-    }));
+  return deduped.map((hex, i) => ({
+    hex,
+    name: colorName(hex),
+    role: ROLES[i] || 'Color',
+    rc:   '#f0f0f2',
+    rt:   '#888'
+  }));
 }
 
 // ── 4. STACK DETECTION ───────────────────────────────────────────
@@ -282,7 +315,7 @@ function detectStack(html) {
   // Platforms
   if (h.includes('wordpress') || h.includes('wp-content'))
     s.push({ ico:'📝', name:'WordPress',          cat:'CMS',              det:true });
-  if (h.includes('shopify'))
+  if (h.includes('myshopify.com') || h.includes('cdn.shopify.com') || h.includes('shopify-section') || h.includes('shopify.theme'))
     s.push({ ico:'🛍️', name:'Shopify',           cat:'E-commerce',       det:true });
   if (h.includes('webflow'))
     s.push({ ico:'🌊', name:'Webflow',            cat:'No-code',          det:true });
@@ -378,6 +411,14 @@ module.exports = async function handler(req, res) {
     const titleM    = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const title     = titleM ? titleM[1].trim() : domain;
     const hasTokens = /--(color|brand|primary|secondary|accent|bg|surface|fg)\b/.test(html);
+
+    // Augment html with first linked stylesheet (catches self-hosted @font-face)
+    if (!extractFonts(html).length || extractFonts(html)[0].name === 'System UI') {
+      try {
+        const extraCss = await fetchFirstStylesheet(html, url);
+        if (extraCss) html = html + extraCss;
+      } catch(e) {}
+    }
 
     const fonts  = extractFonts(html);
     const colors = extractColors(html);
