@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassdeck — See the design behind any website</title>
+
+<!-- Open Graph / iMessage / Social previews -->
+<meta property="og:type"         content="website" />
+<meta property="og:url"          content="https://glassdeck.io/" />
+<meta property="og:title"        content="Glassdeck — See the design behind any website" />
+<meta property="og:description"  content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
+<meta property="og:image"        content="https://glassdeck.io/og-image.png" />
+<meta property="og:image:width"  content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:site"        content="@glassdeck" />
+<meta name="twitter:title"       content="Glassdeck — See the design behind any website" />
+<meta name="twitter:description" content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
+<meta name="twitter:image"       content="https://glassdeck.io/og-image.png" />
+
+<!-- SEO -->
+<meta name="description" content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyMTYgMjE2Ij4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMzAuMS4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjEgQnVpbGQgMTM2KSAgLS0+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNmZWJlMTA7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxyZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIyMTYiIGhlaWdodD0iMjE2Ii8+CiAgPHBhdGggZD0iTTE0NC4wOCwxMDUuNzRjLS42OC04LjM0LTQuOTYtMTYuNDctMTEuMTItMjIuNjItNi4zMi02LjI0LTE0LjQ0LTEwLjUyLTIyLjcxLTExLjIxLjY4LDguMzQsNC45NiwxNi4zOCwxMS4xMiwyMi41NSw2LjI0LDYuMjQsMTQuNDQsMTAuNTksMjIuNywxMS4yOFpNNzEuOTIsMTEwLjI1Yy42OCw4LjM0LDQuOTYsMTYuMzgsMTEuMTIsMjIuNTUsNi4yNCw2LjI0LDE0LjQ0LDEwLjU5LDIyLjcsMTEuMjgtLjY4LTguMzQtNC45Ni0xNi40Ny0xMS4yMS0yMi42Mi02LjI0LTYuMjQtMTQuMzUtMTAuNTItMjIuNjItMTEuMjFaTTExMC4yNiwxNDQuMDhjOC4yNy0uNjgsMTYuMzktNS4wNCwyMi43MS0xMS4yOCw2LjE3LTYuMTcsMTAuNDUtMTQuMjEsMTEuMTItMjIuNTUtOC4yNy42OC0xNi40Nyw0Ljk2LTIyLjcsMTEuMjEtNi4xNyw2LjE3LTEwLjQ1LDE0LjI4LTExLjEyLDIyLjYyWk03MS45MiwxMDUuNzRjOC4yNy0uNzUsMTYuMzktNS4wNCwyMi42Mi0xMS4yOCw2LjI0LTYuMTcsMTAuNTItMTQuMjEsMTEuMjEtMjIuNTUtOC4yNy42OC0xNi40Nyw0Ljk2LTIyLjcsMTEuMjEtNi4xNyw2LjE3LTEwLjQ1LDE0LjI4LTExLjEyLDIyLjYyWiIvPgo8L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #FFC60B;
+  --gold-d: #E6B000;
+  --gold-l: #FFFBEA;
+  --gold-m: #FFF3C4;
+  --text: #0A0A0A;
+  --text2: #5A5A5A;
+  --text3: #9A9A9A;
+  --bg: #FFFFFF;
+  --bg2: #F8F8F6;
+  --border: #EBEBEB;
+  --border2: #D8D8D8;
+  --sh: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --sh-md: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --sh-lg: 0 20px 60px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.05);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 59px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+}
+
+.logo svg { display: block; }
+
+.nav-r { display: flex; align-items: center; gap: 10px; }
+
+.nav-link {
+  font-size: 14px; font-weight: 500; color: var(--text2);
+  text-decoration: none; padding: 6px 14px; border-radius: 100px;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+
+.nav-cta {
+  padding: 9px 22px; border-radius: 100px;
+  background: var(--text); color: #fff;
+  font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+  transition: all 0.15s; text-decoration: none;
+}
+.nav-cta:hover { background: #222; transform: translateY(-1px); box-shadow: var(--sh-md); }
+
+/* ── HERO ── */
+.hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 100px 24px 90px;
+  position: relative; overflow: hidden;
+  background: radial-gradient(ellipse 70% 50% at 50% -10%, #FFF3C4 0%, transparent 65%);
+}
+
+.hero-counter {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 100px;
+  border: 1px solid #E8D87A;
+  background: var(--gold-m);
+  font-size: 13px; font-weight: 500; color: #7A6200;
+  margin-bottom: 36px;
+  animation: fadeDown 0.6s ease forwards;
+}
+
+.counter-avatars {
+  display: flex;
+}
+
+.avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--gold-m);
+  margin-left: -6px; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--border2);
+}
+.avatar:first-child { margin-left: 0; }
+
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; position: relative; }
+.pulse::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid #22C55E; opacity: 0;
+  animation: ripple 1.8s ease-out infinite;
+}
+@keyframes ripple { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2);opacity:0} }
+
+h1 {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 800; font-stretch: expanded;
+  letter-spacing: -0.04em; line-height: 1.0;
+  text-align: center; color: var(--text);
+  max-width: 900px; margin-bottom: 22px;
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+
+h1 em { font-style: normal; color: var(--gold); }
+
+.hero-sub {
+  font-size: 18px; color: var(--text2); text-align: center;
+  max-width: 480px; line-height: 1.65; margin-bottom: 52px;
+  font-weight: 400;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+
+/* ── EMAIL FORM ── */
+.form-wrap {
+  width: 100%; max-width: 480px;
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+
+.email-form {
+  display: flex; gap: 8px;
+  padding: 6px; background: #fff;
+  border: 1.5px solid var(--border2); border-radius: 14px;
+  box-shadow: var(--sh-md);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.email-form:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(255,198,11,0.15), var(--sh-md);
+}
+
+.email-input {
+  flex: 1; border: none; outline: none;
+  font-family: 'Geist', sans-serif; font-size: 15px;
+  color: var(--text); padding: 10px 14px;
+  background: transparent; border-radius: 10px;
+}
+.email-input::placeholder { color: var(--text3); }
+
+.submit-btn {
+  padding: 11px 24px; border-radius: 10px;
+  background: var(--gold); border: none; color: var(--text);
+  font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.submit-btn:hover { background: var(--gold-d); transform: scale(1.02); }
+.submit-btn:active { transform: scale(0.98); }
+
+.form-note {
+  text-align: center; font-size: 12px; color: var(--text3);
+  margin-top: 12px;
+}
+
+/* SUCCESS STATE */
+.success {
+  display: none; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px; border-radius: 14px;
+  background: var(--gold-l); border: 1px solid #E8D87A;
+  text-align: center;
+}
+.success.show { display: flex; }
+.success-icon { font-size: 32px; }
+.success-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.success-sub { font-size: 14px; color: var(--text2); }
+
+/* ── SOCIAL PROOF ── */
+.proof {
+  display: flex; align-items: center; justify-content: center; gap: 32px;
+  padding: 20px 48px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  animation: fadeUp 0.7s 0.5s ease both;
+}
+
+.proof-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text2); font-weight: 500;
+}
+
+.proof-icon { font-size: 16px; }
+
+.proof-div { width: 1px; height: 18px; background: var(--border2); }
+
+/* ── HOW IT WORKS ── */
+.section {
+  padding: 100px 48px;
+  max-width: 1080px; margin: 0 auto;
+}
+
+.section-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  font-weight: 500; color: #7A6200; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 16px;
+  padding: 4px 12px; border-radius: 100px;
+  background: var(--gold-m); border: 1px solid #E8D87A;
+}
+
+.section-tag::before { content: '◆'; font-size: 8px; }
+
+.section-h {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+  color: var(--text); margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 17px; color: var(--text2); line-height: 1.6;
+  max-width: 500px; margin-bottom: 56px; font-weight: 400;
+}
+
+/* STEPS */
+.steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+
+.step {
+  padding: 32px; border-radius: 20px;
+  border: 1px solid var(--border); background: #fff;
+  box-shadow: var(--sh); position: relative;
+  transition: all 0.2s;
+}
+.step:hover { transform: translateY(-4px); box-shadow: var(--sh-md); border-color: var(--border2); }
+
+.step-num {
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  font-weight: 500; color: var(--text3); letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.step-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--gold-m); border: 1px solid #E8D87A;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 20px;
+}
+
+.step-title {
+  font-size: 18px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.02em; margin-bottom: 10px;
+}
+
+.step-desc { font-size: 14px; color: var(--text2); line-height: 1.65; }
+
+.step-connector {
+  position: absolute; top: 50%; right: -13px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--gold); border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; z-index: 2;
+  box-shadow: var(--sh);
+}
+.step:last-child .step-connector { display: none; }
+
+/* ── WHAT YOU GET ── */
+.features-section {
+  padding: 0 48px 100px;
+  max-width: 1080px; margin: 0 auto;
+}
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+}
+
+.feat {
+  padding: 28px 32px; border-radius: 20px;
+  border: 1px solid var(--border); background: #fff;
+  display: flex; gap: 20px; align-items: flex-start;
+  transition: all 0.2s; box-shadow: var(--sh);
+}
+.feat:hover { border-color: var(--border2); box-shadow: var(--sh-md); transform: translateY(-2px); }
+.feat.gold-card {
+  background: var(--gold);
+  border-color: var(--gold-d);
+}
+.feat.gold-card .feat-title { color: var(--text); }
+.feat.gold-card .feat-desc { color: rgba(10,10,10,0.65); }
+.feat.gold-card .feat-icon { background: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.3); }
+
+.feat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--bg2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+
+.feat-body { flex: 1; }
+.feat-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 6px; }
+.feat-desc { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* ── PREVIEW MOCKUP ── */
+.mockup-section {
+  padding: 0 48px 100px;
+}
+
+.mockup-inner {
+  max-width: 1080px; margin: 0 auto;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 24px; padding: 48px;
+  box-shadow: var(--sh-lg);
+  position: relative; overflow: hidden;
+}
+
+.mockup-inner::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,198,11,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.mockup-label {
+  font-family: 'Geist Mono', monospace; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--text3);
+  margin-bottom: 24px;
+}
+
+.mockup-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+
+.mockup-card {
+  background: #fff; border-radius: 14px; padding: 18px;
+  border: 1px solid var(--border); box-shadow: var(--sh);
+}
+
+.mc-label {
+  font-family: 'Geist Mono', monospace; font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3);
+  margin-bottom: 14px;
+}
+
+.mc-fonts { display: flex; flex-direction: column; gap: 8px; }
+
+.mc-font {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px; background: var(--bg2);
+}
+
+.mc-font-pre { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1; width: 24px; }
+.mc-font-name { font-size: 11px; font-weight: 600; color: var(--text); }
+.mc-font-sub { font-size: 10px; color: var(--text3); font-family: 'Geist Mono', monospace; }
+
+.mc-colors { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.mc-swatch {
+  width: 100%; height: 36px; border-radius: 8px;
+  display: flex; align-items: flex-end; padding: 4px 6px;
+  font-family: 'Geist Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.8);
+}
+
+.mc-stack { display: flex; flex-direction: column; gap: 6px; }
+
+.mc-stack-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 8px; background: var(--bg2);
+}
+
+.mc-stack-ico { font-size: 14px; }
+.mc-stack-name { font-size: 11px; font-weight: 600; color: var(--text); }
+
+.mc-score {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 80px;
+}
+
+.score-num {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, sans-serif;
+  font-size: 52px; font-weight: 800; letter-spacing: -0.04em;
+  color: var(--text); line-height: 1;
+}
+
+.score-label { font-size: 11px; color: var(--text3); margin-top: 4px; font-weight: 500; }
+
+.score-bar-wrap {
+  width: 100%; height: 6px; background: var(--border); border-radius: 100px;
+  overflow: hidden; margin-top: 16px;
+}
+.score-bar { height: 100%; border-radius: 100px; background: linear-gradient(90deg, #FFE47A, var(--gold)); width: 94%; }
+
+/* ── PRICING TEASER ── */
+.pricing-section {
+  padding: 0 48px 100px;
+  max-width: 1080px; margin: 0 auto;
+}
+
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.plan {
+  padding: 32px; border-radius: 20px;
+  border: 1px solid var(--border); background: #fff;
+  box-shadow: var(--sh); transition: all 0.2s;
+}
+.plan:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+.plan.featured {
+  background: var(--text); border-color: var(--text);
+  transform: scale(1.02);
+  box-shadow: var(--sh-lg);
+}
+.plan.featured:hover { transform: scale(1.02) translateY(-2px); }
+
+.plan-name {
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
+}
+.plan.featured .plan-name { color: rgba(255,255,255,0.5); }
+
+.plan-price {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, sans-serif;
+  font-size: 40px; font-weight: 800; letter-spacing: -0.04em; color: var(--text); line-height: 1;
+  margin-bottom: 4px;
+}
+.plan.featured .plan-price { color: #fff; }
+
+.plan-period { font-size: 13px; color: var(--text3); margin-bottom: 24px; }
+.plan.featured .plan-period { color: rgba(255,255,255,0.4); }
+
+.plan-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
+.plan.featured .plan-divider { background: rgba(255,255,255,0.1); }
+
+.plan-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+
+.plan-feat {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--text2);
+}
+.plan.featured .plan-feat { color: rgba(255,255,255,0.7); }
+
+.check { width: 18px; height: 18px; border-radius: 50%; background: var(--gold-m); border: 1px solid #E8D87A; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+.plan.featured .check { background: rgba(255,198,11,0.2); border-color: rgba(255,198,11,0.3); }
+
+.plan-btn {
+  width: 100%; padding: 12px; border-radius: 10px; border: none;
+  font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.plan-btn.outline { background: transparent; border: 1.5px solid var(--border2); color: var(--text); }
+.plan-btn.outline:hover { background: var(--bg2); }
+.plan-btn.solid { background: var(--gold); color: var(--text); }
+.plan-btn.solid:hover { background: var(--gold-d); }
+
+/* ── FINAL CTA ── */
+.cta-section {
+  padding: 0 48px 120px;
+}
+
+.cta-inner {
+  max-width: 1080px; margin: 0 auto;
+  background: var(--text); border-radius: 28px; padding: 80px;
+  text-align: center; position: relative; overflow: hidden;
+  box-shadow: var(--sh-lg);
+}
+
+.cta-inner::before {
+  content: '';
+  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(255,198,11,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: rgba(255,198,11,0.8); margin-bottom: 24px;
+}
+
+.cta-h {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: clamp(36px, 5vw, 58px); font-weight: 800;
+  letter-spacing: -0.04em; color: #fff; line-height: 1.05;
+  margin-bottom: 16px;
+}
+
+.cta-h em { font-style: normal; color: var(--gold); }
+
+.cta-sub { font-size: 17px; color: rgba(255,255,255,0.5); margin-bottom: 48px; line-height: 1.6; }
+
+.cta-form {
+  display: flex; gap: 8px; max-width: 440px; margin: 0 auto;
+  padding: 6px; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
+}
+
+.cta-input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: 'Geist', sans-serif; font-size: 15px;
+  color: #fff; padding: 10px 14px;
+}
+.cta-input::placeholder { color: rgba(255,255,255,0.3); }
+
+.cta-btn {
+  padding: 11px 24px; border-radius: 10px;
+  background: var(--gold); border: none; color: var(--text);
+  font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.cta-btn:hover { background: var(--gold-d); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 48px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg);
+}
+
+.foot-left { display: flex; align-items: center; gap: 24px; }
+.foot-copy { font-size: 13px; color: var(--text3); }
+.foot-link { font-size: 13px; color: var(--text3); text-decoration: none; transition: color 0.15s; }
+.foot-link:hover { color: var(--text2); }
+.foot-right { display: flex; gap: 16px; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.animate-ready {
+  opacity: 0; transform: translateY(24px);
+}
+.reveal.animate-ready.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; height: 59px; }
+  nav svg { height: 51px; }
+  .nav-link { display: none; }
+  .nav-cta { padding: 8px 16px; font-size: 13px; }
+
+  .hero { padding: 56px 20px 60px; }
+  .hero-counter { font-size: 12px; flex-wrap: wrap; justify-content: center; text-align: center; }
+  h1 { font-size: clamp(36px, 10vw, 52px); letter-spacing: -0.03em; }
+  .hero-sub { font-size: 16px; margin-bottom: 36px; }
+
+  .email-form { flex-direction: column; gap: 8px; border-radius: 16px; padding: 10px; }
+  .email-input { padding: 12px 14px; font-size: 16px; }
+  .submit-btn { width: 100%; padding: 14px; font-size: 15px; border-radius: 10px; }
+
+  .proof {
+    gap: 20px; padding: 16px 20px;
+    overflow-x: auto; justify-content: flex-start;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .proof::-webkit-scrollbar { display: none; }
+  .proof-item { white-space: nowrap; flex-shrink: 0; }
+  .proof-div { flex-shrink: 0; }
+
+  .section { padding: 60px 20px; }
+  .features-section { padding: 0 20px 60px; }
+  .pricing-section { padding: 0 20px 60px; }
+  .mockup-section { padding: 0 20px 60px !important; }
+  .cta-section { padding: 0 20px 60px; }
+
+  .section-h { font-size: clamp(28px, 7vw, 38px); }
+  .section-sub { font-size: 15px; margin-bottom: 36px; }
+
+  .steps { grid-template-columns: 1fr; gap: 16px; }
+  .step-connector { display: none; }
+  .step { padding: 24px; }
+
+  .features-grid { grid-template-columns: 1fr; gap: 12px; }
+  .feat { padding: 20px 24px; }
+
+  .mockup-inner { padding: 24px 20px; border-radius: 16px; }
+  .mockup-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  .plans { grid-template-columns: 1fr; gap: 16px; }
+  .plan.featured { transform: none; }
+  .plan.featured:hover { transform: translateY(-2px); }
+
+  .cta-inner { padding: 48px 24px; border-radius: 20px; }
+  .cta-h { font-size: clamp(30px, 8vw, 44px); }
+  .cta-sub { font-size: 15px; margin-bottom: 32px; }
+  .cta-form { flex-direction: column; gap: 8px; border-radius: 16px; padding: 10px; max-width: 100%; }
+  .cta-input { padding: 12px 14px; font-size: 16px; }
+  .cta-btn { width: 100%; padding: 14px; border-radius: 10px; }
+
+  footer { flex-direction: column; gap: 16px; text-align: center; padding: 28px 20px; }
+  .foot-left { flex-direction: column; gap: 8px; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#">
+    <svg height="51" viewBox="0 0 648 216" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#0A0A0A" d="M257.75,106.52c-3.36-2.63-8.86-4.35-16.48-5.15l-15.03-1.51c-1.98-.24-3.57-.55-4.78-.91-1.21-.36-2.07-.83-2.57-1.4-.5-.57-.75-1.27-.75-2.11v-.05c0-1.07.4-1.96,1.2-2.65.8-.69,1.98-1.24,3.54-1.64,1.56-.4,3.47-.6,5.72-.6,3.64,0,6.51.51,8.61,1.53,2.1,1.02,3.3,2.42,3.61,4.19l.05.36h19.97l-.05-.47c-.24-3.67-1.65-6.89-4.21-9.65-2.57-2.76-6.21-4.9-10.95-6.42-4.73-1.52-10.48-2.29-17.24-2.29s-12.17.74-16.85,2.21c-4.68,1.47-8.27,3.61-10.76,6.4-2.5,2.79-3.74,6.16-3.74,10.11v.1c0,3.12.78,5.84,2.34,8.16,1.56,2.32,3.91,4.22,7.05,5.69,3.14,1.47,7.08,2.47,11.83,2.99l14.56,1.46c3.12.35,5.27.85,6.45,1.51,1.18.66,1.77,1.63,1.77,2.91v.05c0,1.04-.41,1.92-1.22,2.63-.81.71-2.02,1.25-3.61,1.61-1.6.36-3.54.55-5.82.55-4.02,0-7.17-.46-9.44-1.38-2.27-.92-3.67-2.37-4.19-4.34l-.1-.31h-21.22l.05.47c.42,3.74,2.03,7,4.84,9.77,2.81,2.77,6.72,4.9,11.73,6.37,5.01,1.47,11.08,2.21,18.23,2.21,6.76,0,12.57-.78,17.42-2.34,4.85-1.56,8.59-3.79,11.21-6.68,2.62-2.89,3.93-6.39,3.93-10.48v-.05c0-4.61-1.68-8.23-5.04-10.87ZM66.65,89.25h-.36c-1.28-2.22-3-4.2-5.15-5.95-2.15-1.75-4.7-3.11-7.64-4.08-2.95-.97-6.22-1.46-9.83-1.46-5.72,0-10.72,1.16-15,3.48-4.28,2.32-7.63,5.62-10.04,9.88s-3.61,9.34-3.61,15.24v.05c0,5.65,1.2,10.53,3.59,14.64,2.39,4.11,5.73,7.29,10.01,9.54,4.28,2.25,9.26,3.38,14.95,3.38,3.64,0,6.94-.45,9.91-1.35s5.53-2.12,7.7-3.67c2.17-1.54,3.87-3.34,5.12-5.38h.36v7.33c0,3.71-1.26,6.55-3.77,8.53-2.51,1.98-6.33,2.97-11.46,2.97-3.5,0-6.34-.47-8.5-1.41-2.17-.94-3.65-2.1-4.45-3.48l-.21-.26h-21.48l.1.42c.69,3.5,2.51,6.59,5.46,9.26,2.95,2.67,6.86,4.76,11.75,6.27,4.89,1.51,10.62,2.26,17.21,2.26,7.87,0,14.58-1,20.12-2.99,5.55-1.99,9.78-4.9,12.71-8.71,2.93-3.81,4.39-8.42,4.39-13.83v-50.75h-21.89v10.09ZM66.7,106.67c0,2.84-.61,5.29-1.82,7.33-1.21,2.05-2.94,3.61-5.17,4.71-2.24,1.09-4.85,1.64-7.83,1.64s-5.48-.54-7.7-1.61c-2.22-1.07-3.94-2.63-5.17-4.68s-1.85-4.52-1.85-7.44v-.05c0-2.91.61-5.37,1.85-7.38,1.23-2.01,2.96-3.56,5.17-4.65,2.22-1.09,4.78-1.64,7.7-1.64s5.58.56,7.8,1.66c2.22,1.11,3.94,2.69,5.17,4.73,1.23,2.05,1.85,4.49,1.85,7.33v.05ZM95.82,135.58h21.89V60.55h-21.89v75.03ZM175.56,80.36c-4.91-1.73-10.72-2.6-17.45-2.6s-11.93.81-16.43,2.44c-4.51,1.63-8.07,3.89-10.68,6.79-2.62,2.89-4.26,6.28-4.91,10.17l-.1.62h20.33l.1-.42c.48-1.66,1.65-3,3.48-4,1.84-1.01,4.37-1.51,7.59-1.51,3.74,0,6.59.7,8.53,2.11,1.94,1.4,2.91,3.37,2.91,5.9v1.37l-19.92.5c-6.1.14-11.06.92-14.87,2.34-3.81,1.42-6.6,3.39-8.37,5.9-1.77,2.51-2.65,5.45-2.65,8.81v.05c0,3.71.98,6.86,2.94,9.46,1.96,2.6,4.74,4.6,8.35,6,3.6,1.41,7.83,2.11,12.69,2.11,3.36,0,6.42-.38,9.18-1.15,2.76-.76,5.16-1.87,7.23-3.33,2.06-1.46,3.75-3.17,5.07-5.15h.36v8.79h21.84v-35.88c0-4.58-1.31-8.51-3.93-11.8-2.62-3.29-6.38-5.81-11.28-7.54ZM168.93,113.49c0,1.98-.6,3.71-1.79,5.2-1.2,1.49-2.89,2.64-5.07,3.46s-4.77,1.22-7.75,1.22-5.38-.49-7.2-1.46c-1.82-.97-2.73-2.46-2.73-4.47v-.05c0-1.56.67-2.79,2-3.69,1.33-.9,3.46-1.39,6.37-1.46l16.17-.43v1.68ZM605.62,102.9l25.91-23.84h-25.01l-22.98,21.32h-.31v-39.83h-21.84v75.03h21.84v-16.69l5.75-4.96,18.27,21.65h25.74l-27.37-32.68ZM327.33,106.52c-3.36-2.63-8.86-4.35-16.48-5.15l-15.03-1.51c-1.98-.24-3.57-.55-4.78-.91s-2.07-.83-2.57-1.4c-.5-.57-.75-1.27-.75-2.11v-.05c0-1.07.4-1.96,1.2-2.65s1.98-1.24,3.54-1.64c1.56-.4,3.47-.6,5.72-.6,3.64,0,6.51.51,8.61,1.53,2.1,1.02,3.3,2.42,3.61,4.19l.05.36h19.97l-.05-.47c-.24-3.67-1.65-6.89-4.21-9.65-2.56-2.76-6.21-4.9-10.94-6.42-4.73-1.52-10.48-2.29-17.24-2.29s-12.17.74-16.85,2.21c-4.68,1.47-8.27,3.61-10.76,6.4-2.5,2.79-3.75,6.16-3.75,10.11v.1c0,3.12.78,5.84,2.34,8.16,1.56,2.32,3.91,4.22,7.05,5.69,3.14,1.47,7.08,2.47,11.83,2.99l14.56,1.46c3.12.35,5.27.85,6.45,1.51,1.18.66,1.77,1.63,1.77,2.91v.05c0,1.04-.41,1.92-1.22,2.63-.82.71-2.02,1.25-3.61,1.61-1.6.36-3.54.55-5.83.55-4.02,0-7.17-.46-9.44-1.38s-3.67-2.37-4.18-4.34l-.1-.31h-21.22l.05.47c.42,3.74,2.03,7,4.83,9.77,2.81,2.77,6.72,4.9,11.73,6.37,5.01,1.47,11.08,2.21,18.23,2.21,6.76,0,12.56-.78,17.42-2.34,4.85-1.56,8.59-3.79,11.2-6.68,2.62-2.89,3.93-6.39,3.93-10.48v-.05c0-4.61-1.68-8.23-5.04-10.87ZM535.59,113.02c-.69,2.88-2.19,5.09-4.5,6.63-2.31,1.54-5.14,2.31-8.5,2.31-2.98,0-5.55-.57-7.7-1.72-2.15-1.14-3.79-2.81-4.91-4.99s-1.69-4.8-1.69-7.85v-.05c0-3.12.57-5.75,1.72-7.9,1.15-2.15,2.77-3.8,4.89-4.94s4.66-1.72,7.64-1.72c3.4,0,6.25.77,8.55,2.31,2.3,1.54,3.8,3.74,4.5,6.58l.05.47h20.64l-.1-.57c-.45-4.82-2.17-9.02-5.15-12.61s-6.95-6.35-11.91-8.29-10.68-2.91-17.16-2.91c-7.32,0-13.66,1.19-19.03,3.56-5.37,2.38-9.53,5.76-12.45,10.17-2.93,4.4-4.39,9.66-4.39,15.76v.05c0,6.14,1.46,11.42,4.37,15.86,2.91,4.44,7.06,7.84,12.45,10.22,5.39,2.37,11.76,3.56,19.11,3.56,6.55,0,12.31-1,17.26-2.99,4.96-1.99,8.91-4.78,11.86-8.35s4.63-7.73,5.04-12.48l.16-.57h-20.64l-.1.47ZM386.97,89.41h-.42c-1.25-2.32-2.96-4.37-5.15-6.14-2.18-1.77-4.74-3.13-7.67-4.08-2.93-.95-6.23-1.43-9.9-1.43-5.72,0-10.74,1.2-15.06,3.59-4.32,2.39-7.67,5.8-10.06,10.22-2.39,4.42-3.59,9.65-3.59,15.68v.1c0,6.03,1.19,11.27,3.56,15.7,2.38,4.44,5.73,7.86,10.06,10.27,4.33,2.41,9.34,3.61,15.03,3.61,3.67,0,7-.48,9.98-1.43,2.98-.95,5.54-2.31,7.67-4.06,2.13-1.75,3.84-3.75,5.12-6h.42v10.14h21.79V60.55h-21.79v28.86ZM386.87,107.4c0,2.91-.61,5.43-1.82,7.54-1.21,2.11-2.94,3.74-5.17,4.86-2.24,1.13-4.85,1.69-7.82,1.69s-5.58-.55-7.77-1.66c-2.2-1.11-3.91-2.73-5.12-4.86-1.21-2.13-1.82-4.67-1.82-7.62v-.1c0-2.91.61-5.43,1.82-7.54,1.21-2.11,2.92-3.73,5.12-4.84,2.2-1.11,4.79-1.66,7.77-1.66s5.59.56,7.82,1.69c2.24,1.13,3.96,2.75,5.17,4.86,1.21,2.11,1.82,4.63,1.82,7.54v.1ZM466.22,81.51c-5.27-2.5-11.51-3.74-18.72-3.74-7.07-.03-13.29,1.14-18.64,3.51-5.36,2.37-9.52,5.79-12.48,10.24-2.96,4.46-4.45,9.78-4.45,15.99v.05c0,6.17,1.46,11.45,4.39,15.83s7.1,7.74,12.51,10.06c5.41,2.32,11.86,3.48,19.34,3.48,4.64,0,8.87-.46,12.69-1.38,3.81-.92,7.16-2.24,10.04-3.95,2.88-1.72,5.25-3.74,7.12-6.06s3.19-4.85,3.95-7.59l.1-.57h-19.97l-.16.26c-.63,1.07-1.57,2.05-2.83,2.91-1.27.87-2.76,1.55-4.5,2.05-1.73.5-3.66.75-5.77.75-3.23,0-6.03-.49-8.43-1.48-2.39-.99-4.24-2.53-5.54-4.63-.93-1.49-1.51-3.32-1.77-5.43h49.64v-4.11c0-6.03-1.44-11.28-4.32-15.76-2.88-4.47-6.95-7.96-12.22-10.45ZM433.42,101.11c.3-1.23.74-2.36,1.32-3.38,1.2-2.08,2.91-3.65,5.15-4.71,2.24-1.06,4.95-1.59,8.14-1.59s5.65.54,7.8,1.61c2.15,1.07,3.8,2.63,4.94,4.68.58,1.03,1.01,2.16,1.29,3.38h-28.64Z"/>
+    </svg>
+  </a>
+  <div class="nav-r">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-counter">
+    <div class="counter-avatars">
+      <div class="avatar">👩</div>
+      <div class="avatar">👨</div>
+      <div class="avatar">🧑</div>
+    </div>
+    <span class="pulse"></span>
+    <span><strong>1,240 designers</strong> already on the waitlist</span>
+  </div>
+
+  <h1>See the design<br>behind <em>any website</em></h1>
+
+  <p class="hero-sub">Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site — built for designers, by a designer.</p>
+
+  <div class="form-wrap" id="waitlist">
+    <div class="email-form" id="heroForm">
+      <input class="email-input" type="email" placeholder="your@email.com" id="heroEmail" />
+      <button class="submit-btn" onclick="handleSubmit('heroEmail','heroForm','heroSuccess')">Get early access →</button>
+    </div>
+    <div class="success" id="heroSuccess">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">You're on the list!</div>
+      <div class="success-sub">We'll email you the moment Glassdeck launches. Tell a designer friend.</div>
+    </div>
+    <p class="form-note">Free forever plan available. No credit card needed.</p>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<div class="proof reveal">
+  <div class="proof-item"><span class="proof-icon">⚡</span> Instant analysis</div>
+  <div class="proof-div"></div>
+  <div class="proof-item"><span class="proof-icon">🎨</span> Built for designers</div>
+  <div class="proof-div"></div>
+  <div class="proof-item"><span class="proof-icon">🔍</span> Any public website</div>
+  <div class="proof-div"></div>
+  <div class="proof-item"><span class="proof-icon">📤</span> Export ready</div>
+  <div class="proof-div"></div>
+  <div class="proof-item"><span class="proof-icon">🔒</span> No login required</div>
+</div>
+
+<!-- MOCKUP PREVIEW -->
+<div class="mockup-section" style="padding: 80px 48px;">
+  <div class="mockup-inner reveal">
+    <div class="mockup-label">Live analysis preview · linear.app</div>
+    <div class="mockup-cards">
+
+      <!-- Fonts -->
+      <div class="mockup-card">
+        <div class="mc-label">Typography</div>
+        <div class="mc-fonts">
+          <div class="mc-font">
+            <div class="mc-font-pre">Aa</div>
+            <div>
+              <div class="mc-font-name">Inter</div>
+              <div class="mc-font-sub">Body · Variable</div>
+            </div>
+          </div>
+          <div class="mc-font">
+            <div class="mc-font-pre" style="font-family:monospace;font-size:14px">01</div>
+            <div>
+              <div class="mc-font-name">SF Mono</div>
+              <div class="mc-font-sub">Mono · System</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div class="mockup-card">
+        <div class="mc-label">Color System</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="mc-swatch" style="background:#1A1A1A">Void</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div class="mc-swatch" style="background:#5E6AD2;height:28px">Blue</div>
+            <div class="mc-swatch" style="background:#6E56CF;height:28px">Iris</div>
+            <div class="mc-swatch" style="background:#3DD68C;height:28px;color:rgba(0,0,0,0.5)">Green</div>
+            <div class="mc-swatch" style="background:#F2F2F2;height:28px;color:#aaa">White</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stack -->
+      <div class="mockup-card">
+        <div class="mc-label">Design Stack</div>
+        <div class="mc-stack">
+          <div class="mc-stack-item"><span class="mc-stack-ico">⚛️</span><span class="mc-stack-name">React</span></div>
+          <div class="mc-stack-item"><span class="mc-stack-ico">🎨</span><span class="mc-stack-name">Radix UI</span></div>
+          <div class="mc-stack-item"><span class="mc-stack-ico">✨</span><span class="mc-stack-name">Framer Motion</span></div>
+          <div class="mc-stack-item"><span class="mc-stack-ico">📦</span><span class="mc-stack-name">CSS Modules</span></div>
+        </div>
+      </div>
+
+      <!-- Score -->
+      <div class="mockup-card" style="display:flex;flex-direction:column;justify-content:center">
+        <div class="mc-label">Design Score</div>
+        <div class="mc-score">
+          <div class="score-num">96</div>
+          <div class="score-label">Excellent</div>
+        </div>
+        <div class="score-bar-wrap"><div class="score-bar"></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="how" class="section">
+  <div class="section-tag">How it works</div>
+  <h2 class="section-h">Three steps to<br>design clarity</h2>
+  <p class="section-sub">No extensions, no installs. Just paste a URL and see everything.</p>
+
+  <div class="steps">
+    <div class="step reveal reveal-d1">
+      <div class="step-num">01</div>
+      <div class="step-icon">🔗</div>
+      <div class="step-title">Paste any URL</div>
+      <div class="step-desc">Drop in any public website URL. Glassdeck fetches and parses the site's stylesheet, markup, and assets instantly.</div>
+      <div class="step-connector">→</div>
+    </div>
+    <div class="step reveal reveal-d2">
+      <div class="step-num">02</div>
+      <div class="step-icon">🔬</div>
+      <div class="step-title">We analyze everything</div>
+      <div class="step-desc">Our engine extracts fonts, color tokens, spacing systems, animation curves, component libraries, and framework fingerprints.</div>
+      <div class="step-connector">→</div>
+    </div>
+    <div class="step reveal reveal-d3">
+      <div class="step-num">03</div>
+      <div class="step-icon">✨</div>
+      <div class="step-title">Get the full picture</div>
+      <div class="step-desc">A beautiful, shareable report that tells you exactly how the site was designed and built — with one-click exports.</div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT YOU GET -->
+<div class="features-section">
+  <div class="section-tag">What you get</div>
+  <h2 class="section-h" style="margin-bottom:16px">Every design signal,<br>beautifully surfaced</h2>
+  <p class="section-sub">The things a senior designer looks for — extracted automatically.</p>
+
+  <div class="features-grid">
+    <div class="feat reveal reveal-d1">
+      <div class="feat-icon">🔤</div>
+      <div class="feat-body">
+        <div class="feat-title">Typography DNA</div>
+        <div class="feat-desc">Font families, weights, sizes, line heights, and where each typeface is used — display, body, UI, or mono.</div>
+      </div>
+    </div>
+    <div class="feat gold-card reveal reveal-d2">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-body">
+        <div class="feat-title">Full Color System</div>
+        <div class="feat-desc">Every color token extracted, named, and role-mapped. Copy hex codes instantly or export as a Figma palette.</div>
+      </div>
+    </div>
+    <div class="feat reveal reveal-d3">
+      <div class="feat-icon">📐</div>
+      <div class="feat-body">
+        <div class="feat-title">Spacing & Grid</div>
+        <div class="feat-desc">Base spacing unit, grid system, density level, and the rhythm that holds the layout together.</div>
+      </div>
+    </div>
+    <div class="feat reveal reveal-d4">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-body">
+        <div class="feat-title">Motion Language</div>
+        <div class="feat-desc">Animation curves, durations, and transition styles — the subtle details that make great products feel alive.</div>
+      </div>
+    </div>
+    <div class="feat reveal">
+      <div class="feat-icon">🧱</div>
+      <div class="feat-body">
+        <div class="feat-title">Design Stack</div>
+        <div class="feat-desc">Component libraries, design systems, frameworks, and tools detected from the actual code.</div>
+      </div>
+    </div>
+    <div class="feat reveal reveal-d1">
+      <div class="feat-icon">📤</div>
+      <div class="feat-body">
+        <div class="feat-title">Shareable Reports</div>
+        <div class="feat-desc">A beautiful PNG card and a public link for every analysis. Share in Slack, tweet it, drop it in a brief.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing" class="pricing-section">
+  <div class="section-tag">Pricing</div>
+  <h2 class="section-h" style="margin-bottom:16px">Simple, honest pricing</h2>
+  <p class="section-sub" style="margin-bottom:48px">Start free. Upgrade when you're ready.</p>
+
+  <div class="plans">
+    <div class="plan reveal reveal-d1">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">forever</div>
+      <div class="plan-divider"></div>
+      <div class="plan-features">
+        <div class="plan-feat"><span class="check">✓</span> 5 analyses per month</div>
+        <div class="plan-feat"><span class="check">✓</span> Fonts & colors</div>
+        <div class="plan-feat"><span class="check">✓</span> Basic export</div>
+      </div>
+      <button class="plan-btn outline" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+    </div>
+
+    <div class="plan featured reveal reveal-d2">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price" style="color:#FFC60B">$12</div>
+      <div class="plan-period">per month</div>
+      <div class="plan-divider"></div>
+      <div class="plan-features">
+        <div class="plan-feat"><span class="check">✓</span> Unlimited analyses</div>
+        <div class="plan-feat"><span class="check">✓</span> Full design report</div>
+        <div class="plan-feat"><span class="check">✓</span> Motion & spacing data</div>
+        <div class="plan-feat"><span class="check">✓</span> Shareable cards</div>
+        <div class="plan-feat"><span class="check">✓</span> History & saved reports</div>
+        <div class="plan-feat"><span class="check">✓</span> Figma + CSS export</div>
+      </div>
+      <button class="plan-btn solid" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Get early access</button>
+    </div>
+
+    <div class="plan reveal reveal-d3">
+      <div class="plan-name">Teams</div>
+      <div class="plan-price">$79</div>
+      <div class="plan-period">per month</div>
+      <div class="plan-divider"></div>
+      <div class="plan-features">
+        <div class="plan-feat"><span class="check">✓</span> Everything in Pro</div>
+        <div class="plan-feat"><span class="check">✓</span> 10 seats included</div>
+        <div class="plan-feat"><span class="check">✓</span> API access</div>
+        <div class="plan-feat"><span class="check">✓</span> White-label exports</div>
+        <div class="plan-feat"><span class="check">✓</span> Priority support</div>
+      </div>
+      <a href="/cdn-cgi/l/email-protection#d0b8b5bcbcbf90b7bcb1a3a3b4b5b3bbfeb9bf" class="plan-btn outline" style="display:block;text-align:center;text-decoration:none;line-height:normal;padding:12px;">Contact us</a>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<div class="cta-section">
+  <div class="cta-inner reveal">
+    <div class="cta-tag">◆ &nbsp;Early access open now</div>
+    <h2 class="cta-h">The design intel tool<br>you've been <em>missing</em></h2>
+    <p class="cta-sub">Join thousands of designers who want to see<br>what's under the hood of great design.</p>
+    <div class="cta-form">
+      <input class="cta-input" type="email" placeholder="your@email.com" id="ctaEmail" />
+      <button class="cta-btn" onclick="handleSubmit('ctaEmail','ctaFormWrap','ctaSuccess')">Join waitlist →</button>
+    </div>
+    <div id="ctaSuccess" class="success" style="margin-top:16px;background:rgba(255,255,255,0.08);border-color:rgba(255,198,11,0.3)">
+      <div class="success-icon">🎉</div>
+      <div class="success-title" style="color:#fff">You're on the list!</div>
+      <div class="success-sub" style="color:rgba(255,255,255,0.5)">We'll be in touch soon. Tell a designer friend.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <span class="foot-copy">© 2026 Glassdeck. All rights reserved.</span>
+  </div>
+  <div class="foot-right">
+    <a href="#" class="foot-link">Privacy</a>
+    <a href="#" class="foot-link">Terms</a>
+    <a href="https://www.instagram.com/glassdeck/" class="foot-link" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+async function handleSubmit(inputId, formId, successId) {
+  const emailEl = document.getElementById(inputId);
+  const email = emailEl.value.trim();
+  if (!email || !email.includes('@')) {
+    emailEl.style.outline = '2px solid #ef4444';
+    emailEl.focus();
+    return;
+  }
+  emailEl.style.outline = '';
+  try {
+    const res = await fetch('https://formspree.io/f/xaqpovpv', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) {
+      const form = document.getElementById(formId);
+      const success = document.getElementById(successId);
+      if (form) form.style.display = 'none';
+      success.classList.add('show');
+      const counter = document.querySelector('.hero-counter span strong');
+      if (counter) counter.textContent = '1,241 designers';
+    } else {
+      alert('Something went wrong. Please try again.');
+    }
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+// Mark elements as ready to animate (hidden), then observe
+revealEls.forEach(el => el.classList.add('animate-ready'));
+
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+} else {
+  revealEls.forEach(el => el.classList.add('visible'));
+}
+// Hard fallback — everything visible after 1s no matter what
+setTimeout(() => revealEls.forEach(el => el.classList.add('visible')), 1000);
+
+// Smooth anchor scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector
