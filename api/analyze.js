@@ -111,11 +111,38 @@ async function fetchAllStylesheets(html, baseUrl, maxSheets = 4) {
 
 // ── 2. FONT EXTRACTION ───────────────────────────────────────────
 
+// Build a map of CSS variable name → value so we can resolve var(--x) references
+function buildCssVarMap(html) {
+  const map = {};
+  // Match --var-name: value; inside :root, html, or bare declarations
+  const re = /--([a-zA-Z][a-zA-Z0-9-]*)s*:s*([^;}{]+)/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const val = m[2].trim().replace(/['"]/g, '');
+    if (val && !val.startsWith('var(')) map['--' + m[1]] = val;
+  }
+  return map;
+}
+
+// Resolve a font-family value that might be var(--something)
+function resolveFontVar(raw, varMap) {
+  const varMatch = /var(([^)]+))/.exec(raw);
+  if (!varMatch) return raw;
+  const varName = varMatch[1].split(',')[0].trim(); // handle fallbacks
+  const resolved = varMap[varName];
+  if (!resolved) return null; // can't resolve — skip
+  // Resolved value might itself be a font stack — take first font
+  return resolved.split(',')[0].trim().replace(/['"]/g, '');
+}
+
 function extractFonts(html) {
   const seen  = {};
   const fonts = [];
+  const varMap = buildCssVarMap(html);
 
   const add = (name, src, weight = '400') => {
+    // Skip if name looks like a CSS variable reference we couldn't resolve
+    if (!name || name.startsWith('var(') || name.startsWith('--')) return;
     const key = name.toLowerCase();
     if (!seen[key] && name.length > 1) {
       seen[key] = true;
@@ -123,15 +150,17 @@ function extractFonts(html) {
     }
   };
 
-  // Priority 1: @font-face blocks (most accurate — catches self-hosted fonts)
-  const fontFaceRe = /@font-face\s*\{([^}]+)\}/gi;
+  // Priority 1: @font-face blocks — most reliable, catches self-hosted fonts
+  const fontFaceRe = /@font-faces*{([^}]+)}/gi;
   let m;
   while ((m = fontFaceRe.exec(html)) !== null) {
-    const block  = m[1];
-    const nameM  = /font-family\s*:\s*['"]?([^'";]+)['"]?/i.exec(block);
+    const block   = m[1];
+    const nameM   = /font-familys*:s*['"]?([^'";]+)['"]?/i.exec(block);
     if (!nameM) continue;
-    const name    = nameM[1].trim().replace(/['"]/g, '');
-    const weightM = /font-weight\s*:\s*([^;]+)/i.exec(block);
+    const rawName = nameM[1].trim().replace(/['"]/g, '');
+    const name    = rawName.startsWith('var(') ? resolveFontVar(rawName, varMap) : rawName;
+    if (!name) continue;
+    const weightM = /font-weights*:s*([^;]+)/i.exec(block);
     add(name, '@font-face', weightM ? weightM[1].trim() : '400');
   }
 
@@ -146,45 +175,60 @@ function extractFonts(html) {
     } catch(e) {}
   }
 
-  // Priority 3: font-family declarations (catch CSS-in-JS / inline styles)
+  // Priority 3: font-family declarations — resolve var() references first
   const SKIP = new Set([
     'inherit','initial','unset','sans-serif','serif','monospace',
     'system-ui','ui-sans-serif','ui-serif','ui-monospace','ui-rounded',
     '-apple-system','blinkmacsystemfont','helvetica neue','helvetica',
-    'arial','georgia','times','verdana','trebuchet ms','cursive','fantasy'
+    'arial','georgia','times','verdana','trebuchet ms','cursive','fantasy',
+    'menlo','monaco','consolas','courier new','lucida console'
   ]);
-  const cssRe = /font-family\s*:\s*['"]?([A-Za-z][^'";,\n{}]{1,50})['"]?/gi;
+
+  const cssRe = /font-familys*:s*([^;}{\n]{1,120})/gi;
   while ((m = cssRe.exec(html)) !== null) {
-    const raw  = m[1].trim().replace(/['"]/g, '');
-    const name = raw.split(',')[0].trim();
-    if (name && !SKIP.has(name.toLowerCase())) add(name, 'CSS');
+    let raw = m[1].trim();
+
+    // Resolve var() if present
+    if (raw.startsWith('var(')) {
+      const resolved = resolveFontVar(raw, varMap);
+      if (!resolved) continue;
+      raw = resolved;
+    }
+
+    // Take first font in stack
+    const name = raw.split(',')[0].trim().replace(/['"]/g, '');
+    if (name && !name.startsWith('var(') && !SKIP.has(name.toLowerCase())) {
+      add(name, 'CSS');
+    }
   }
 
-  // Font name cleanup — strip variable/display/italic suffixes, fix known names
+  // Font name cleanup — normalize known names
   function cleanFontName(name) {
     const KNOWN = {
-      'sohne': 'Söhne', 'söhne': 'Söhne',
-      'sohne-var': 'Söhne', 'soehne': 'Söhne',
+      'sohne': 'Söhne', 'söhne': 'Söhne', 'sohne-var': 'Söhne', 'soehne': 'Söhne',
       'inter-var': 'Inter', 'inter var': 'Inter',
       'geist-sans': 'Geist', 'geistsans': 'Geist',
       'geist-mono': 'Geist Mono', 'geistmono': 'Geist Mono',
       'sf pro display': 'SF Pro', 'sf pro text': 'SF Pro',
-      'sourcecodepro': 'Source Code Pro',
-      'jetbrainsmono': 'JetBrains Mono',
+      'sourcecodepro': 'Source Code Pro', 'source-code-pro': 'Source Code Pro',
+      'jetbrainsmono': 'JetBrains Mono', 'jetbrains-mono': 'JetBrains Mono',
       'ibmplexsans': 'IBM Plex Sans', 'ibmplexmono': 'IBM Plex Mono',
       'dmsans': 'DM Sans', 'dmserif': 'DM Serif', 'dmmono': 'DM Mono',
       'plusjakartasans': 'Plus Jakarta Sans',
-      'bricolageGrotesque': 'Bricolage Grotesque',
+      'bricolagegrotesque': 'Bricolage Grotesque',
+      'suisseintl': 'Suisse Intl', 'suisse intl': 'Suisse Intl',
+      'graphik': 'Graphik',
     };
     const lower = name.toLowerCase().replace(/\s+/g, '');
     if (KNOWN[lower]) return KNOWN[lower];
-    // Strip common suffixes: -var, -variable, -italic, -display, -text
-    return name.replace(/-(?:var|variable|display|text|italic|roman|regular|semibold)$/i, '')
-               .replace(/\s+(?:Variable|Display|Text|Italic)$/i, '')
-               .trim();
+    const lowerSpace = name.toLowerCase();
+    if (KNOWN[lowerSpace]) return KNOWN[lowerSpace];
+    return name
+      .replace(/-(?:var|variable|display|text|italic|roman|regular|semibold|bold)$/i, '')
+      .replace(/\s+(?:Variable|Display|Text|Italic|Regular)$/i, '')
+      .trim();
   }
 
-  // Shape for render()
   return fonts.slice(0, 4).map(f => {
     const cleaned   = cleanFontName(f.name);
     const isMono    = /mono|code|console|courier/i.test(cleaned);
@@ -194,7 +238,7 @@ function extractFonts(html) {
       name:    cleaned,
       weights: f.weight,
       role:    isMono ? 'mono' : isDisplay ? 'display' : 'body',
-      tags:    [f.src, f.weight && f.weight !== '400' ? `w${f.weight}` : null].filter(Boolean)
+      tags:    [f.src, f.weight && f.weight !== '400' ? 'w' + f.weight : null].filter(Boolean)
     };
   });
 }
