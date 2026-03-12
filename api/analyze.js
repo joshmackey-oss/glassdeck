@@ -174,11 +174,20 @@ async function extractInBrowser(url) {
         bump(rootStyle.backgroundColor, 5);
         bump(rootStyle.color, 3);
         const bodyStyle = getComputedStyle(document.body);
+        // Skip elements belonging to third-party widgets (chat, reviews, analytics, payments)
+        const WIDGET_SIG = /tidio|tidiochat|gorgias|intercom|drift|crisp|livechat|freshchat|zendesk|helpscout|klaviyo|yotpo|okendo|loox|judge|hubspot|omnisend|stamped|paypal|shopify-pay|shop-pay|afterpay|klarna|sezzle|affirm|hotjar|hj-|onetrust|cookiebot|cookieconsent/i;
+        const isOwnEl = (el) => {
+          const id = (el.id || '');
+          const cls = (typeof el.className === 'string' ? el.className : '');
+          return !WIDGET_SIG.test(id + ' ' + cls);
+        };
+
         bump(bodyStyle.backgroundColor, 5);
         bump(bodyStyle.color, 3);
 
         // Buttons — highest value for brand colors
         document.querySelectorAll('button,[class*="btn"],[class*="cta"],[class*="button"]').forEach(el => {
+          if (!isOwnEl(el)) return;
           const s = getComputedStyle(el);
           bump(s.backgroundColor, 10);
           bump(s.color, 4);
@@ -186,6 +195,7 @@ async function extractInBrowser(url) {
 
         // Nav, header — strong brand signal
         document.querySelectorAll('nav, header, [class*="nav"], [class*="header"]').forEach(el => {
+          if (!isOwnEl(el)) return;
           const s = getComputedStyle(el);
           bump(s.backgroundColor, 6);
           bump(s.color, 3);
@@ -193,13 +203,15 @@ async function extractInBrowser(url) {
 
         // Headings + links
         document.querySelectorAll('h1,h2,h3,a').forEach(el => {
+          if (!isOwnEl(el)) return;
           const s = getComputedStyle(el);
           bump(s.color, 2);
           bump(s.backgroundColor, 1);
         });
 
-        // Broad sample
-        Array.from(document.querySelectorAll('*')).slice(0, 400).forEach(el => {
+        // Broad sample — skip widget roots
+        Array.from(document.querySelectorAll('body *')).slice(0, 400).forEach(el => {
+          if (!isOwnEl(el)) return;
           const s = getComputedStyle(el);
           bump(s.backgroundColor, 1);
           bump(s.color, 1);
@@ -230,8 +242,21 @@ async function extractInBrowser(url) {
         // ── 7. Colors from @font-face / sheet rules ──────────────────
         const sheetColors = [];
         try {
+          const siteHost = location.hostname;
           for (const sheet of Array.from(document.styleSheets)) {
             try {
+              // Only read stylesheets from: same origin, Shopify CDN theme assets, WP themes
+              const sheetHref = sheet.href || '';
+              if (sheetHref) {
+                let sheetHost = '';
+                try { sheetHost = new URL(sheetHref).hostname; } catch(e) {}
+                const isSameOrigin = sheetHost === siteHost || sheetHost.endsWith('.' + siteHost);
+                const isShopifyTheme = sheetHost === 'cdn.shopify.com' && /\/assets\/|theme/i.test(sheetHref);
+                const isWpTheme = /wp-content\/themes/i.test(sheetHref);
+                const isWebflow = sheetHost.endsWith('webflow.com') || sheetHost.endsWith('webflow.io');
+                const isSquarespace = sheetHost.endsWith('squarespace.com') || sheetHost.endsWith('squarespace-cdn.com');
+                if (!isSameOrigin && !isShopifyTheme && !isWpTheme && !isWebflow && !isSquarespace) continue;
+              }
               for (const rule of Array.from((sheet.cssRules || [])).slice(0, 300)) {
                 const text = rule.cssText || '';
                 (text.match(/#[0-9A-Fa-f]{6}\\b/g) || []).forEach(h => sheetColors.push(h.toUpperCase()));
@@ -322,9 +347,37 @@ async function fetchAllStylesheets(html, baseUrl, maxSheets = 4) {
     while ((lm = linkRe2.exec(html)) !== null) hrefs.push(lm[1]);
 
     const seen = new Set();
+
+    const isBrandCss = (url) => {
+      try {
+        const u = new URL(url);
+        const host = u.hostname;
+        const siteHost = base.hostname;
+        // Same origin — always include
+        if (host === siteHost || host.endsWith('.' + siteHost)) return true;
+        // Shopify CDN theme assets — these contain the brand CSS variables
+        if (host === 'cdn.shopify.com' && /\/assets\/|theme/i.test(u.pathname)) return true;
+        // WordPress theme / plugin assets on same domain
+        if (/wp-content\/themes/i.test(u.pathname)) return true;
+        // Webflow CDN
+        if (host.endsWith('webflow.com') || host.endsWith('webflow.io')) return true;
+        // Squarespace CDN
+        if (host.endsWith('squarespace.com') || host.endsWith('squarespace-cdn.com')) return true;
+        // Other known third-party — skip
+        return false;
+      } catch { return false; }
+    };
+
     const resolved = hrefs
-      .filter(h => { if (seen.has(h)) return false; seen.add(h); return !/google|typekit|fontawesome|bootstrap-icons|ionicons|normalize|reset/i.test(h); })
-      .map(h => h.startsWith('http') ? h : new URL(h, base).href);
+      .filter(h => {
+        if (seen.has(h)) return false;
+        seen.add(h);
+        // Reject known icon/reset CDNs by URL pattern
+        if (/fontawesome|bootstrap-icons|ionicons|normalize\.css|reset\.css|typekit|google.*font/i.test(h)) return false;
+        return true;
+      })
+      .map(h => h.startsWith('http') ? h : new URL(h, base).href)
+      .filter(isBrandCss); // Only fetch CSS from the brand's own domains
 
     const results = await Promise.all(resolved.slice(0, 8).map(u => fetchRaw(u).catch(() => '')));
     const sorted  = results.filter(Boolean).sort((a, b) => b.length - a.length);
@@ -471,6 +524,12 @@ function processColors(freqMap) {
     '#663399','#8B008B',                               // generic purples
     // CSS color keywords that leak through
     '#FF0000','#00FF00','#0000FF','#FFFF00','#FF00FF','#00FFFF',
+    // Tidio chat widget colors (appear on many Shopify sites)
+    '#EE9441','#136F99','#1990C6','#1A7FC1','#0A6EB4',
+    // Shopify Pay / Shop Pay
+    '#5A31F4','#96BF48',
+    // Klaviyo, Yotpo, review widgets
+    '#FFC107','#FF6900',
   ]);
 
   function hexToRgb(h)   { return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
