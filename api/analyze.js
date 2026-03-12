@@ -457,23 +457,38 @@ function processColors(freqMap) {
   function colorName(hex) {
     const [r,g,b] = hexToRgb(hex);
     const br = brightness(hex), sat = saturation(hex);
-    const max = Math.max(r,g,b), min = Math.min(r,g,b);
     if (br > 230 && sat < 0.15) return 'White';
-    if (br < 25  && sat < 0.2)  return 'Black';
-    if (br < 60  && sat < 0.25) return 'Near Black';
-    if (br > 180 && sat < 0.12) return 'Light Grey';
+    if (br < 15  && sat < 0.2)  return 'Black';
+    if (br < 40  && sat < 0.25) return 'Near Black';
+    if (br > 200 && sat < 0.10) return 'White';
+    if (br > 170 && sat < 0.12) return 'Light Grey';
+    if (br > 120 && sat < 0.12) return 'Grey';
     if (br < 100 && sat < 0.2)  return 'Dark Grey';
     const hue = Math.atan2(Math.sqrt(3)*(g-b), 2*r-g-b) * 180 / Math.PI;
     const h = (hue + 360) % 360;
     if (sat < 0.15) return 'Grey';
-    if (h < 20  || h >= 340) return r > 180 ? 'Coral'  : 'Red';
-    if (h < 45)  return 'Orange';
-    if (h < 70)  return 'Yellow';
-    if (h < 150) return 'Green';
-    if (h < 200) return 'Teal';
-    if (h < 250) return b > 150 ? 'Indigo' : 'Blue';
-    if (h < 290) return 'Purple';
-    if (h < 340) return 'Pink';
+    // Reds
+    if (h < 15 || h >= 345) return br < 80 ? 'Dark Red' : (r > 220 && br > 160) ? 'Coral' : 'Red';
+    // Oranges
+    if (h < 40)  return br < 100 ? 'Rust'   : 'Orange';
+    // Yellows / golds
+    if (h < 65)  return br < 170 ? 'Gold'   : 'Yellow';
+    // Greens — split dark forest from bright/neon
+    if (h < 150) {
+      if (br < 80)  return 'Forest Green';
+      if (br > 160) return 'Light Green';
+      return sat > 0.7 ? 'Bright Green' : 'Green';
+    }
+    // Teals
+    if (h < 195) return br < 100 ? 'Dark Teal' : 'Teal';
+    // Blues
+    if (h < 255) {
+      if (br < 80)  return 'Dark Blue';
+      if (b > 180 && sat > 0.6) return 'Electric Blue';
+      return b > r + 40 ? 'Indigo' : 'Blue';
+    }
+    if (h < 290) return br < 100 ? 'Deep Purple' : 'Purple';
+    if (h < 340) return br > 150 ? 'Pink' : 'Magenta';
     return 'Neutral';
   }
   function badgeBg(hex) {
@@ -583,11 +598,18 @@ function extractFontsFromHtml(html) {
   // P0: preload font hints
   const preloadRe = /PRELOAD_FONT:\s*(\S+)/g;
   while ((m = preloadRe.exec(html)) !== null) {
-    const file = m[1].trim().split('/').pop().replace(/\.woff2?.*$/i, '');
-    let slug = file
-      .replace(/[-_](buch|regular|bold|medium|semibold|light|italic|roman|web|var|variable|\d{3})$/i, '')
-      .replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
-    if (slug.length > 2) add(slug, 'preload');
+    const file = m[1].trim().split('/').pop().replace(/\.woff2?(\?.*)?$/i, '');
+    let slug = file;
+    // Strip content hashes (Next.js/Vercel: fontname_n4.abc123longHash)
+    slug = slug.replace(/[._][a-zA-Z0-9]{20,}.*$/, '');
+    // Strip Next.js weight/style variant suffixes
+    slug = slug.replace(/[_-][ni]\d$/i, '');
+    // Strip standard weight/style words
+    slug = slug.replace(/[-_](buch|regular|bold|medium|semibold|light|thin|italic|roman|web|var|variable|\d{3})$/i, '');
+    slug = slug.replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
+    if (!slug || slug.length < 3) continue;
+    if (/^[0-9a-f]{8,}$/i.test(slug)) continue;
+    add(slug, 'preload');
   }
 
   // P1: @font-face
@@ -610,12 +632,20 @@ function extractFontsFromHtml(html) {
   }
 
   // P3: woff2 filenames
-  const woffSeen = new Set(), woffRe = /\/([a-zA-Z][a-zA-Z0-9_-]{2,40})\.woff2?/g;
+  const woffSeen = new Set(), woffRe = /\/([a-zA-Z][a-zA-Z0-9_.-]{2,80})\.woff2?/g;
   while ((m = woffRe.exec(html)) !== null) {
-    let slug = m[1]
-      .replace(/[-_](buch|regular|bold|medium|semibold|light|italic|roman|web|var|variable|\d{3})$/i, '')
-      .replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
-    if (slug.length < 3 || /^\d+$/.test(slug) || woffSeen.has(slug.toLowerCase())) continue;
+    let slug = m[1];
+    // Strip content hashes — Next.js/Vercel font optimization appends a dot + 20+ char hash
+    // e.g. geist_n4.6e27f2oc83b0a07405... → geist_n4 → geist
+    slug = slug.replace(/[._][a-zA-Z0-9]{20,}.*$/, '');
+    // Strip Next.js weight/style variant suffixes: _n4 _n7 _i4 (normal/italic + weight digit)
+    slug = slug.replace(/[_-][ni]\d$/i, '');
+    // Strip standard weight/style words
+    slug = slug.replace(/[-_](buch|regular|bold|medium|semibold|light|thin|italic|roman|web|var|variable|\d{3})$/i, '');
+    slug = slug.replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
+    if (!slug || slug.length < 3) continue;
+    if (/^\d+$/.test(slug) || /^[0-9a-f]{8,}$/i.test(slug)) continue; // pure number or hash
+    if (woffSeen.has(slug.toLowerCase())) continue;
     woffSeen.add(slug.toLowerCase());
     const candidate = slug
       .replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -784,11 +814,19 @@ module.exports = async function handler(req, res) {
         // Fonts: 3-layer merge
         // Layer 1 (highest): network-intercepted .woff2 URLs — ground truth
         const urlFonts = (bd.fontUrls || []).map(u => {
-          const file = u.split('/').pop().split('?')[0].replace(/\.woff2?$/i, '');
-          const slug = file
-            .replace(/[-_](buch|regular|bold|medium|semibold|light|thin|italic|roman|web|var|variable|\d{3})$/i, '')
-            .replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
-          if (slug.length < 3) return null;
+          const file = u.split('/').pop().split('?')[0].replace(/\.woff2?(\?.*)?$/i, '');
+          let slug = file;
+          // Strip content hashes: any segment of 20+ alphanumeric chars after . or _
+          // Catches Next.js/Vercel optimized filenames: geist_n4.6e27f2oc83b0... → geist
+          slug = slug.replace(/[._][a-zA-Z0-9]{20,}.*$/, '');
+          // Strip Next.js weight/style variant suffixes: _n4 _n7 _i4 (normal/italic + digit)
+          slug = slug.replace(/[_-][ni]\d$/i, '');
+          // Strip common weight/style words
+          slug = slug.replace(/[-_](buch|regular|bold|medium|semibold|light|thin|italic|roman|web|var|variable|\d{3})$/i, '');
+          slug = slug.replace(/[-_](buch|regular|bold|medium|light|italic|roman|web|var|\d{3})$/i, '');
+          if (!slug || slug.length < 3) return null;
+          // Skip if still looks like a hash (no real word chars)
+          if (/^[0-9a-f]{8,}$/i.test(slug)) return null;
           const family = slug
             .replace(/([a-z])([A-Z])/g, '$1 $2')
             .replace(/(^|[-_])([a-z])/g, (_, p, c) => (p ? ' ' : '') + c.toUpperCase())
