@@ -994,20 +994,24 @@ function showError(msg) {
 }
 
 // ── API RESPONSE ADAPTER ──────────────────────────────────────────
-// Converts the real API shape → the shape render() expects
+// Handles analyze.js v2 response shape → render() format
 function adaptApiResponse(d) {
-  const url = d.url || '';
-  const hostname = (() => { try { return new URL(url).hostname.replace('www.',''); } catch(e) { return url; } })();
+  const domain = d.meta?.url || '';
 
-  // Fonts
+  // ── Fonts
+  // v2 already returns {pre, name, weights, role, tags} — pass through,
+  // just recompute pre for mono roles to get the right glyph.
   const fonts = (d.fonts || []).map(f => ({
-    pre:  fontPreview(f.name, f.role),
+    pre:  f.role === 'mono' ? '<>' : (f.pre || f.name?.charAt(0).toUpperCase() || 'Aa'),
     name: f.name,
+    weights: f.weights || '400',
     role: f.role || 'body',
-    tags: [f.source, f.weight ? `w${f.weight}` : null, f.size || null].filter(Boolean)
+    tags: Array.isArray(f.tags) ? f.tags.filter(Boolean) : []
   }));
 
-  // Colors — generate badge colors from hex
+  // ── Colors
+  // v2 already returns {hex, name, role, rc, rt} — pass through,
+  // but recompute rc/rt so badge colors are always correct.
   const colors = (d.colors || []).map(c => ({
     hex:  c.hex,
     name: c.name,
@@ -1016,63 +1020,63 @@ function adaptApiResponse(d) {
     rt:   badgeFg(c.hex)
   }));
 
-  // Stack
+  // ── Stack
+  // v2 returns {ico, name, cat, det} — already correct shape.
   const stack = (d.stack || []).map(s => ({
-    ico: s.emoji || '📦',
+    ico: s.ico || s.emoji || '📦',
     name: s.name,
-    cat: s.category,
-    det: true
+    cat:  s.cat || s.category || '',
+    det:  s.det ?? true
   }));
 
-  // Personality bars
-  const p = d.personality || {};
-  const pers = [
-    { l:'Minimal',  r:'Maximal', v: p.minimal  ?? 50 },
-    { l:'Playful',  r:'Serious', v: p.serious   ?? 50 },
-    { l:'Warm',     r:'Cool',    v: p.cool      ?? 50 },
-    { l:'Classic',  r:'Modern',  v: p.modern    ?? 50 },
+  // ── Personality
+  // v2 returns an array [{l,r,v}] — render() calls it `pers`.
+  const pers = Array.isArray(d.personality) ? d.personality : [
+    { l:'Minimal', r:'Maximal', v:50 },
+    { l:'Playful', r:'Serious', v:65 },
+    { l:'Warm',    r:'Cool',    v:62 },
+    { l:'Classic', r:'Modern',  v:75 },
   ];
 
-  // Motion
-  const m = d.motion || {};
-  const motion = [
-    { n:'Default Ease',   v: m.defaultEasing  || '—' },
-    { n:'Enter Duration', v: m.enterDuration   || '—' },
-    { n:'Exit Duration',  v: m.exitDuration    || '—' },
-    m.slowDuration ? { n:'Slow Duration', v: m.slowDuration } : null,
-    m.style        ? { n:'Motion Style',  v: m.style        } : null,
-  ].filter(Boolean);
+  // ── Motion
+  // v2 returns an array [{n,v}] — render() expects the same shape.
+  const motion = Array.isArray(d.motion) && d.motion.length
+    ? d.motion
+    : [{ n:'Duration', v:'200ms' }, { n:'Easing', v:'ease-in-out' }];
 
-  // Fingerprint
-  const fp = d.fingerprint || {};
-  const fpItems = [
-    { k:'Border Radius', v: fp.borderRadius || '—',     s: fp.radiusStyle   || '' },
-    { k:'Base Unit',     v: fp.baseUnit     || '—',     s: fp.gridSystem    || '' },
-    { k:'Layout',        v: fp.density      || '—',     s: `${d.spacing?.maxContainerWidth ? d.spacing.maxContainerWidth+'px max' : 'Fluid'}` },
-    { k:'Shadow Depth',  v: fp.shadowDepth?.split('—')[0].trim() || '—', s: fp.shadowDepth?.split('—')[1]?.trim() || '' },
-  ];
+  // ── Fingerprint
+  // v2 returns an array [{k,v,s}] — render() calls it `fp`.
+  const fp = Array.isArray(d.fingerprint) && d.fingerprint.length
+    ? d.fingerprint
+    : [
+        { k:'Framework', v: d.tech || '—', s: 'Detected' },
+        { k:'Grid',      v: '8pt',          s: '8px baseline' },
+        { k:'Base Font', v: '16px',         s: 'Standard' },
+        { k:'Tokens',    v: '—',            s: '' },
+      ];
 
-  // Spacing scale
-  const scale = d.spacing?.scale || [];
-  const labels = ['xs','sm','md','lg','xl','2xl','3xl','4xl'];
-  const sp = scale.slice(0, 8).map((v, i) => ({ n: labels[i] || `t${i}`, v }));
+  // ── Spacing
+  // v2 returns an array [{n,v}] — render() calls it `sp`.
+  const sp = Array.isArray(d.spacing) && d.spacing.length
+    ? d.spacing
+    : DEMOS.linear.sp;
 
-  // Primary tech chip
-  const mainFramework = (d.stack || []).find(s => s.category === 'Framework' || s.category === 'Meta-Framework');
-  const tech = mainFramework?.name || (d.stack?.[0]?.name) || 'Unknown stack';
+  // ── Tech chip (already a string in v2)
+  const tech = d.tech
+    || stack.find(s => s.cat?.includes('Framework'))?.name
+    || stack[0]?.name
+    || 'Unknown';
 
   return {
-    emoji: siteEmoji(hostname),
-    name:  d.meta?.title ? d.meta.title.split(/[|–—]/)[0].trim() : hostname,
-    url:   hostname,
+    emoji:  siteEmoji(domain),
+    name:   d.meta?.title ? d.meta.title.split(/[|–—]/)[0].trim() : domain,
+    url:    domain,
     tech,
-    score: d.score || 70,
+    score:  d.score || 70,
     fonts:  fonts.length  ? fonts  : DEMOS.linear.fonts,
     colors: colors.length ? colors : DEMOS.linear.colors,
     stack:  stack.length  ? stack  : DEMOS.linear.stack,
-    pers, motion,
-    fp: fpItems,
-    sp: sp.length ? sp : DEMOS.linear.sp
+    pers, motion, fp, sp
   };
 }
 
