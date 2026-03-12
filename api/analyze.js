@@ -147,13 +147,38 @@ function extractFonts(html) {
     if (name && !SKIP.has(name.toLowerCase())) add(name, 'CSS');
   }
 
+  // Font name cleanup — strip variable/display/italic suffixes, fix known names
+  function cleanFontName(name) {
+    const KNOWN = {
+      'sohne': 'Söhne', 'söhne': 'Söhne',
+      'sohne-var': 'Söhne', 'soehne': 'Söhne',
+      'inter-var': 'Inter', 'inter var': 'Inter',
+      'geist-sans': 'Geist', 'geistsans': 'Geist',
+      'geist-mono': 'Geist Mono', 'geistmono': 'Geist Mono',
+      'sf pro display': 'SF Pro', 'sf pro text': 'SF Pro',
+      'sourcecodepro': 'Source Code Pro',
+      'jetbrainsmono': 'JetBrains Mono',
+      'ibmplexsans': 'IBM Plex Sans', 'ibmplexmono': 'IBM Plex Mono',
+      'dmsans': 'DM Sans', 'dmserif': 'DM Serif', 'dmmono': 'DM Mono',
+      'plusjakartasans': 'Plus Jakarta Sans',
+      'bricolageGrotesque': 'Bricolage Grotesque',
+    };
+    const lower = name.toLowerCase().replace(/\s+/g, '');
+    if (KNOWN[lower]) return KNOWN[lower];
+    // Strip common suffixes: -var, -variable, -italic, -display, -text
+    return name.replace(/-(?:var|variable|display|text|italic|roman|regular|semibold)$/i, '')
+               .replace(/\s+(?:Variable|Display|Text|Italic)$/i, '')
+               .trim();
+  }
+
   // Shape for render()
   return fonts.slice(0, 4).map(f => {
-    const isMono    = /mono|code|console|courier/i.test(f.name);
-    const isDisplay = /display|heading|title|hero|syne|editorial/i.test(f.name);
+    const cleaned   = cleanFontName(f.name);
+    const isMono    = /mono|code|console|courier/i.test(cleaned);
+    const isDisplay = /display|heading|title|hero|syne|editorial/i.test(cleaned);
     return {
-      pre:     isMono ? '01' : (f.name.charAt(0).toUpperCase() || 'Aa'),
-      name:    f.name,
+      pre:     isMono ? '01' : (cleaned.charAt(0).toUpperCase() || 'Aa'),
+      name:    cleaned,
       weights: f.weight,
       role:    isMono ? 'mono' : isDisplay ? 'display' : 'body',
       tags:    [f.src, f.weight && f.weight !== '400' ? `w${f.weight}` : null].filter(Boolean)
@@ -179,52 +204,81 @@ function colorName(hex) {
   const r = parseInt(hex.slice(1,3),16);
   const g = parseInt(hex.slice(3,5),16);
   const b = parseInt(hex.slice(5,7),16);
-  if (r > 220 && g > 220 && b > 220) return 'White';
-  if (r < 40  && g < 40  && b < 40)  return 'Black';
-  if (r < 80  && g < 80  && b < 80)  return 'Dark';
-  if (r > 200 && g > 180 && b < 80)  return 'Gold';
-  if (r > 220 && g > 100 && b < 80)  return 'Orange';
-  if (r > 180 && g < 100 && b < 100) return 'Red';
-  if (g > r && g > b)                 return 'Green';
-  if (b > r && b > g)                 return r > 120 ? 'Periwinkle' : 'Blue';
-  if (r > 150 && b > 150 && g < 120) return 'Purple';
+  // Saturation: how "colorful" is this color?
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  const sat = max === 0 ? 0 : (max - min) / max;
+  const br  = (r*299 + g*587 + b*114) / 1000; // perceived brightness
+
+  if (br > 230 && sat < 0.15)  return 'White';
+  if (br < 25  && sat < 0.2)   return 'Black';
+  if (br < 60  && sat < 0.25)  return 'Near Black';
+  if (br < 100 && sat < 0.2)   return 'Dark Grey';
+  if (br > 180 && sat < 0.12)  return 'Light Grey';
+  // Chromatic names
+  const hue = Math.atan2(Math.sqrt(3)*(g-b), 2*r-g-b) * 180/Math.PI;
+  const h = (hue + 360) % 360;
+  if (sat < 0.15) return 'Grey';
+  if (h < 20  || h >= 340) return r > 180 ? 'Coral' : 'Red';
+  if (h < 45)  return 'Orange';
+  if (h < 70)  return 'Yellow';
+  if (h < 150) return 'Green';
+  if (h < 200) return 'Teal';
+  if (h < 250) return b > 150 ? 'Indigo' : 'Blue';
+  if (h < 290) return 'Purple';
+  if (h < 340) return 'Pink';
   return 'Neutral';
 }
 
 function extractColors(html) {
   const freq = {};
 
-  // Known noise: Google, Facebook, Twitter, and other
-  // tracking/analytics script colors that bleed into extraction
   const NOISE = new Set([
     '#4285F4','#34A853','#FBBC05','#EA4335', // Google
     '#1877F2','#42B72A',                     // Facebook
     '#1DA1F2',                               // Twitter/X
     '#FF6201','#FF6200',                     // GTM/Firebase orange
-    '#0070F3',                               // Vercel blue (if analyzing other sites)
     '#5865F2',                               // Discord
     '#FF0000',                               // YouTube red
     '#25D366',                               // WhatsApp
     '#0A66C2',                               // LinkedIn
   ]);
 
+  function hexToRgb(h) {
+    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  }
+  function saturation(h) {
+    const [r,g,b] = hexToRgb(h);
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    return max === 0 ? 0 : (max - min) / max;
+  }
+  function brightness(h) {
+    const [r,g,b] = hexToRgb(h);
+    return (r*299 + g*587 + b*114) / 1000;
+  }
+  function colorDist(a, b) {
+    const [r1,g1,b1] = hexToRgb(a), [r2,g2,b2] = hexToRgb(b);
+    // Weighted distance — emphasize hue differences so indigo != dark blue
+    return Math.sqrt((r1-r2)**2 * 2 + (g1-g2)**2 * 4 + (b1-b2)**2 * 2);
+  }
+
   const bump = (hex, weight = 1) => {
     if (!hex) return;
-    if (hex === '#FFFFFF' || hex === '#000000') return;
-    if (NOISE.has(hex)) return; // filter tracking script colors
+    const br = brightness(hex);
+    if (br > 250) return; // pure white
+    if (br < 8)  return; // pure black
+    if (NOISE.has(hex)) return;
     freq[hex] = (freq[hex] || 0) + weight;
   };
 
-  // Priority 1: CSS custom properties (design tokens — sign of a real system)
-  // e.g. --color-primary: #5E6AD2  or  --brand: rgb(94, 106, 210)
-  const tokenRe = /--(?:color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill)[^:]*\s*:\s*(#[0-9A-Fa-f]{6}|rgba?\([^)]+\))/gi;
+  // Priority 1: CSS custom properties (design tokens — high weight)
+  const tokenRe = /--(?:color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill|ui|cta|button|link|highlight)[^:]*s*:s*(#[0-9A-Fa-f]{6}|rgba?([^)]+))/gi;
   let m;
   while ((m = tokenRe.exec(html)) !== null) {
     const hex = rgbToHex(m[1]);
-    if (hex) bump(hex, 4); // weight tokens 4× — they're intentional
+    if (hex) bump(hex, 5); // tokens are intentional design decisions
   }
 
-  // Priority 2: All hex colors by frequency
+  // Priority 2: inline style / CSS color declarations
   const hexRe = /#([0-9A-Fa-f]{6})\b/g;
   while ((m = hexRe.exec(html)) !== null) {
     bump('#' + m[1].toUpperCase(), 1);
@@ -237,25 +291,52 @@ function extractColors(html) {
     if (hex) bump(hex, 1);
   }
 
-  // Deduplicate perceptually similar colors (avoids '3× near-black' problem)
-  function hexToRgb(h) {
-    return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
-  }
-  function colorDist(a, b) {
-    const [r1,g1,b1] = hexToRgb(a), [r2,g2,b2] = hexToRgb(b);
-    return Math.sqrt((r1-r2)**2 + (g1-g2)**2 + (b1-b2)**2);
-  }
+  // Boost saturated colors — they're more likely to be brand colors
+  Object.keys(freq).forEach(hex => {
+    const sat = saturation(hex);
+    const br  = brightness(hex);
+    if (sat > 0.5 && br > 30 && br < 220) freq[hex] *= (1 + sat); // up to 2× boost
+  });
 
+  // Sort by weighted frequency
   const sorted = Object.keys(freq).sort((a, b) => freq[b] - freq[a]);
+
+  // Deduplicate — use larger threshold for near-neutrals (group all greys)
+  // but smaller for chromatic colors (keep indigo separate from blue)
   const deduped = [];
   for (const hex of sorted) {
-    const tooClose = deduped.some(kept => colorDist(hex, kept) < 45);
+    const isSaturated = saturation(hex) > 0.35;
+    const threshold   = isSaturated ? 55 : 35; // chromatic colors need less dedup
+    const tooClose    = deduped.some(kept => {
+      const dist = colorDist(hex, kept);
+      // If both are saturated, use a tighter threshold so distinct hues survive
+      const effectiveThreshold = (isSaturated && saturation(kept) > 0.35) ? 80 : threshold;
+      return dist < effectiveThreshold;
+    });
     if (!tooClose) deduped.push(hex);
     if (deduped.length === 5) break;
   }
 
+  // Smart role assignment based on actual color properties
+  function assignRole(hex, index) {
+    const br  = brightness(hex);
+    const sat = saturation(hex);
+    if (br > 190 && sat < 0.15) return 'Background';
+    if (br < 50  && sat < 0.2)  return 'Background';
+    if (sat > 0.5 && index === 0) return 'Primary';
+    if (sat > 0.4) return index <= 1 ? 'Primary' : 'Accent';
+    if (br > 150) return 'Surface';
+    if (br < 80)  return 'Base';
+    return 'Muted';
+  }
+
+  // Sort palette: dark/light first (background-ish), then saturated (brand colors)
+  const neutrals  = deduped.filter(h => saturation(h) < 0.25).sort((a,b) => brightness(a) - brightness(b));
+  const chromatic = deduped.filter(h => saturation(h) >= 0.25).sort((a,b) => freq[b] - freq[a]);
+  const ordered   = [...neutrals, ...chromatic].slice(0, 5);
+
   const ROLES = ['Background','Primary','Accent','Surface','Muted'];
-  return deduped.map((hex, i) => ({
+  return ordered.map((hex, i) => ({
     hex,
     name: colorName(hex),
     role: ROLES[i] || 'Color',
