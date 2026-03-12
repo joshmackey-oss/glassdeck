@@ -43,21 +43,18 @@ function fetchRaw(url, hops = 0) {
 }
 
 // Browserless REST — returns fully JS-rendered HTML.
-// Uses the /content endpoint (no SDK needed, pure HTTPS).
+// Uses the /chrome/content endpoint (Browserless v2 API).
 function fetchRendered(url) {
   const token = process.env.BROWSERLESS_TOKEN;
   if (!token) return Promise.reject(new Error('BROWSERLESS_TOKEN not set'));
 
-  const payload = JSON.stringify({
-    url,
-    gotoOptions: { waitUntil: 'networkidle2', timeout: 20000 },
-    waitFor: 1500  // extra settle time for CSS animations / lazy fonts
-  });
+  // Browserless v2: minimal payload — just url
+  const payload = JSON.stringify({ url });
 
   return new Promise((resolve, reject) => {
     const req = https.request({
-      hostname: 'chrome.browserless.io',
-      path:     `/content?token=${token}`,
+      hostname: 'production-sfo.browserless.io',
+      path:     `/content?token=${token}&timeout=25000&stealth=true`,
       method:   'POST',
       headers:  {
         'Content-Type':   'application/json',
@@ -69,7 +66,7 @@ function fetchRendered(url) {
       res.on('data', c => data += c);
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) resolve(data);
-        else reject(new Error(`Browserless ${res.statusCode}: ${data.slice(0, 120)}`));
+        else reject(new Error(`Browserless ${res.statusCode}: ${data.slice(0, 200)}`));
       });
     });
     req.on('error', reject);
@@ -78,6 +75,7 @@ function fetchRendered(url) {
     req.end();
   });
 }
+
 
 // ── 2. FONT EXTRACTION ───────────────────────────────────────────
 
