@@ -79,17 +79,6 @@ function fetchRendered(url) {
   });
 }
 
-// If body text after stripping tags is < 300 chars, it's a JS shell.
-function isJsRendered(html) {
-  const text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return text.length < 300;
-}
-
 // ── 2. FONT EXTRACTION ───────────────────────────────────────────
 
 function extractFonts(html) {
@@ -188,8 +177,24 @@ function colorName(hex) {
 function extractColors(html) {
   const freq = {};
 
+  // Known noise: Google, Facebook, Twitter, and other
+  // tracking/analytics script colors that bleed into extraction
+  const NOISE = new Set([
+    '#4285F4','#34A853','#FBBC05','#EA4335', // Google
+    '#1877F2','#42B72A',                     // Facebook
+    '#1DA1F2',                               // Twitter/X
+    '#FF6201','#FF6200',                     // GTM/Firebase orange
+    '#0070F3',                               // Vercel blue (if analyzing other sites)
+    '#5865F2',                               // Discord
+    '#FF0000',                               // YouTube red
+    '#25D366',                               // WhatsApp
+    '#0A66C2',                               // LinkedIn
+  ]);
+
   const bump = (hex, weight = 1) => {
-    if (!hex || hex === '#FFFFFF' || hex === '#000000') return;
+    if (!hex) return;
+    if (hex === '#FFFFFF' || hex === '#000000') return;
+    if (NOISE.has(hex)) return; // filter tracking script colors
     freq[hex] = (freq[hex] || 0) + weight;
   };
 
@@ -356,25 +361,18 @@ module.exports = async function handler(req, res) {
   let rendered    = false;
 
   try {
-    // ── Step 1: Plain fetch (fast path)
-    try {
-      html = await fetchRaw(url);
-    } catch (fetchErr) {
-      // Plain fetch failed entirely — go straight to Browserless
-      if (!process.env.BROWSERLESS_TOKEN) throw fetchErr;
-      html     = await fetchRendered(url);
-      rendered = true;
-    }
-
-    // ── Step 2: If the page is a JS shell, upgrade to Browserless
-    if (!rendered && isJsRendered(html) && process.env.BROWSERLESS_TOKEN) {
+    // ── Strategy: Browserless FIRST (gets real CSS tokens, @font-face,
+    //    computed styles). Fall back to plain fetch if unavailable/fails.
+    if (process.env.BROWSERLESS_TOKEN) {
       try {
         html     = await fetchRendered(url);
         rendered = true;
       } catch (bErr) {
-        // Browserless failed — carry on with the raw HTML we have
-        console.warn('Browserless fallback failed:', bErr.message);
+        console.warn('Browserless failed, falling back to raw fetch:', bErr.message);
+        html = await fetchRaw(url);
       }
+    } else {
+      html = await fetchRaw(url);
     }
 
     // ── Extract everything
