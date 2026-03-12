@@ -773,7 +773,7 @@ const DEMOS = {
 // ── CONFIG ──────────────────────────────────────────────────────
 // Once your Railway API is live, replace this with your real URL:
 // e.g. 'https://glassdeck-api.up.railway.app'
-const API_URL = 'https://glassdeck-api-production.up.railway.app';
+const API_URL = '/api/analyze';
 
 // ── DEMO FALLBACK ────────────────────────────────────────────────
 function loadDemo(k) {
@@ -810,7 +810,7 @@ async function runLiveAnalysis(url, ldr) {
   const stepPromise = animateSteps(true); // open-ended — resolves when we tell it to
 
   try {
-    const res = await fetch(`${API_URL}/analyze`, {
+    const res = await fetch(`${API_URL}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
