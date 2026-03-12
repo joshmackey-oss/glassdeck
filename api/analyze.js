@@ -209,9 +209,22 @@ async function extractInBrowser(url) {
 
         // ── 6. Token colors (CSS vars) ───────────────────────────────
         const tokenColors = {};
-        const colorVarRe = /^--(color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill|ui|cta|button|link)/i;
+        // Utility/state variable names to SKIP — these are platform defaults, not brand colors
+        const UTIL_VAR = /sold.?out|unavailable|badge|price|discount|savings|sale|error|success|warning|overlay|spinner|skeleton|focus|visit|scrollbar|placeholder|border|shadow|button-text|icon-subtle/i;
+        const colorVarRe = /^--(color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill|ui|cta|scheme)/i;
         for (const [k, v] of Object.entries(cssVars)) {
-          if (colorVarRe.test(k) && /^(#|rgb|hsl)/.test(v)) tokenColors[k] = v;
+          if (UTIL_VAR.test(k)) continue; // skip utility/state vars
+          if (!colorVarRe.test(k)) continue;
+          // Standard hex/rgb/hsl
+          if (/^(#|rgb|hsl)/.test(v)) { tokenColors[k] = v; continue; }
+          // Shopify Dawn format: space-separated R G B integers e.g. "245 240 232"
+          const spRgb = v.match(/^(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})$/);
+          if (spRgb) {
+            const r = parseInt(spRgb[1]), g = parseInt(spRgb[2]), b = parseInt(spRgb[3]);
+            if (r <= 255 && g <= 255 && b <= 255) {
+              tokenColors[k] = '#' + [r,g,b].map(n => n.toString(16).padStart(2,'0')).join('');
+            }
+          }
         }
 
         // ── 7. Colors from @font-face / sheet rules ──────────────────
@@ -445,9 +458,19 @@ function toHex(str) {
 
 function processColors(freqMap) {
   const NOISE = new Set([
+    // Social / brand platform defaults (not the site's own colors)
     '#4285F4','#34A853','#FBBC05','#EA4335',
     '#1877F2','#1DA1F2','#FF6201','#5865F2',
     '#FF0000','#25D366','#0A66C2',
+    // Shopify / WooCommerce / e-commerce platform SYSTEM colors
+    // These appear in every theme for sale badges, stock, errors — not brand colors
+    '#008000','#006400','#00FF00','#3ED660','#39DA8A', // stock/success greens
+    '#8B0000','#DC143C','#FF4444','#CC0000','#B91C1C', // sale/error reds
+    '#FF8C00','#FFA500','#F59E0B','#D97706',           // warning oranges
+    '#1E90FF','#0000FF','#0066CC',                     // generic info blues
+    '#663399','#8B008B',                               // generic purples
+    // CSS color keywords that leak through
+    '#FF0000','#00FF00','#0000FF','#FFFF00','#FF00FF','#00FFFF',
   ]);
 
   function hexToRgb(h)   { return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
@@ -671,9 +694,29 @@ function extractColorsFromHtml(html) {
   const bump = (hex, w) => { if (hex) freq[hex] = (freq[hex]||0) + w; };
 
   // CSS token properties (highest weight)
-  const tokenRe = /--(?:color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill|ui|cta|button|link|highlight)[^:]*\s*:\s*(#[0-9A-Fa-f]{6}|rgba?\([^)]+\)|hsla?\([^)]+\))/gi;
+  // Handles hex/rgb/hsl AND Shopify Dawn space-separated R G B format
+  // Also excludes utility/state vars (sale, error, success, badge, etc.)
+  const UTIL_TOKEN = /sold.?out|unavailable|badge|price|discount|savings|sale|error|success|warning|overlay|spinner|skeleton|focus|visited|scrollbar|placeholder|shadow/i;
+  const tokenRe = /--(color|brand|primary|secondary|accent|bg|background|surface|text|fg|foreground|fill|ui|cta|scheme)[^:{\n]*:\s*([^;{\n]+)/gi;
   let m;
-  while ((m = tokenRe.exec(html)) !== null) { const h = toHex(m[1]); if (h) bump(h, 5); }
+  while ((m = tokenRe.exec(html)) !== null) {
+    const varName = m[0].split(':')[0].trim();
+    if (UTIL_TOKEN.test(varName)) continue;
+    const val = m[2].trim();
+    // Standard color formats
+    const stdHex = val.match(/^(#[0-9A-Fa-f]{6}|rgba?\([^)]+\)|hsla?\([^)]+\))/i);
+    if (stdHex) { const h = toHex(stdHex[1]); if (h) { const isPrimary = /background|foreground|scheme-1|base-bg|base-text|brand/i.test(varName); bump(h, isPrimary ? 20 : 5); } continue; }
+    // Shopify Dawn format: "245 240 232" (space-separated R G B)
+    const spRgb = val.match(/^(\d{1,3})\s+(\d{1,3})\s+(\d{1,3})\s*$/);
+    if (spRgb) {
+      const r=parseInt(spRgb[1]),g=parseInt(spRgb[2]),b=parseInt(spRgb[3]);
+      if (r<=255&&g<=255&&b<=255) {
+        const h='#'+[r,g,b].map(n=>n.toString(16).padStart(2,'0')).join('').toUpperCase();
+        const isPrimary = /background|foreground|scheme-1|base-bg|base-text|brand/i.test(varName);
+        bump(h, isPrimary ? 20 : 5);
+      }
+    }
+  }
 
   const hexRe = /#([0-9A-Fa-f]{6})\b/g;
   while ((m = hexRe.exec(html)) !== null) bump('#'+m[1].toUpperCase(), 1);
@@ -866,9 +909,12 @@ module.exports = async function handler(req, res) {
         // Colors: merge token colors (high weight) + computed freq map + sheet colors
         const colorFreq = { ...(bd.colorFreq || {}) };
         // Token colors get a big boost — they're intentional design decisions
-        for (const [, val] of Object.entries(bd.tokenColors || {})) {
-          const hex = toHex(val);
-          if (hex) colorFreq[val] = (colorFreq[val] || 0) + 15;
+        for (const [key, val] of Object.entries(bd.tokenColors || {})) {
+          const hex = typeof val === 'string' && val.startsWith('#') ? val : toHex(val);
+          if (!hex) continue;
+          // Extra boost for vars that name the primary palette slots
+          const isPrimary = /background|foreground|scheme-1|base-text|base-bg|brand/i.test(key);
+          colorFreq[hex] = (colorFreq[hex] || 0) + (isPrimary ? 30 : 15);
         }
         // Sheet colors at medium weight
         for (const c of (bd.sheetColors || [])) {
