@@ -76,23 +76,36 @@ function fetchRendered(url) {
   });
 }
 
-// Fetches the first external stylesheet linked in the HTML (catches self-hosted font @font-face)
-async function fetchFirstStylesheet(html, baseUrl) {
+// Fetches up to N external stylesheets — catches fonts, color tokens, design vars.
+// Prioritises files that look like design-system CSS (largest first, skip icon/reset sheets).
+async function fetchAllStylesheets(html, baseUrl, maxSheets = 4) {
+  const sheets = [];
   try {
     const base = new URL(baseUrl.startsWith('http') ? baseUrl : 'https://' + baseUrl);
+
+    // Collect all <link rel="stylesheet"> hrefs
     const linkRe = /<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']/gi;
+    const hrefs = [];
     let m;
     while ((m = linkRe.exec(html)) !== null) {
       const href = m[1];
-      if (href.includes('google') || href.includes('typekit')) continue; // skip known font CDNs
-      const cssUrl = href.startsWith('http') ? href : new URL(href, base).href;
-      try {
-        const css = await fetchRaw(cssUrl);
-        if (css && css.includes('@font-face')) return css;
-      } catch(e) {}
+      // Skip known CDN/font/icon sheets that won't have brand colors
+      if (/google|typekit|fontawesome|bootstrap-icons|ionicons|normalize|reset/i.test(href)) continue;
+      hrefs.push(href.startsWith('http') ? href : new URL(href, base).href);
     }
+
+
+    // Fetch up to maxSheets, in parallel, with a 5s timeout each
+    const fetches = hrefs.slice(0, Math.min(hrefs.length, 8)).map(cssUrl =>
+      fetchRaw(cssUrl).catch(() => '')
+    );
+    const results = await Promise.all(fetches);
+
+    // Sort by length descending (biggest file = most likely to be the design system CSS)
+    const sorted = results.filter(Boolean).sort((a, b) => b.length - a.length);
+    sheets.push(...sorted.slice(0, maxSheets));
   } catch(e) {}
-  return '';
+  return sheets.join('\n');
 }
 
 
@@ -188,16 +201,26 @@ function extractFonts(html) {
 
 // ── 3. COLOR EXTRACTION ──────────────────────────────────────────
 
+function hslToHex(h, s, l) {
+  h = ((h % 360) + 360) % 360;
+  s /= 100; l /= 100;
+  const k = n => (n + h/30) % 12;
+  const a = s * Math.min(l, 1-l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+  return '#' + [f(0),f(8),f(4)].map(x => Math.round(x*255).toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
 function rgbToHex(str) {
   if (!str) return null;
   str = str.trim();
   if (/^#[0-9A-Fa-f]{6}$/.test(str)) return str.toUpperCase();
-  const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(str);
-  if (!m) return null;
-  return '#' + [m[1], m[2], m[3]]
-    .map(x => parseInt(x).toString(16).padStart(2, '0'))
-    .join('')
-    .toUpperCase();
+  // rgb/rgba
+  let m = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/.exec(str);
+  if (m) return '#' + [m[1],m[2],m[3]].map(x => Math.round(parseFloat(x)).toString(16).padStart(2,'0')).join('').toUpperCase();
+  // hsl/hsla — handles "hsl(243, 100%, 68%)" and "hsl(243deg 100% 68%)"
+  m = /hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%?[\s,]+([\d.]+)%/.exec(str);
+  if (m) return hslToHex(parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3]));
+  return null;
 }
 
 function colorName(hex) {
@@ -285,10 +308,19 @@ function extractColors(html) {
   }
 
   // Priority 3: rgb/rgba values
-  const rgbRe = /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/g;
+  const rgbRe = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/g;
   while ((m = rgbRe.exec(html)) !== null) {
     const hex = rgbToHex(`rgb(${m[1]},${m[2]},${m[3]})`);
     if (hex) bump(hex, 1);
+  }
+
+  // Priority 4: hsl/hsla values — many modern design systems use hsl exclusively
+  const hslRe = /hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%?[\s,]+([\d.]+)%/g;
+  while ((m = hslRe.exec(html)) !== null) {
+    try {
+      const hex = hslToHex(parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3]));
+      if (hex) bump(hex, 1);
+    } catch(e) {}
   }
 
   // Boost saturated colors — they're more likely to be brand colors
@@ -491,16 +523,14 @@ module.exports = async function handler(req, res) {
     const domain    = (() => { try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return url; } })();
     const titleM    = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const title     = titleM ? titleM[1].trim() : domain;
+    // Always fetch linked CSS files — brand colors and font declarations live here,
+    // not in the rendered HTML (especially for Next.js / CSS Modules sites)
+    try {
+      const extraCss = await fetchAllStylesheets(html, url);
+      if (extraCss) html = html + extraCss;
+    } catch(e) {}
+
     const hasTokens = /--(color|brand|primary|secondary|accent|bg|surface|fg)\b/.test(html);
-
-    // Augment html with first linked stylesheet (catches self-hosted @font-face)
-    if (!extractFonts(html).length || extractFonts(html)[0].name === 'System UI') {
-      try {
-        const extraCss = await fetchFirstStylesheet(html, url);
-        if (extraCss) html = html + extraCss;
-      } catch(e) {}
-    }
-
     const fonts  = extractFonts(html);
     const colors = extractColors(html);
     const stack  = detectStack(html);
