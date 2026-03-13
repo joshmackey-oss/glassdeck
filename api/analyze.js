@@ -878,12 +878,237 @@ function derivePersonality({ fonts, colors, stack, hasTokens }) {
   const hasMinimal = colors.length <= 3;
   const isModern   = hasTokens || stack.some(s => /Radix|shadcn|Tailwind/.test(s.name));
   const isPlayful  = fonts.some(f => /syne|display|rounded/i.test(f.name)) || hasMotion;
+  const warmth     = computeColorWarmth(colors);
   return [
     { l:'Minimal',  r:'Maximal', v: hasMinimal ? 20 : colors.length >= 5 ? 65 : 40 },
     { l:'Playful',  r:'Serious', v: isPlayful ? 35 : 68 },
-    { l:'Warm',     r:'Cool',    v: 62 },
+    { l:'Warm',     r:'Cool',    v: warmth },
     { l:'Classic',  r:'Modern',  v: isModern ? 82 : 50 },
   ];
+}
+
+// ── ICON LIBRARY DETECTION ────────────────────────────────────────
+// Detects which icon library a site uses from HTML markup and stack.
+
+function detectIcons(html, stack) {
+  const h = html.toLowerCase();
+
+  // Signature patterns: [regex, libName, style, format]
+  const sigs = [
+    // Heroicons (Tailwind's default)
+    [/heroicon|@heroicons/,                               'Heroicons',         'Outline',            'SVG'],
+    // Lucide (successor to Feather)
+    [/lucide-react|lucide\.dev|from ['"]lucide/,          'Lucide',            'Outline',            'SVG'],
+    // Feather Icons
+    [/feathericons|feather-icons|data-feather/,           'Feather Icons',     'Outline',            'SVG'],
+    // Phosphor Icons
+    [/phosphor-react|phosphor-icons|@phosphor-icons/,     'Phosphor Icons',    'Outline',            'SVG'],
+    // Tabler Icons
+    [/tabler-icons|@tabler\/icons/,                       'Tabler Icons',      'Outline',            'SVG'],
+    // Radix Icons
+    [/radix-ui\/react-icons|@radix-ui\/icons/,            'Radix Icons',       'Outline',            'SVG'],
+    // Font Awesome 6
+    [/font-awesome|fontawesome|fa-solid|fa-regular|fa-brands|fa fa-/,
+                                                          'Font Awesome',      'Filled',             'SVG Font'],
+    // Material Icons / Symbols
+    [/material-icons|material-symbols|google\/material/,  'Material Icons',    'Filled',             'SVG Font'],
+    // Remix Icons
+    [/remixicon|ri-[a-z]+-line|ri-[a-z]+-fill/,          'Remix Icons',       'Outline + Filled',   'SVG Font'],
+    // Bootstrap Icons
+    [/bootstrap-icons|bi bi-/,                            'Bootstrap Icons',   'Outline',            'SVG Font'],
+    // React Icons (wrapper — look for specific sub-libraries)
+    [/react-icons\/hi|HeroIcon/,                          'React Icons (HI)',  'Outline',            'SVG'],
+    [/react-icons\/fi|from ['"]react-icons\/fi/,          'React Icons (FI)',  'Outline',            'SVG'],
+    [/react-icons\/bs|from ['"]react-icons\/bs/,          'React Icons (BS)',  'Outline',            'SVG'],
+    [/react-icons/,                                       'React Icons',       'Mixed',              'SVG'],
+    // Iconify
+    [/iconify|@iconify/,                                  'Iconify',           'Mixed',              'SVG'],
+  ];
+
+  for (const [re, lib, style, format] of sigs) {
+    if (re.test(h)) {
+      return { lib, style, format, size: detectIconSize(h) };
+    }
+  }
+
+  // Stack-based inference
+  const hasRadix   = stack.some(s => /Radix/i.test(s.name));
+  const hasTailwind = stack.some(s => /Tailwind/i.test(s.name));
+  const hasShadcn  = stack.some(s => /shadcn/i.test(s.name));
+
+  if (hasShadcn || hasRadix)  return { lib: 'Lucide (likely)',    style: 'Outline',  format: 'SVG', size: '16px' };
+  if (hasTailwind)             return { lib: 'Heroicons (likely)', style: 'Outline',  format: 'SVG', size: '20px' };
+
+  // Check for inline SVG usage as a strong signal of custom icons
+  const svgCount = (h.match(/<svg\b/g) || []).length;
+  if (svgCount >= 5) return { lib: 'Custom SVG Icons', style: detectSvgStyle(h), format: 'SVG', size: detectIconSize(h) };
+
+  return { lib: 'Custom Icons', style: 'Mixed', format: 'SVG', size: '20px' };
+}
+
+function detectSvgStyle(h) {
+  // Heuristic: count stroke vs fill usage in SVG elements
+  const strokeMatches = (h.match(/stroke="currentcolor"|stroke-width|stroke-linecap/g) || []).length;
+  const fillMatches   = (h.match(/fill="currentcolor"|fill-rule|fill-opacity/g) || []).length;
+  if (strokeMatches > fillMatches * 2) return 'Outline';
+  if (fillMatches > strokeMatches * 2) return 'Filled';
+  return 'Outline + Filled';
+}
+
+function detectIconSize(h) {
+  // Look for common icon size classes (Tailwind) or explicit w/h attributes on SVGs
+  if (/w-3\b|h-3\b|size-3\b/.test(h)) return '12px';
+  if (/w-4\b|h-4\b|size-4\b/.test(h)) return '16px';
+  if (/w-5\b|h-5\b|size-5\b/.test(h)) return '20px';
+  if (/w-6\b|h-6\b|size-6\b/.test(h)) return '24px';
+  if (/w-8\b|h-8\b|size-8\b/.test(h)) return '32px';
+  // SVG width attribute
+  const m = /\<svg[^>]+width=["'](\d+)["']/.exec(h);
+  if (m) {
+    const px = parseInt(m[1]);
+    if (px >= 12 && px <= 32) return `${px}px`;
+  }
+  return '20px';
+}
+
+// ── COPY VOICE DERIVATION ─────────────────────────────────────────
+// Derives brand voice dimensions from detectable signals.
+
+function deriveVoice({ fonts, colors, stack, hasTokens, personality }) {
+  // Friendly ↔ Corporate
+  // Signals for Friendly: warm colors, playful fonts, consumer-facing stacks
+  // Signals for Corporate: cool palette, serif/system fonts, B2B stacks
+  const warmScore   = personality.find(p => p.l === 'Warm')?.v ?? 50;
+  const playScore   = 100 - (personality.find(p => p.l === 'Playful')?.v ?? 50); // invert (Playful=low v means playful)
+  const isConsumer  = stack.some(s => /Shopify|WordPress|Webflow|Framer/i.test(s.name));
+  const isDevTool   = stack.some(s => /Next\.js|Gatsby|Remix|SvelteKit/i.test(s.name));
+  let friendly = 50;
+  friendly += (warmScore < 50) ? -15 : 10;   // warm palette → more friendly
+  friendly += playScore > 60 ? -10 : 10;      // playful personality → more friendly
+  friendly += isConsumer ? 15 : 0;
+  friendly += isDevTool  ? -10 : 0;
+  friendly = Math.min(85, Math.max(15, Math.round(friendly)));
+
+  // Simple ↔ Technical
+  // Signals for Technical: mono fonts, developer stack, token system, many stack items
+  const hasMono    = fonts.some(f => f.role === 'mono');
+  const stackDepth = stack.length;
+  let technical = 35;
+  technical += hasMono      ? 20 : 0;
+  technical += hasTokens    ? 10 : 0;
+  technical += isDevTool    ? 20 : 0;
+  technical += (stackDepth >= 4) ? 10 : 0;
+  technical += isConsumer   ? -15 : 0;
+  technical = Math.min(90, Math.max(15, Math.round(technical)));
+
+  // Playful ↔ Serious (reuse from personality, inverted for consistency)
+  const serious = personality.find(p => p.l === 'Playful')?.v ?? 65;
+
+  const voice = [
+    { l: 'Friendly',  r: 'Corporate',  v: friendly  },
+    { l: 'Simple',    r: 'Technical',  v: technical  },
+    { l: 'Playful',   r: 'Serious',    v: serious    },
+  ];
+
+  // Generate a summary sentence
+  const voiceSummary = buildVoiceSummary(voice, stack, fonts);
+
+  return { voice, voiceSummary };
+}
+
+function buildVoiceSummary(voice, stack, fonts) {
+  const friendly  = voice.find(v => v.l === 'Friendly')?.v  ?? 50;
+  const technical = voice.find(v => v.l === 'Simple')?.v    ?? 50;
+  const serious   = voice.find(v => v.l === 'Playful')?.v   ?? 65;
+
+  const toneWord   = friendly  < 35 ? 'Corporate and authoritative'
+                   : friendly  > 65 ? 'Warm and approachable'
+                   : 'Balanced and professional';
+  const techWord   = technical > 65 ? 'Technical depth over simplicity'
+                   : technical < 35 ? 'Plain language first'
+                   : 'Clear without being simplistic';
+  const moodWord   = serious   > 75 ? 'Earnest and focused'
+                   : serious   < 35 ? 'Playful and energetic'
+                   : 'Confident without being stuffy';
+
+  return `${toneWord}. ${techWord}. ${moodWord}.`;
+}
+
+// ── FINGERPRINT DETECTION ─────────────────────────────────────────
+// Detects border radius and base font size from CSS/HTML.
+
+function detectBorderRadius(html) {
+  // Collect all border-radius values, find the most common non-zero one
+  const vals = [];
+  const re = /border-radius\s*:\s*([\d.]+)px/gi;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const v = parseFloat(m[1]);
+    if (v > 0 && v <= 64) vals.push(v);
+  }
+
+  // Also check for CSS var-based radius patterns
+  const varRe = /--(radius|rounded|border-radius|corner)[^:{\n]*:\s*([\d.]+)(?:px|rem)?/gi;
+  while ((m = varRe.exec(html)) !== null) {
+    const v = parseFloat(m[2]);
+    if (v > 0 && v <= 64) vals.push(v);
+  }
+
+  if (vals.length === 0) return null;
+
+  // Find mode (most common value)
+  const freq = {};
+  vals.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
+  const mode = parseFloat(Object.keys(freq).sort((a, b) => freq[b] - freq[a])[0]);
+
+  const desc = mode <= 2  ? 'Ultra sharp'
+             : mode <= 6  ? 'Sharp & precise'
+             : mode <= 12 ? 'Softly rounded'
+             : mode <= 20 ? 'Rounded'
+             : 'Pill-friendly';
+
+  return { v: `${mode}px`, s: desc };
+}
+
+function detectBaseFontSize(html) {
+  // Look for font-size on html/body/root, or --font-size-base CSS var
+  const patterns = [
+    /(?:html|body)\s*\{[^}]*font-size\s*:\s*([\d.]+)(px|rem)/i,
+    /--(?:font-size-base|base-font-size|font-base)[^:]*:\s*([\d.]+)(px|rem)/i,
+    /:root\s*\{[^}]*font-size\s*:\s*([\d.]+)(px|rem)/i,
+  ];
+  for (const re of patterns) {
+    const m = re.exec(html);
+    if (m) {
+      let px = parseFloat(m[1]);
+      if (m[2] === 'rem') px = Math.round(px * 16);
+      if (px >= 10 && px <= 24) {
+        const desc = px <= 13 ? 'Dense UI' : px <= 15 ? 'Compact' : px >= 18 ? 'Generous reading' : 'Standard';
+        return { v: `${px}px`, s: desc };
+      }
+    }
+  }
+  return null;
+}
+
+// ── COLOR WARMTH DETECTION ────────────────────────────────────────
+// Compute actual warm/cool balance from the color palette.
+
+function computeColorWarmth(colors) {
+  if (!colors || colors.length === 0) return 62;
+  function hexToRgb(h) { return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+  function saturation(h) { const [r,g,b]=hexToRgb(h); const mx=Math.max(r,g,b),mn=Math.min(r,g,b); return mx===0?0:(mx-mn)/mx; }
+
+  const chromatic = colors.filter(c => saturation(c.hex) > 0.15);
+  if (chromatic.length === 0) return 50; // neutral greyscale palette
+
+  const temps = chromatic.map(c => {
+    const [r,,b] = hexToRgb(c.hex);
+    return r - b; // positive = warm, negative = cool
+  });
+  const avg = temps.reduce((a,b) => a+b, 0) / temps.length;
+  // Map avg (-255 to +255) onto 10–90 range, inverted (warm = low v because bar reads left=warm)
+  return Math.min(90, Math.max(10, Math.round(50 - (avg / 255) * 40)));
 }
 
 // ── MAIN HANDLER ──────────────────────────────────────────────────
@@ -901,7 +1126,7 @@ module.exports = async function handler(req, res) {
 
   const domain = (() => { try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return url; } })();
 
-  let fonts, colors, stack, spacing, hasTokens, title, rendered = false;
+  let fonts, colors, stack, spacing, hasTokens, title, rendered = false, rawHtmlCache = '';
   const LABELS = ['xs','sm','md','lg','xl','2xl'];
 
   try {
@@ -956,6 +1181,7 @@ module.exports = async function handler(req, res) {
           console.log('No real fonts from browser — running CSS font fallback for', domain);
           try {
             const rawHtml = await fetchRaw(url);
+            rawHtmlCache = rawHtml; // cache for fingerprint detection
             const extraCss = await fetchAllStylesheets(rawHtml, url).catch(() => '');
             const fallbackFonts = extractFontsFromHtml(rawHtml + extraCss);
             if (fallbackFonts.length > 0) {
@@ -1007,6 +1233,7 @@ module.exports = async function handler(req, res) {
       const extraCss = await fetchAllStylesheets(html, url).catch(() => '');
       if (extraCss) html += extraCss;
 
+      rawHtmlCache = html; // cache for fingerprint detection below
       hasTokens = /--(color|brand|primary|secondary|accent|bg|surface|fg)\b/.test(html);
       fonts     = extractFontsFromHtml(html);
       colors    = extractColorsFromHtml(html);
@@ -1019,6 +1246,8 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  const html_for_detection = rawHtmlCache;
+
   const tech = (() => {
     const found = stack.find(s => ['Next.js','Nuxt.js','SvelteKit','Gatsby','Remix'].includes(s.name))
                || stack.find(s => ['React','Vue.js','Svelte','Angular'].includes(s.name));
@@ -1027,10 +1256,19 @@ module.exports = async function handler(req, res) {
 
   const score       = scoreDesign({ fonts, colors, stack, hasTokens, rendered });
   const personality = derivePersonality({ fonts, colors, stack, hasTokens });
+  const { voice, voiceSummary } = deriveVoice({ fonts, colors, stack, hasTokens, personality });
+  const icons       = detectIcons(html_for_detection, stack);
+
   const hasMotion   = stack.some(s => /Motion|GSAP/.test(s.name));
   const motionStyle = stack.some(s => /Motion/.test(s.name)) ? 'Spring physics'
                     : stack.some(s => /GSAP/.test(s.name))   ? 'Timeline-based'
                     : 'CSS ease-in-out';
+
+  // Fingerprint — detect real values where possible, fall back to sensible defaults
+  const detectedRadius   = detectBorderRadius(html_for_detection);
+  const detectedFontSize = detectBaseFontSize(html_for_detection);
+  const gridSystem       = stack.some(s => /Tailwind/i.test(s.name)) ? '4pt' : '8pt';
+  const gridDesc         = stack.some(s => /Tailwind/i.test(s.name)) ? 'Tailwind 4px grid' : '8px baseline grid';
 
   res.status(200).json({
     meta: { url: domain, title },
@@ -1041,16 +1279,19 @@ module.exports = async function handler(req, res) {
     tech,
     rendered,
     personality,
+    voice,
+    voiceSummary,
+    icons,
     motion: [
       { n:'Style',    v: motionStyle },
       { n:'Duration', v: hasMotion ? '300–600ms' : '150–250ms' },
       { n:'Easing',   v: hasMotion ? 'Spring / cubic-bezier' : 'ease-in-out' },
     ],
     fingerprint: [
-      { k:'Framework', v: tech,                  s: 'Detected from markup' },
-      { k:'Grid',      v: '8pt',                 s: '8px baseline grid' },
-      { k:'Base Font', v: '16px',                s: 'Standard rem base' },
-      { k:'Tokens',    v: hasTokens ? '✓' : '—', s: hasTokens ? 'CSS custom props found' : 'No token system detected' },
+      { k:'Border Radius', ...(detectedRadius   || { v: '8px',  s: 'Default estimate' }) },
+      { k:'Base Font',     ...(detectedFontSize  || { v: '16px', s: 'Standard rem base' }) },
+      { k:'Grid System',   v: gridSystem,          s: gridDesc },
+      { k:'Tokens',        v: hasTokens ? '✓' : '—', s: hasTokens ? 'CSS custom props found' : 'No token system detected' },
     ],
     spacing,
   });
