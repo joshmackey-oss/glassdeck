@@ -4,25 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Glassdeck — Design Intelligence Tool</title>
-
-<!-- Open Graph -->
-<meta property="og:type"         content="website" />
-<meta property="og:url"          content="https://glassdeck.io/tool" />
-<meta property="og:title"        content="Glassdeck — See the design behind any website" />
-<meta property="og:description"  content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
-<meta property="og:image"        content="https://glassdeck.io/og-image.png" />
-<meta property="og:image:width"  content="1200" />
-<meta property="og:image:height" content="630" />
-
-<!-- Twitter / X -->
-<meta name="twitter:card"        content="summary_large_image" />
-<meta name="twitter:site"        content="@glassdeck" />
-<meta name="twitter:title"       content="Glassdeck — See the design behind any website" />
-<meta name="twitter:description" content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
-<meta name="twitter:image"       content="https://glassdeck.io/og-image.png" />
-
-<!-- SEO -->
-<meta name="description" content="Instantly reveal the fonts, colors, spacing, motion, and design DNA of any site. Built for designers, by a designer." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -1472,7 +1453,7 @@ async function runLiveAnalysis(url, ldr, skipScroll = false) {
   } catch (err) {
     const demoKey = Object.keys(DEMOS).find(k => url.includes(DEMOS[k].url));
     if (demoKey) {
-      await runDemoAnalysis(DEMOS[demoKey], ldr);
+      await runDemoAnalysis(DEMOS[demoKey], ldr, skipScroll);
     } else {
       ldr.classList.remove('on');
       resetSteps();
@@ -2155,7 +2136,16 @@ function render(d) {
 function copy(t) { navigator.clipboard.writeText(t).catch(()=>{}); }
 
 document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key==='Enter') runAnalysis(); });
-window.addEventListener('load', () => setTimeout(() => runAnalysis('linear', true), 300));
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const presetUrl = params.get('url');
+  if (presetUrl) {
+    document.getElementById('urlInput').value = presetUrl;
+    setTimeout(() => runAnalysis(null, false), 400); // analyze with scroll
+  } else {
+    setTimeout(() => runAnalysis('linear', true), 300); // demo, no scroll
+  }
+});
 
 // ── MOBILE LAYOUT FIX ──────────────────────────────────────────────
 // CSS media queries unreliable in Safari iOS. Apply directly via JS.
