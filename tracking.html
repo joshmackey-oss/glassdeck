@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassdeck — Tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF; --bg2: #F7F7F8; --bg3: #F0F0F2;
+    --border: #E8E8EC; --border2: #D4D4DA;
+    --text: #0F0F11; --text2: #6B6B78; --text3: #A0A0AD;
+    --accent: #FFC60B; --accent2: #E6B000; --accent-l: #FFFBEA;
+    --green: #16A34A; --green-l: #DCFCE7;
+    --amber: #D97706; --amber-l: #FEF3C7;
+    --red: #DC2626; --red-l: #FEF2F2;
+    --blue: #3B54D4; --blue-l: #F0F4FF;
+    --sh-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --sh-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+    --sh-lg: 0 8px 28px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+  }
+  html, body {
+    background: #fafafa; color: var(--text);
+    font-family: 'Geist', sans-serif; font-weight: 400;
+    min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+
+  /* ── AURORA ── */
+  .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .aurora-blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; }
+  .aurora-blob-1 {
+    width: 600px; height: 500px;
+    background: radial-gradient(circle, rgba(255,198,11,0.25) 0%, transparent 70%);
+    top: -80px; left: 50%; transform: translateX(-50%);
+    animation: b1 3s ease-in-out infinite alternate;
+  }
+  .aurora-blob-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(180,210,255,0.4) 0%, transparent 70%);
+    top: -60px; right: -80px;
+    animation: b2 4s ease-in-out infinite alternate;
+  }
+  @keyframes b1 { 0%{transform:translateX(-50%) translate(-40px,0)} 100%{transform:translateX(-50%) translate(40px,50px)} }
+  @keyframes b2 { 0%{transform:translate(0,0)} 100%{transform:translate(-60px,70px)} }
+
+  /* ── NAV ── */
+  .nav-wrap {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; justify-content: center; padding: 12px 24px; pointer-events: none;
+  }
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 52px; padding: 0 8px 0 18px; width: 100%; max-width: 1100px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(20px) saturate(180%) brightness(1.04);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.04);
+    border: 1px solid rgba(255,255,255,0.55);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.8);
+    pointer-events: all;
+  }
+  .logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 2px; }
+  .nav-link {
+    padding: 6px 13px; font-size: 13.5px; font-weight: 500;
+    color: #3a3a3a; text-decoration: none; border-radius: 100px;
+    transition: color .15s, background .15s;
+  }
+  .nav-link:hover { color: #0a0a0a; background: rgba(0,0,0,0.07); }
+  .nav-link.active { color: #0a0a0a; background: rgba(0,0,0,0.06); }
+  .nav-cta {
+    padding: 8px 20px; background: #0A0A0A; color: #fff;
+    font-size: 13.5px; font-weight: 600; border-radius: 100px;
+    text-decoration: none; transition: all .2s;
+  }
+  .nav-cta:hover { background: #222; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+  .nav-spacer { height: 76px; }
+
+  /* ── PAGE ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  .page-header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+  }
+  .page-header-left { display: flex; flex-direction: column; gap: 5px; }
+  .page-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--text3);
+    font-family: 'Geist Mono', monospace;
+  }
+  .page-title {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: var(--text);
+  }
+  .page-desc { font-size: 14px; color: var(--text3); margin-top: 2px; }
+  .check-all-btn {
+    padding: 10px 20px; background: var(--text); color: #fff;
+    border: none; border-radius: 10px; font-family: 'Geist', sans-serif;
+    font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all .2s;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .check-all-btn:hover { background: #333; transform: translateY(-1px); }
+  .check-all-btn:disabled { background: var(--bg3); color: var(--text3); cursor: not-allowed; transform: none; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
+  }
+  .stat-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 100px; box-shadow: var(--sh-sm);
+  }
+  .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .stat-dot.green { background: var(--green); }
+  .stat-dot.amber { background: var(--amber); }
+  .stat-dot.gray  { background: var(--text3); }
+  .stat-label { font-size: 13px; font-weight: 500; color: var(--text2); }
+  .stat-val   { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  /* ── TRACKED SITE CARD ── */
+  .track-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 18px; box-shadow: var(--sh-sm);
+    margin-bottom: 14px; overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .track-card:hover { box-shadow: var(--sh-md); }
+  .track-card.has-changes { border-color: #F5D860; }
+
+  /* Card header row */
+  .track-card-head {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px; cursor: pointer;
+    user-select: none;
+  }
+  .track-emoji {
+    width: 42px; height: 42px; border-radius: 11px;
+    background: var(--bg2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0; box-shadow: var(--sh-sm);
+  }
+  .track-info { flex: 1; min-width: 0; }
+  .track-name {
+    font-size: 15px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .track-url {
+    font-size: 12px; color: var(--text3);
+    font-family: 'Geist Mono', monospace; margin-top: 1px;
+  }
+  .track-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  /* Status badge */
+  .status-badge {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+  }
+  .status-badge.changed { background: var(--amber-l); color: var(--amber); border: 1px solid #FDE68A; }
+  .status-badge.stable  { background: var(--green-l); color: var(--green); border: 1px solid #BBF7D0; }
+  .status-badge.new     { background: var(--blue-l);  color: var(--blue);  border: 1px solid #C7D4FF; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .track-last-checked {
+    font-size: 11.5px; color: var(--text3); font-family: 'Geist Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .track-actions { display: flex; gap: 6px; align-items: center; }
+  .track-btn {
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border2);
+    background: var(--bg); font-family: 'Geist', sans-serif;
+    font-size: 12.5px; font-weight: 600; color: var(--text2);
+    cursor: pointer; transition: all .15s; white-space: nowrap;
+  }
+  .track-btn:hover { background: var(--bg3); color: var(--text); }
+  .track-btn.primary { background: var(--text); color: #fff; border-color: var(--text); }
+  .track-btn.primary:hover { background: #333; }
+  .track-btn.danger:hover { background: var(--red-l); color: var(--red); border-color: #FECACA; }
+  .track-btn.checking { opacity: 0.6; cursor: not-allowed; }
+
+  /* Expand chevron */
+  .track-chevron {
+    width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--bg2); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--text3); transition: transform .2s, background .15s;
+    flex-shrink: 0; cursor: pointer;
+  }
+  .track-card.open .track-chevron { transform: rotate(180deg); background: var(--bg3); }
+
+  /* Snapshot section */
+  .track-body {
+    display: none; padding: 0 20px 20px; border-top: 1px solid var(--border);
+  }
+  .track-card.open .track-body { display: block; }
+
+  /* Change badges row */
+  .change-badges {
+    display: flex; flex-wrap: wrap; gap: 7px; padding: 14px 0 16px;
+  }
+  .change-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 11.5px; font-weight: 600;
+  }
+  .change-badge.added   { background: var(--green-l); color: var(--green); }
+  .change-badge.removed { background: var(--red-l);   color: var(--red); }
+  .change-badge.changed { background: var(--amber-l); color: var(--amber); }
+  .change-badge.same    { background: var(--bg3);     color: var(--text3); }
+
+  /* Snapshot timeline */
+  .snapshot-timeline { display: flex; flex-direction: column; gap: 0; }
+  .snapshot-row {
+    display: grid; grid-template-columns: 130px 1fr 1fr;
+    gap: 0; border-top: 1px solid var(--border); padding: 12px 0;
+  }
+  .snapshot-row:first-child { border-top: none; }
+  .snapshot-ts {
+    font-size: 11.5px; color: var(--text3); font-family: 'Geist Mono', monospace;
+    padding-right: 16px; padding-top: 1px;
+  }
+  .snapshot-ts strong { display: block; color: var(--text2); font-weight: 600; }
+  .snapshot-col { display: flex; flex-direction: column; gap: 6px; }
+  .snapshot-col-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text3); margin-bottom: 2px;
+  }
+
+  /* Color swatches */
+  .swatch-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .swatch {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .swatch.new-item::after {
+    content: '';
+    position: absolute; inset: -3px;
+    border: 2px solid var(--green);
+    border-radius: 7px;
+  }
+  .swatch.removed-item { opacity: 0.3; }
+
+  /* Font tags */
+  .font-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .font-tag {
+    padding: 3px 9px; border-radius: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    font-size: 11.5px; font-weight: 500; color: var(--text2);
+  }
+  .font-tag.new-item { background: var(--green-l); border-color: #BBF7D0; color: var(--green); }
+  .font-tag.removed-item { background: var(--red-l); border-color: #FECACA; color: var(--red); text-decoration: line-through; }
+
+  /* Archetype change */
+  .archetype-change {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .arch-pill {
+    padding: 4px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+  }
+  .arch-pill.before { background: var(--bg3); color: var(--text2); }
+  .arch-pill.after  { background: var(--accent-l); color: #92700A; border: 1px solid #F5D860; }
+  .arch-arrow { color: var(--text3); font-size: 12px; }
+
+  /* Snapshot "no changes" */
+  .no-changes-row {
+    padding: 20px 0; text-align: center;
+    font-size: 13.5px; color: var(--text3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 80px 40px; text-align: center; gap: 14px;
+  }
+  .empty-icon { font-size: 48px; opacity: 0.35; }
+  .empty-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .empty-desc { font-size: 14px; color: var(--text3); max-width: 340px; line-height: 1.6; }
+  .empty-cta {
+    margin-top: 6px; padding: 11px 22px;
+    background: var(--text); color: #fff; border: none;
+    border-radius: 10px; font-family: 'Geist', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    text-decoration: none; display: inline-block; transition: all .2s;
+  }
+  .empty-cta:hover { background: #333; transform: translateY(-1px); }
+
+  /* ── CHECKING SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--border2); border-top-color: var(--text);
+    animation: spin .6s linear infinite; display: inline-block;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .page-header { flex-direction: column; align-items: flex-start; }
+    .track-card-head { flex-wrap: wrap; gap: 10px; }
+    .track-meta { flex-wrap: wrap; }
+    .snapshot-row { grid-template-columns: 1fr; gap: 10px; }
+    .stats-row { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="aurora-blob aurora-blob-1"></div>
+  <div class="aurora-blob aurora-blob-2"></div>
+</div>
+
+<!-- NAV -->
+<div class="nav-wrap">
+<nav>
+  <a href="index.html" class="logo">
+    <svg height="22" viewBox="0 0 432 72" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#0A0A0A" d="M54.03,34.95c-.49-5.98-3.55-11.8-7.97-16.21-4.53-4.47-10.35-7.54-16.27-8.03.49,5.98,3.55,11.74,7.97,16.16,4.47,4.47,10.35,7.59,16.27,8.08ZM2.31,38.18c.49,5.98,3.55,11.74,7.97,16.16,4.47,4.47,10.35,7.59,16.27,8.08-.49-5.98-3.55-11.8-8.03-16.21-4.47-4.47-10.29-7.54-16.21-8.03ZM29.79,62.43c5.93-.49,11.74-3.61,16.27-8.08,4.42-4.42,7.49-10.19,7.97-16.16-5.93.49-11.8,3.55-16.27,8.03-4.42,4.42-7.49,10.24-7.97,16.21ZM2.31,34.95c5.93-.54,11.74-3.61,16.21-8.08,4.47-4.42,7.54-10.19,8.03-16.16-5.93.49-11.8,3.55-16.27,8.03-4.42,4.42-7.49,10.24-7.97,16.21Z"/>
+      <path fill="#0A0A0A" d="M214.13,35.24c-1.95-1.52-5.12-2.51-9.52-2.97l-8.69-.87c-1.15-.14-2.07-.32-2.76-.53-.7-.21-1.2-.48-1.49-.81-.29-.33-.44-.73-.44-1.21v-.03c0-.62.23-1.13.69-1.53.46-.4,1.15-.71,2.04-.95.9-.23,2.01-.34,3.31-.34,2.1,0,3.76.29,4.98.89s1.91,1.39,2.09,2.42l.03.21h11.54l-.03-.27c-.14-2.13-.96-3.98-2.44-5.57-1.48-1.59-3.59-2.83-6.33-3.71-2.74-.88-6.05-1.33-9.96-1.33s-7.03.42-9.74,1.27c-2.7.85-4.78,2.08-6.22,3.69s-2.16,3.56-2.16,5.85v.06c0,1.8.45,3.38,1.35,4.72.9,1.34,2.26,2.44,4.07,3.29s4.09,1.43,6.84,1.73l8.41.84c1.8.2,3.05.49,3.73.87.68.38,1.02.94,1.02,1.68v.03c0,.6-.23,1.11-.71,1.52-.47.41-1.17.72-2.08.93-.92.21-2.04.32-3.37.32-2.32,0-4.14-.27-5.45-.79-1.31-.53-2.12-1.37-2.42-2.51l-.06-.18h-12.26l.03.27c.24,2.16,1.17,4.05,2.8,5.65,1.62,1.6,3.88,2.83,6.78,3.69,2.89.85,6.41,1.27,10.53,1.27,3.91,0,7.26-.45,10.06-1.35,2.81-.9,4.96-2.19,6.47-3.86,1.52-1.67,2.26-3.69,2.26-6.05v-.03c0-2.66-.97-4.76-2.91-6.28v-.02ZM103.71,25.26h-.21c-.74-1.28-1.73-2.43-2.97-3.44-1.24-1.01-2.71-1.8-4.42-2.36-1.7-.56-3.6-.84-5.68-.84-3.31,0-6.19.67-8.67,2.01-2.47,1.34-4.41,3.25-5.8,5.71s-2.09,5.4-2.09,8.81v.03c0,3.26.69,6.09,2.07,8.45,1.39,2.38,3.31,4.21,5.79,5.51,2.47,1.3,5.36,1.95,8.64,1.95,2.1,0,4.01-.26,5.73-.78s3.19-1.22,4.44-2.12c1.25-.89,2.24-1.93,2.96-3.11h.21v4.24c0,2.14-.72,3.79-2.18,4.92-1.46,1.15-3.66,1.71-6.62,1.71-2.02,0-3.66-.27-4.92-.81-1.25-.54-2.11-1.21-2.57-2.01l-.12-.15h-12.41l.06.24c.4,2.02,1.46,3.81,3.15,5.35,1.7,1.54,3.97,2.75,6.79,3.62,2.82.87,6.14,1.31,9.94,1.31,4.55,0,8.42-.58,11.62-1.73,3.2-1.15,5.66-2.83,7.34-5.04,1.7-2.2,2.54-4.86,2.54-7.99v-29.32h-12.65v5.83h0ZM103.75,35.32c0,1.64-.35,3.06-1.05,4.24s-1.7,2.09-2.99,2.72-2.8.95-4.52.95-3.17-.31-4.44-.93c-1.28-.62-2.28-1.52-2.99-2.7s-1.07-2.62-1.07-4.3v-.03c0-1.68.35-3.11,1.07-4.27.71-1.16,1.7-2.06,2.99-2.69,1.28-.63,2.76-.95,4.44-.95s3.23.32,4.5.96c1.28.65,2.28,1.55,2.99,2.74.71,1.18,1.07,2.59,1.07,4.24v.03ZM120.57,52.03h12.65V8.68h-12.65s0,43.35,0,43.35ZM166.64,20.13c-2.83-1-6.19-1.51-10.08-1.51s-6.89.47-9.5,1.41c-2.6.94-4.66,2.25-6.17,3.92-1.52,1.67-2.46,3.63-2.84,5.87l-.06.36h11.74l.06-.24c.28-.96.95-1.73,2.01-2.32,1.06-.58,2.52-.87,4.38-.87,2.16,0,3.81.4,4.92,1.21s1.68,1.95,1.68,3.41v.79l-11.51.29c-3.52.08-6.39.53-8.59,1.35-2.2.82-3.81,1.95-4.84,3.41s-1.53,3.15-1.53,5.1v.03c0,2.14.57,3.97,1.7,5.47,1.13,1.5,2.74,2.66,4.82,3.47s4.53,1.21,7.33,1.21c1.95,0,3.71-.22,5.3-.66,1.59-.44,2.99-1.08,4.18-1.92,1.19-.84,2.17-1.83,2.93-2.97h.21v5.08h12.62v-20.73c0-2.64-.76-4.92-2.26-6.82-1.52-1.9-3.69-3.36-6.52-4.36h.03ZM162.82,39.26c0,1.15-.34,2.14-1.03,3-.69.86-1.67,1.52-2.93,2s-2.76.71-4.48.71-3.11-.28-4.16-.84c-1.05-.56-1.58-1.42-1.58-2.58v-.03c0-.9.39-1.61,1.15-2.14.77-.52,2-.8,3.68-.84l9.34-.25s0,.97,0,.97ZM415.13,33.14l14.97-13.78h-14.46l-13.28,12.32h-.18V8.68h-12.62v43.35h12.62v-9.64l3.32-2.87,10.56,12.51h14.87l-15.82-18.88h0ZM254.33,35.24c-1.95-1.52-5.11-2.51-9.52-2.97l-8.69-.87c-1.15-.14-2.06-.32-2.76-.53s-1.2-.48-1.49-.81c-.29-.33-.44-.73-.44-1.21v-.03c0-.62.23-1.13.69-1.53s1.15-.71,2.04-.95c.9-.23,2.01-.34,3.31-.34,2.1,0,3.76.29,4.98.89s1.91,1.39,2.09,2.42l.03.21h11.54l-.03-.27c-.14-2.13-.95-3.98-2.44-5.57-1.48-1.59-3.59-2.83-6.32-3.71-2.74-.88-6.05-1.33-9.96-1.33s-7.03.42-9.74,1.27c-2.7.85-4.78,2.08-6.22,3.69-1.45,1.61-2.16,3.56-2.16,5.85v.06c0,1.8.45,3.38,1.35,4.72.9,1.34,2.26,2.44,4.07,3.29,1.82.85,4.09,1.43,6.84,1.73l8.41.84c1.8.2,3.05.49,3.73.87.68.38,1.02.94,1.02,1.68v.03c0,.6-.23,1.11-.71,1.52-.47.41-1.17.72-2.09.93-.92.21-2.04.32-3.37.32-2.32,0-4.14-.27-5.45-.79s-2.12-1.37-2.42-2.51l-.06-.18h-12.26l.03.27c.24,2.16,1.17,4.05,2.79,5.65,1.63,1.6,3.88,2.83,6.78,3.69,2.89.85,6.41,1.27,10.53,1.27,3.91,0,7.26-.45,10.06-1.35s4.96-2.19,6.47-3.86c1.52-1.67,2.27-3.69,2.27-6.05v-.03c0-2.66-.97-4.76-2.91-6.28v-.02ZM374.67,38.99c-.4,1.66-1.27,2.94-2.6,3.83s-2.97,1.33-4.92,1.33c-1.72,0-3.2-.33-4.44-.99s-2.19-1.62-2.84-2.88-.97-2.77-.97-4.54v-.03c0-1.8.33-3.32.99-4.56.66-1.24,1.6-2.2,2.82-2.85s2.69-.99,4.42-.99c1.96,0,3.61.45,4.94,1.33,1.33.9,2.2,2.16,2.6,3.8l.03.27h11.92l-.06-.33c-.26-2.78-1.25-5.21-2.97-7.28-1.72-2.07-4.01-3.67-6.88-4.8-2.87-1.13-6.17-1.68-9.92-1.68-4.23,0-7.9.69-10.99,2.06-3.11,1.37-5.5,3.33-7.2,5.87-1.7,2.55-2.54,5.58-2.54,9.1v.03c0,3.55.84,6.6,2.52,9.16,1.68,2.57,4.08,4.53,7.2,5.91,3.12,1.37,6.79,2.06,11.04,2.06,3.79,0,7.11-.58,9.98-1.73,2.87-1.15,5.15-2.76,6.85-4.82,1.7-2.06,2.68-4.47,2.91-7.22l.09-.33h-11.92l-.06.27h0ZM288.8,25.35h-.24c-.72-1.34-1.71-2.52-2.97-3.55-1.26-1.02-2.74-1.81-4.43-2.36-1.7-.55-3.6-.83-5.73-.83-3.31,0-6.21.69-8.7,2.07-2.5,1.39-4.43,3.35-5.81,5.91-1.38,2.56-2.07,5.57-2.07,9.06v.06c0,3.49.69,6.51,2.06,9.07,1.37,2.57,3.31,4.54,5.81,5.93,2.51,1.39,5.4,2.09,8.69,2.09,2.13,0,4.05-.28,5.77-.83s3.2-1.33,4.43-2.34c1.23-1.01,2.22-2.17,2.96-3.47h.24v5.85h12.59V8.68h-12.59v16.68h0ZM288.74,35.74c0,1.68-.35,3.13-1.05,4.36-.7,1.22-1.7,2.16-2.99,2.81-1.29.65-2.8.97-4.52.97s-3.22-.32-4.49-.96c-1.27-.64-2.26-1.58-2.96-2.81-.7-1.23-1.05-2.7-1.05-4.4v-.06c0-1.68.35-3.13,1.05-4.36.7-1.22,1.69-2.15,2.96-2.8,1.27-.64,2.77-.96,4.49-.96s3.23.33,4.52.97c1.29.65,2.29,1.58,2.99,2.81s1.05,2.68,1.05,4.36v.08ZM334.59,20.78c-3.05-1.45-6.65-2.16-10.81-2.16-4.09-.02-7.68.65-10.77,2.03-3.09,1.37-5.5,3.35-7.21,5.92-1.71,2.57-2.57,5.66-2.57,9.24v.03c0,3.56.84,6.61,2.54,9.15,1.7,2.53,4.1,4.47,7.22,5.81,3.13,1.34,6.85,2.01,11.18,2.01,2.69,0,5.13-.27,7.34-.8s4.13-1.29,5.8-2.28c1.66-.99,3.03-2.16,4.12-3.5,1.08-1.34,1.84-2.81,2.28-4.38l.06-.33h-11.54l-.09.15c-.36.62-.9,1.18-1.64,1.68s-1.6.9-2.6,1.19-2.11.44-3.33.44c-1.86,0-3.49-.28-4.86-.85s-2.45-1.46-3.2-2.68c-.53-.86-.87-1.91-1.02-3.14h28.68v-2.38c0-3.49-.84-6.52-2.5-9.1-1.66-2.58-4.01-4.6-7.06-6.04h-.02ZM315.64,32.11c.17-.71.42-1.36.77-1.95.69-1.21,1.68-2.11,2.97-2.72s2.86-.91,4.7-.91,3.26.31,4.5.93,2.2,1.52,2.86,2.7c.34.59.59,1.25.75,1.95h-16.55Z"/>
+    </svg>
+  </a>
+  <div class="nav-right">
+    <a href="tool.html" class="nav-link">Analyze</a>
+    <a href="collections.html" class="nav-link">Collections</a>
+    <a href="index.html#pricing" class="nav-link">Pricing</a>
+    <a href="#" class="nav-link">Log In</a>
+    <a href="index.html#waitlist" class="nav-cta">Join for free</a>
+  </div>
+</nav>
+</div>
+<div class="nav-spacer"></div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-eyebrow">Design Intelligence</div>
+      <div class="page-title">Tracked Sites</div>
+      <div class="page-desc">Monitor design changes across the sites that matter to you.</div>
+    </div>
+    <button class="check-all-btn" id="checkAllBtn" onclick="checkAll()">Check all for changes</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow"></div>
+
+  <!-- CARDS -->
+  <div id="trackList"></div>
+
+  <!-- EMPTY -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon">◎</div>
+    <div class="empty-title">No sites tracked yet</div>
+    <div class="empty-desc">Analyze any site in the tool and hit "Track Site" to start monitoring it for design changes.</div>
+    <a href="tool.html" class="empty-cta">Open the tool →</a>
+  </div>
+
+</div>
+
+<script>
+// ── STORAGE ──────────────────────────────────────────────────────────────
+const GD_TRACKED = 'gd_tracked';
+function getTracked()   { try { return JSON.parse(localStorage.getItem(GD_TRACKED)||'[]'); } catch { return []; } }
+function saveTracked(t) { localStorage.setItem(GD_TRACKED, JSON.stringify(t)); }
+function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+// ── DIFF ENGINE ──────────────────────────────────────────────────────────
+function diffSnapshots(prev, next) {
+  const changes = [];
+
+  // Archetype changed?
+  if (prev.archetype !== next.archetype) {
+    changes.push({ type: 'archetype', label: 'Archetype', prev: prev.archetype, next: next.archetype });
+  }
+
+  // Fonts added / removed
+  const prevFonts = new Set(prev.fonts || []);
+  const nextFonts = new Set(next.fonts || []);
+  const addedFonts   = [...nextFonts].filter(f => !prevFonts.has(f));
+  const removedFonts = [...prevFonts].filter(f => !nextFonts.has(f));
+  if (addedFonts.length)   changes.push({ type: 'font-added',   label: `Font added`,   items: addedFonts });
+  if (removedFonts.length) changes.push({ type: 'font-removed', label: `Font removed`,  items: removedFonts });
+
+  // Colors added / removed (by hex, first 6)
+  const prevColors = new Set((prev.colors||[]).map(c => c.toLowerCase()));
+  const nextColors = new Set((next.colors||[]).map(c => c.toLowerCase()));
+  const addedColors   = [...nextColors].filter(c => !prevColors.has(c));
+  const removedColors = [...prevColors].filter(c => !nextColors.has(c));
+  if (addedColors.length)   changes.push({ type: 'color-added',   label: 'Color added',   items: addedColors });
+  if (removedColors.length) changes.push({ type: 'color-removed', label: 'Color removed',  items: removedColors });
+
+  // Stack changes
+  const prevStack = new Set(prev.stack || []);
+  const nextStack = new Set(next.stack || []);
+  const addedStack   = [...nextStack].filter(s => !prevStack.has(s));
+  const removedStack = [...prevStack].filter(s => !nextStack.has(s));
+  if (addedStack.length)   changes.push({ type: 'stack-added',   label: 'Tech added',   items: addedStack });
+  if (removedStack.length) changes.push({ type: 'stack-removed', label: 'Tech removed',  items: removedStack });
+
+  // Consistency drift > 5%
+  const consDiff = Math.abs((next.consistency||0) - (prev.consistency||0));
+  if (consDiff >= 5) {
+    changes.push({ type: 'consistency', label: 'Consistency shifted', prev: prev.consistency + '%', next: next.consistency + '%' });
+  }
+
+  return changes;
+}
+
+// ── RENDER STATS ─────────────────────────────────────────────────────────
+function renderStats() {
+  const tracked = getTracked();
+  const changed = tracked.filter(t => t.hasChanges).length;
+  const stable  = tracked.filter(t => !t.hasChanges && t.snapshots.length > 1).length;
+  const newSites = tracked.filter(t => t.snapshots.length === 1).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-pill">
+      <div class="stat-dot gray"></div>
+      <span class="stat-label">Tracking</span>
+      <span class="stat-val">${tracked.length}</span>
+    </div>
+    ${changed ? `<div class="stat-pill">
+      <div class="stat-dot amber"></div>
+      <span class="stat-label">Changes detected</span>
+      <span class="stat-val">${changed}</span>
+    </div>` : ''}
+    ${stable ? `<div class="stat-pill">
+      <div class="stat-dot green"></div>
+      <span class="stat-label">Stable</span>
+      <span class="stat-val">${stable}</span>
+    </div>` : ''}
+    ${newSites ? `<div class="stat-pill">
+      <div class="stat-dot" style="background:var(--blue)"></div>
+      <span class="stat-label">Baseline set</span>
+      <span class="stat-val">${newSites}</span>
+    </div>` : ''}
+  `;
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────────────────
+function renderCards() {
+  const tracked = getTracked();
+  const list = document.getElementById('trackList');
+  const empty = document.getElementById('emptyState');
+  const checkAll = document.getElementById('checkAllBtn');
+
+  if (tracked.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'flex';
+    checkAll.disabled = true;
+    return;
+  }
+  empty.style.display = 'none';
+  checkAll.disabled = false;
+
+  list.innerHTML = tracked.map(site => cardHTML(site)).join('');
+  renderStats();
+}
+
+function cardHTML(site) {
+  const snaps = site.snapshots || [];
+  const latest = snaps[snaps.length - 1];
+  const prev   = snaps[snaps.length - 2];
+  const changes = (prev && latest) ? diffSnapshots(prev, latest) : [];
+  const isNew = snaps.length === 1;
+
+  const statusBadge = site.hasChanges
+    ? `<div class="status-badge changed"><div class="status-dot"></div> Changes detected</div>`
+    : isNew
+    ? `<div class="status-badge new"><div class="status-dot"></div> Baseline set</div>`
+    : `<div class="status-badge stable"><div class="status-dot"></div> Stable</div>`;
+
+  const lastChecked = site.lastChecked
+    ? `Checked ${timeAgo(site.lastChecked)}`
+    : '';
+
+  return `
+    <div class="track-card ${site.hasChanges ? 'has-changes' : ''}" id="card-${site.id}">
+      <div class="track-card-head" onclick="toggleCard('${site.id}')">
+        <div class="track-emoji">${esc(site.emoji || '🌐')}</div>
+        <div class="track-info">
+          <div class="track-name">${esc(site.name || site.url)}</div>
+          <div class="track-url">${esc(site.url)}</div>
+        </div>
+        <div class="track-meta">
+          ${statusBadge}
+          <div class="track-last-checked">${lastChecked}</div>
+          <div class="track-actions">
+            <button class="track-btn primary" id="check-${site.id}" onclick="event.stopPropagation();checkSite('${site.id}')">Check now</button>
+            <button class="track-btn" onclick="event.stopPropagation();openInTool('${esc(site.url)}')">Open</button>
+            <button class="track-btn danger" onclick="event.stopPropagation();untrack('${site.id}')">Remove</button>
+          </div>
+          <div class="track-chevron">▾</div>
+        </div>
+      </div>
+      <div class="track-body">
+        ${bodyHTML(site, changes, latest, prev)}
+      </div>
+    </div>`;
+}
+
+function bodyHTML(site, changes, latest, prev) {
+  const snaps = site.snapshots || [];
+
+  // Change badges
+  let badgesHTML = '';
+  if (changes.length > 0) {
+    badgesHTML = `<div class="change-badges">` +
+      changes.map(c => {
+        const cls = c.type.includes('added') ? 'added' : c.type.includes('removed') ? 'removed' : 'changed';
+        return `<span class="change-badge ${cls}">↑ ${esc(c.label)}</span>`;
+      }).join('') +
+      `</div>`;
+  } else if (snaps.length > 1) {
+    badgesHTML = `<div class="no-changes-row">✓ No design changes detected since last check</div>`;
+  } else {
+    badgesHTML = `<div class="no-changes-row">📸 Baseline captured — check again after the site updates</div>`;
+  }
+
+  // Snapshot timeline (latest 3)
+  const shownSnaps = snaps.slice(-3).reverse();
+  const timelineHTML = shownSnaps.length < 2 ? '' : `
+    <div class="snapshot-timeline">
+      ${shownSnaps.map((snap, i) => {
+        const compareTo = snaps[snaps.indexOf(snap) - 1];
+        const snapChanges = compareTo ? diffSnapshots(compareTo, snap) : [];
+        return snapshotRowHTML(snap, compareTo, snapChanges, i === 0);
+      }).join('')}
+    </div>`;
+
+  return badgesHTML + timelineHTML;
+}
+
+function snapshotRowHTML(snap, prev, changes, isLatest) {
+  const date = new Date(snap.ts);
+  const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+  // Fonts
+  const prevFonts = new Set((prev?.fonts || []));
+  const fontTags = (snap.fonts || []).map(f => {
+    const isNew = prev && !prevFonts.has(f);
+    const cls = isNew ? 'new-item' : '';
+    return `<span class="font-tag ${cls}">${esc(f)}</span>`;
+  }).join('');
+  const removedFonts = prev ? [...prevFonts].filter(f => !snap.fonts.includes(f)) : [];
+  const removedFontTags = removedFonts.map(f => `<span class="font-tag removed-item">${esc(f)}</span>`).join('');
+
+  // Colors
+  const prevColors = new Set((prev?.colors || []).map(c => c.toLowerCase()));
+  const swatches = (snap.colors || []).map(c => {
+    const isNew = prev && !prevColors.has(c.toLowerCase());
+    return `<div class="swatch ${isNew ? 'new-item' : ''}" style="background:${esc(c)}" title="${esc(c)}"></div>`;
+  }).join('');
+  const removedSwatches = prev
+    ? [...prevColors].filter(c => !(snap.colors||[]).map(x=>x.toLowerCase()).includes(c))
+      .map(c => `<div class="swatch removed-item" style="background:${esc(c)}" title="Removed: ${esc(c)}"></div>`).join('')
+    : '';
+
+  // Archetype
+  const archetypeHTML = (prev && prev.archetype !== snap.archetype)
+    ? `<div class="archetype-change">
+        <span class="arch-pill before">${esc(prev.archetype)}</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-pill after">${esc(snap.archetype)}</span>
+       </div>`
+    : `<span style="font-size:13px;color:var(--text2);font-weight:500">${esc(snap.archetype)}</span>`;
+
+  return `
+    <div class="snapshot-row">
+      <div class="snapshot-ts">
+        <strong>${isLatest ? 'Latest' : dateStr}</strong>
+        ${isLatest ? dateStr + ', ' + timeStr : timeStr}
+      </div>
+      <div class="snapshot-col">
+        <div class="snapshot-col-label">Colors</div>
+        <div class="swatch-row">${swatches}${removedSwatches}</div>
+        <div style="margin-top:8px">
+          <div class="snapshot-col-label">Fonts</div>
+          <div class="font-tags">${fontTags}${removedFontTags}</div>
+        </div>
+      </div>
+      <div class="snapshot-col">
+        <div class="snapshot-col-label">Archetype</div>
+        ${archetypeHTML}
+        <div style="margin-top:8px">
+          <div class="snapshot-col-label">Consistency</div>
+          <span style="font-size:13px;color:var(--text2);font-weight:500">${snap.consistency}%</span>
+          ${prev && Math.abs(snap.consistency - prev.consistency) >= 5
+            ? `<span style="font-size:11px;color:var(--amber);margin-left:6px">${snap.consistency > prev.consistency ? '↑' : '↓'} ${Math.abs(snap.consistency - prev.consistency)}%</span>`
+            : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── INTERACTIONS ─────────────────────────────────────────────────────────
+function toggleCard(id) {
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.classList.toggle('open');
+}
+
+function openInTool(url) {
+  window.location.href = `tool.html?url=${encodeURIComponent('https://' + url)}`;
+}
+
+function untrack(id) {
+  if (!confirm('Stop tracking this site?')) return;
+  const tracked = getTracked().filter(t => t.id !== id);
+  saveTracked(tracked);
+  renderCards();
+}
+
+// ── CHECK FOR CHANGES ────────────────────────────────────────────────────
+async function checkSite(id) {
+  const tracked = getTracked();
+  const site = tracked.find(t => t.id === id);
+  if (!site) return;
+
+  const btn = document.getElementById(`check-${id}`);
+  if (btn) {
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.classList.add('checking');
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: site.url })
+    });
+
+    if (!res.ok) throw new Error('Analysis failed');
+    const data = await res.json();
+    const snap = buildSnapshotFromAPI(data);
+
+    // Update site record
+    site.snapshots.push(snap);
+    if (site.snapshots.length > 10) site.snapshots = site.snapshots.slice(-10);
+    site.lastChecked = Date.now();
+
+    // Detect changes vs previous snapshot
+    const prev = site.snapshots[site.snapshots.length - 2];
+    if (prev) {
+      const changes = diffSnapshots(prev, snap);
+      site.hasChanges = changes.length > 0;
+    }
+
+    const idx = tracked.findIndex(t => t.id === id);
+    tracked[idx] = site;
+    saveTracked(tracked);
+    renderCards();
+
+    // Auto-open the card to show results
+    setTimeout(() => {
+      const card = document.getElementById(`card-${id}`);
+      if (card && !card.classList.contains('open')) card.classList.add('open');
+    }, 100);
+
+  } catch (err) {
+    if (btn) {
+      btn.innerHTML = 'Failed — retry';
+      btn.classList.remove('checking');
+      btn.disabled = false;
+    }
+    console.error('Check failed:', err);
+  }
+}
+
+async function checkAll() {
+  const tracked = getTracked();
+  const btn = document.getElementById('checkAllBtn');
+  btn.textContent = `Checking 0 / ${tracked.length}…`;
+  btn.disabled = true;
+
+  for (let i = 0; i < tracked.length; i++) {
+    btn.textContent = `Checking ${i + 1} / ${tracked.length}…`;
+    await checkSite(tracked[i].id);
+    await new Promise(r => setTimeout(r, 800)); // be polite to the API
+  }
+
+  btn.textContent = 'Check all for changes';
+  btn.disabled = false;
+}
+
+function buildSnapshotFromAPI(data) {
+  // Mirrors buildSnapshot() in tool.html but from raw API data
+  const fonts  = (data.fonts  || []).slice(0,4).map(f => f.name || f);
+  const colors = (data.colors || []).slice(0,6).map(c => c.hex || c);
+  const stack  = (data.stack  || []).slice(0,6).map(s => s.name || s);
+
+  // Compute archetype from personality data (simplified)
+  const pers = data.personality || [];
+  const minimal  = 100 - (pers[0]?.v ?? 50);
+  const serious  = pers[1]?.v ?? 50;
+  const cool     = pers[2]?.v ?? 50;
+  const modern   = pers[3]?.v ?? 50;
+  const archetype = computeArchetypeLabel({ minimal, serious, cool, modern });
+
+  // Consistency: rough estimate from color + font counts
+  const colorPenalty = Math.max(0, (colors.length - 5) * 4);
+  const fontPenalty  = Math.max(0, (fonts.length  - 3) * 6);
+  const consistency  = Math.max(20, Math.min(100, 100 - colorPenalty - fontPenalty));
+
+  return {
+    ts: Date.now(),
+    archetype,
+    consistency,
+    fonts,
+    colors,
+    stack,
+    tech: data.tech || '',
+  };
+}
+
+function computeArchetypeLabel({ minimal, serious, cool, modern }) {
+  const playful = 100 - serious;
+  const warm    = 100 - cool;
+  if (minimal < 30 && modern > 65)           return 'Neo-Brutalist';
+  if (minimal > 70 && serious > 65 && modern > 75) return 'Surgical Modernist';
+  if (minimal > 60 && warm > 55 && serious > 60)   return 'Quiet Luxury';
+  if (minimal > 65 && serious > 65 && cool > 55)   return 'Restrained Authority';
+  if (serious > 65 && modern < 45)                 return 'Classic Prestige';
+  if (warm > 55 && serious > 55 && modern < 50)    return 'Craft Heritage';
+  if (serious > 70 && cool > 65)                   return 'Corporate Precision';
+  if (minimal > 60 && cool > 60)                   return 'Digital Minimalist';
+  if (modern > 65 && cool > 60 && playful > 50)    return 'Techno Optimist';
+  if (playful > 60 && modern > 60 && minimal > 45) return 'Playful Digital';
+  if (modern > 60 && playful > 50 && minimal < 50) return 'Creative Agency';
+  if (playful > 60 && warm > 60 && minimal < 55)   return 'Indie Collective';
+  if (playful > 55 && warm > 55 && minimal < 40)   return 'Expressive Brand';
+  if (warm > 65 && modern < 55 && minimal < 50)    return 'Organic Studio';
+  if (warm > 55 && serious < 55)                   return 'Warm Studio';
+  if (modern > 80)                                 return 'Avant-Garde';
+  if (serious > 60 && modern > 60)                 return 'Editorial Refined';
+  return 'Balanced Studio';
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1)  return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)  return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── DEMO SEED ────────────────────────────────────────────────────────────
+function seedDemo() {
+  if (getTracked().length > 0) return;
+
+  const now = Date.now();
+  const day = 86400000;
+
+  const demoSites = [
+    {
+      id: 'demo-1', url: 'linear.app', name: 'Linear', emoji: '⚡',
+      trackedAt: now - day * 7, lastChecked: now - day,
+      hasChanges: true,
+      snapshots: [
+        {
+          ts: now - day * 7,
+          archetype: 'Digital Minimalist', consistency: 91,
+          fonts: ['Inter', 'JetBrains Mono'], colors: ['#5E6AD2','#090909','#FFFFFF','#6B7280'],
+          stack: ['React', 'Vercel'], tech: 'React',
+        },
+        {
+          ts: now - day,
+          archetype: 'Surgical Modernist', consistency: 94,
+          fonts: ['Inter', 'JetBrains Mono', 'Söhne'], colors: ['#5E6AD2','#090909','#FFFFFF','#6B7280','#F3F4F6'],
+          stack: ['React', 'Vercel', 'Framer Motion'], tech: 'React',
+        },
+      ],
+    },
+    {
+      id: 'demo-2', url: 'stripe.com', name: 'Stripe', emoji: '💳',
+      trackedAt: now - day * 14, lastChecked: now - day * 2,
+      hasChanges: false,
+      snapshots: [
+        {
+          ts: now - day * 14,
+          archetype: 'Corporate Precision', consistency: 91,
+          fonts: ['Camphor', 'Source Code Pro'], colors: ['#635BFF','#0A2540','#FFFFFF','#F6F9FC'],
+          stack: ['React', 'Next.js'], tech: 'Next.js',
+        },
+        {
+          ts: now - day * 2,
+          archetype: 'Corporate Precision', consistency: 91,
+          fonts: ['Camphor', 'Source Code Pro'], colors: ['#635BFF','#0A2540','#FFFFFF','#F6F9FC'],
+          stack: ['React', 'Next.js'], tech: 'Next.js',
+        },
+      ],
+    },
+  ];
+
+  saveTracked(demoSites);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+seedDemo();
+renderStats();
+renderCards();
+</script>
+</body>
+</html>

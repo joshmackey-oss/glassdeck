@@ -338,8 +338,45 @@
   }
   .rh-btn-icon { font-size: 14px; line-height: 1; }
 
-  .rh-btn-track {
+  .rh-btn-track.locked,
+  .rh-btn-save.locked {
     background: var(--bg2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+  }
+  .rh-btn-track.locked:hover,
+  .rh-btn-save.locked:hover { background: var(--bg3); color: var(--text2); transform: none; box-shadow: none; }
+
+  /* Upgrade tooltip */
+  .upgrade-tooltip-wrap { position: relative; display: inline-flex; }
+  .upgrade-tooltip {
+    position: absolute; bottom: calc(100% + 10px); right: 0;
+    background: #0A0A0A; color: #fff;
+    padding: 10px 14px; border-radius: 12px;
+    font-size: 12.5px; font-weight: 500; line-height: 1.4;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transform: translateY(4px);
+    transition: opacity .15s, transform .15s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+    z-index: 300;
+  }
+  .upgrade-tooltip::after {
+    content: '';
+    position: absolute; top: 100%; right: 18px;
+    border: 6px solid transparent;
+    border-top-color: #0A0A0A;
+  }
+  .upgrade-tooltip strong { color: var(--accent); }
+  .upgrade-tooltip-wrap:hover .upgrade-tooltip {
+    opacity: 1; transform: translateY(0);
+  }
+  .upgrade-tooltip .tt-cta {
+    display: block; margin-top: 6px;
+    color: var(--accent); font-weight: 700; font-size: 12px;
+    text-decoration: none;
+  }
     border: 1px solid var(--border2);
     color: var(--text2);
   }
@@ -1245,7 +1282,6 @@
   <div class="nav-right">
     <a href="index.html#pricing" class="nav-link">Pricing</a>
     <a href="showcase.html" class="nav-link">Awards</a>
-    <a href="collections.html" class="nav-link">Collections</a>
     <a href="#" class="nav-link nav-signin">Log In</a>
     <a href="index.html#waitlist" class="nav-cta">Join for free</a>
   </div>
@@ -1329,12 +1365,26 @@
         <div class="chip chip-cons" id="cConsistency"></div>
         <div class="chip chip-tier" id="cMaturity"></div>
 
-        <button class="rh-btn rh-btn-track" id="trackBtn" onclick="toggleTrack(this)">
-          <span class="rh-btn-icon">◎</span> Track Site
-        </button>
-        <button class="rh-btn rh-btn-save" id="saveBtn" onclick="openSaveModal()" style="display:none">
-          <span class="rh-btn-icon">＋</span> Save to Collection
-        </button>
+        <div class="upgrade-tooltip-wrap">
+          <button class="rh-btn rh-btn-track locked" id="trackBtn" onclick="onTrackClick(this)">
+            <span class="rh-btn-icon">◎</span> Track Site
+          </button>
+          <div class="upgrade-tooltip">
+            <strong>Pro feature</strong><br>
+            Monitor design changes over time.
+            <a class="tt-cta" href="index.html#pricing">Upgrade to Pro →</a>
+          </div>
+        </div>
+        <div class="upgrade-tooltip-wrap">
+          <button class="rh-btn rh-btn-save locked" id="saveBtn" onclick="onSaveClick()" style="display:none">
+            <span class="rh-btn-icon">＋</span> Save to Collection
+          </button>
+          <div class="upgrade-tooltip">
+            <strong>Pro feature</strong><br>
+            Save analyses into mood boards.
+            <a class="tt-cta" href="index.html#pricing">Upgrade to Pro →</a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2589,8 +2639,17 @@ let _selectedColId = null;
 // Called from render() after analysis completes — stores the normalized data
 function setCurrentAnalysisForSave(d, archetype, consistency, maturity) {
   _currentAnalysisData = { d, archetype, consistency, maturity };
-  const btn = document.getElementById('saveBtn');
-  if (btn) btn.style.display = 'inline-block';
+  const saveBtn  = document.getElementById('saveBtn');
+  const trackBtn = document.getElementById('trackBtn');
+  if (saveBtn) {
+    saveBtn.style.display = 'inline-block';
+    saveBtn.classList.toggle('locked', !IS_PRO);
+  }
+  if (trackBtn) {
+    trackBtn.classList.toggle('locked', !IS_PRO);
+  }
+  const domain = (d.url||'').replace(/^https?:\/\//,'').split('/')[0];
+  if (IS_PRO && typeof restoreTrackState === 'function') restoreTrackState(domain);
 }
 
 function openSaveModal() {
@@ -2696,11 +2755,84 @@ function escSave(s) {
 }
 
 // ── TRACK SITE (stub — toggles UI state, backend wires up later) ──────
+// ── PRO GATE ──────────────────────────────────────────────────────────
+// Swap to `true` once auth is wired up and user is verified Pro
+const IS_PRO = false;
+
+function onSaveClick() {
+  if (!IS_PRO) return; // tooltip handles the nudge
+  openSaveModal();
+}
+
+function onTrackClick(btn) {
+  if (!IS_PRO) return; // tooltip handles the nudge
+  toggleTrack(btn);
+}
+
+// ── TRACKING ──────────────────────────────────────────────────────────
+const GD_TRACKED = 'gd_tracked';
+function gdGetTracked()   { try { return JSON.parse(localStorage.getItem(GD_TRACKED)||'[]'); } catch { return []; } }
+function gdSaveTracked(t) { localStorage.setItem(GD_TRACKED, JSON.stringify(t)); }
+
 function toggleTrack(btn) {
-  const isTracking = btn.classList.toggle('tracking');
-  if (isTracking) {
+  if (!_currentAnalysisData) return;
+  const { d, archetype, consistency, maturity } = _currentAnalysisData;
+  const domain = (d.url||'').replace(/^https?:\/\//,'').split('/')[0];
+
+  let tracked = gdGetTracked();
+  const existing = tracked.find(t => t.url === domain);
+
+  if (existing) {
+    // Untrack
+    tracked = tracked.filter(t => t.url !== domain);
+    gdSaveTracked(tracked);
+    btn.classList.remove('tracking');
+    btn.innerHTML = '<span class="rh-btn-icon">◎</span> Track Site';
+  } else {
+    // Snapshot and track
+    const snapshot = buildSnapshot(d, archetype, consistency, maturity);
+    tracked.push({
+      id: gdUid(),
+      url: domain,
+      name: d.name || domain,
+      emoji: d.emoji || '🌐',
+      trackedAt: Date.now(),
+      lastChecked: Date.now(),
+      snapshots: [snapshot],
+      hasChanges: false,
+    });
+    gdSaveTracked(tracked);
+    btn.classList.add('tracking');
+    btn.innerHTML = '<span class="rh-btn-icon">●</span> Tracking';
+    // Brief confirmation flash
+    btn.style.background = 'var(--green)';
+    setTimeout(() => btn.style.background = '', 1200);
+  }
+}
+
+function buildSnapshot(d, archetype, consistency, maturity) {
+  return {
+    ts: Date.now(),
+    archetype:   archetype?.label || '—',
+    consistency: consistency?.pct  || 0,
+    maturity:    maturity?.label   || '—',
+    fonts:  (d.fonts  || []).slice(0,4).map(f => f.name || f),
+    colors: (d.colors || []).slice(0,6).map(c => c.hex || c),
+    stack:  (d.stack  || []).slice(0,6).map(s => s.name || s),
+    tech:   d.tech || '',
+  };
+}
+
+// Restore tracking button state when a site loads
+function restoreTrackState(domain) {
+  const tracked = gdGetTracked();
+  const btn = document.getElementById('trackBtn');
+  if (!btn) return;
+  if (tracked.find(t => t.url === domain)) {
+    btn.classList.add('tracking');
     btn.innerHTML = '<span class="rh-btn-icon">●</span> Tracking';
   } else {
+    btn.classList.remove('tracking');
     btn.innerHTML = '<span class="rh-btn-icon">◎</span> Track Site';
   }
 }
