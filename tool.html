@@ -65,19 +65,20 @@
     font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; letter-spacing: -0.02em;
   }
 
-  .nav-right { display: flex; align-items: center; gap: 6px; }
-
-  .nav-btn {
-    padding: 6px 16px; border-radius: 100px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--text2); font-family: 'Geist', sans-serif;
-    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  .nav-right { display: flex; align-items: center; gap: 4px; }
+  .nav-link {
+    padding: 6px 12px; font-size: 13px; font-weight: 500;
+    color: var(--text2); text-decoration: none; border-radius: 8px;
+    transition: color .15s, background .15s; white-space: nowrap;
   }
-  .nav-btn:hover { color: var(--text); border-color: var(--border2); background: var(--bg2); }
-  .nav-btn.cta {
-    background: var(--accent); color: #1A1400; border-color: var(--accent); font-weight: 700;
+  .nav-link:hover { color: var(--text); background: var(--bg2); }
+  .nav-signin { margin-right: 4px; }
+  .nav-cta {
+    padding: 8px 18px; background: var(--text); color: #fff;
+    font-size: 13px; font-weight: 600; border-radius: 100px;
+    text-decoration: none; transition: all .15s; white-space: nowrap;
   }
-  .nav-btn.cta:hover { background: var(--accent2); border-color: var(--accent2); }
+  .nav-cta:hover { background: #222; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
 
   /* ── HERO ── */
   .hero {
@@ -863,8 +864,8 @@
     /* Nav */
     nav { padding: 0 16px !important; height: 52px; }
     nav svg { height: 32px; }
-    .nav-btn:not(.cta) { display: none; }
-    .nav-btn.cta { padding: 8px 14px; font-size: 13px; }
+    .nav-link { display: none; }
+    .nav-cta { padding: 8px 14px; font-size: 13px; }
 
     /* Hero */
     .hero { padding: 36px 16px 32px; }
@@ -985,9 +986,11 @@
     </svg>
   </a>
   <div class="nav-right">
-    <button class="nav-btn">Explore</button>
-    <button class="nav-btn">Pricing</button>
-    <button class="nav-btn cta">Sign up free</button>
+    <a href="index.html#how" class="nav-link">How It Works</a>
+    <a href="index.html#pricing" class="nav-link">Pricing</a>
+    <a href="showcase.html" class="nav-link">Awards</a>
+    <a href="#" class="nav-link nav-signin">Sign In</a>
+    <a href="index.html#waitlist" class="nav-cta">Sign Up</a>
   </div>
 </nav>
 
@@ -2141,9 +2144,9 @@ window.addEventListener('load', () => {
   const presetUrl = params.get('url');
   if (presetUrl) {
     document.getElementById('urlInput').value = presetUrl;
-    setTimeout(() => runAnalysis(null, false), 400); // analyze with scroll
+    setTimeout(() => runAnalysis(null, false), 400); // real URL — scroll to results
   } else {
-    setTimeout(() => runAnalysis('linear', true), 300); // demo, no scroll
+    setTimeout(() => runAnalysis('linear', true), 300); // demo on load — no scroll
   }
 });
 
