@@ -60,7 +60,7 @@
     background: var(--accent);
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: 800; color: #1A1400;
-    font-family: 'Syne', sans-serif; letter-spacing: -0.02em;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; letter-spacing: -0.02em;
   }
 
   .nav-right { display: flex; align-items: center; gap: 6px; }
@@ -152,7 +152,7 @@
   .search-go {
     padding: 10px 22px; border-radius: 10px;
     background: var(--accent); border: none;
-    color: #1A1400; font-family: 'Syne', sans-serif;
+    color: #1A1400; font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
     font-size: 14px; font-weight: 700; cursor: pointer;
     transition: all 0.15s; white-space: nowrap;
     letter-spacing: -0.01em;
@@ -223,7 +223,7 @@
   }
 
   .s-name {
-    font-family: 'Syne', sans-serif; font-size: 20px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 20px;
     font-weight: 700; color: var(--text); letter-spacing: -0.03em;
   }
 
@@ -241,11 +241,23 @@
     color: var(--text2); font-weight: 400;
   }
 
-  .score {
+  .chip-arch {
+    padding: 5px 14px; border-radius: 100px;
+    background: #FFFBEA; border: 1px solid #F5D860;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 12px;
+    font-weight: 700; color: #92700A;
+  }
+  .chip-cons {
     padding: 5px 14px; border-radius: 100px;
     background: var(--green-l); border: 1px solid #BBF7D0;
-    font-family: 'Syne', sans-serif; font-size: 12px;
-    font-weight: 700; color: var(--green);
+    font-family: 'Geist Mono', monospace; font-size: 11px;
+    font-weight: 600; color: var(--green);
+  }
+  .chip-tier {
+    padding: 5px 14px; border-radius: 100px;
+    background: #F0F4FF; border: 1px solid #C7D4FF;
+    font-family: 'Geist Mono', monospace; font-size: 11px;
+    font-weight: 600; color: #3B54D4;
   }
 
   /* ── GRID ── */
@@ -299,7 +311,7 @@
   .f-info { flex: 1; }
 
   .f-name {
-    font-family: 'Syne', sans-serif; font-size: 14px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 14px;
     font-weight: 700; color: var(--text); letter-spacing: -0.02em;
     margin-bottom: 6px;
   }
@@ -440,7 +452,7 @@
   }
 
   .fp-v {
-    font-family: 'Syne', sans-serif; font-size: 22px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 22px;
     font-weight: 700; color: var(--text); letter-spacing: -0.03em;
   }
 
@@ -477,7 +489,7 @@
     padding: 7px 18px; border-radius: 8px;
     background: var(--accent); border: none;
     color: #1A1400; font-size: 13px; font-weight: 700;
-    font-family: 'Syne', sans-serif; cursor: pointer;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; cursor: pointer;
     transition: background 0.15s;
   }
   .share-btn:hover { background: var(--accent2); }
@@ -581,7 +593,7 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .prev-score-num span:first-child {
-    font-family: 'Syne', sans-serif; font-size: 22px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 22px;
     font-weight: 800; letter-spacing: -0.04em; color: var(--text);
   }
   .prev-score-lbl {
@@ -590,7 +602,7 @@
   }
   .prev-score-desc { flex: 1; }
   .prev-score-title {
-    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 15px; font-weight: 700;
     color: var(--text); letter-spacing: -0.02em; margin-bottom: 5px;
   }
   .prev-score-sub { font-size: 12px; color: var(--text2); line-height: 1.6; }
@@ -600,7 +612,63 @@
     background: var(--bg2); border: 1px solid var(--border);
   }
   .prev-stat-k { font-size: 9px; color: var(--text3); font-family: 'Geist Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .prev-stat-v { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+  .prev-stat-v { font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+
+  /* ── ARCHETYPE + METRICS ── */
+  .prev-archetype {
+    padding: 14px 18px; border-radius: 12px;
+    background: linear-gradient(135deg, #FFFBEA 0%, #FFF8D6 100%);
+    border: 1px solid #F5D860;
+  }
+  .prev-archetype-label {
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 20px;
+    font-weight: 800; color: var(--text); letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 4px;
+  }
+  .prev-archetype-desc {
+    font-size: 12px; color: #92700A; font-weight: 500;
+  }
+
+  .prev-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .prev-metric {
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .prev-metric-label {
+    font-family: 'Geist Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3);
+  }
+  .prev-metric-value {
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 26px;
+    font-weight: 800; color: var(--text); letter-spacing: -0.04em; line-height: 1;
+  }
+  .prev-metric-bar {
+    height: 5px; background: var(--bg3); border-radius: 100px; overflow: hidden;
+  }
+  .prev-metric-fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, #16A34A, #4ADE80);
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+  .prev-metric-sub { font-size: 11px; color: var(--text3); font-family: 'Geist Mono', monospace; }
+
+  /* Maturity tier dots */
+  .tier-dots { display: flex; gap: 5px; align-items: center; }
+  .tier-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--bg3); border: 1px solid var(--border);
+    transition: background 0.3s, border-color 0.3s;
+    flex-shrink: 0;
+  }
+  .tier-dot.lit { background: #3B54D4; border-color: #3B54D4; }
+  .tier-dot.lit-accent { background: var(--accent); border-color: var(--accent2); }
+  .prev-tier-name {
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 18px;
+    font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1;
+  }
 
   /* ── ACCESSIBILITY ── */
   .a11y-list { display: flex; flex-direction: column; gap: 8px; }
@@ -618,7 +686,7 @@
   .a11y-sw:last-child  { left: 14px; box-shadow: 0 0 0 2px #fff; }
   .a11y-names { flex: 1; font-size: 11.5px; color: var(--text2); font-weight: 500; }
   .a11y-ratio {
-    font-family: 'Syne', sans-serif; font-size: 17px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 17px;
     font-weight: 800; color: var(--text); letter-spacing: -0.03em;
   }
   .a11y-badges { display: flex; flex-direction: column; gap: 3px; align-items: flex-end; }
@@ -643,7 +711,7 @@
     background: var(--bg2); border: 1px solid var(--border);
   }
   .ico-stat-k { font-size: 9px; color: var(--text3); font-family: 'Geist Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-  .ico-stat-v { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .ico-stat-v { font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
   .ico-preview {
     display: flex; gap: 14px; align-items: center; justify-content: center;
     padding: 18px; border-radius: 10px;
@@ -686,7 +754,7 @@
   .instr-strip {
     grid-column: span 12;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
 
@@ -773,13 +841,8 @@
   }
   .instr-corner svg { overflow: visible; }
 
-  /* Strip mobile collapse */
-  @media (max-width: 900px) {
-    .instr-strip { grid-template-columns: repeat(3, 1fr); }
-    .instr:nth-child(n+4) { display: none; }
-  }
   @media (max-width: 600px) {
-    .instr-strip { grid-template-columns: repeat(2, 1fr); }
+    .instr-strip { grid-template-columns: 1fr 1fr; }
     .instr:nth-child(n+3) { display: none; }
   }
 
@@ -870,6 +933,13 @@
     .prev-browser-bar { border-radius: 14px 14px 0 0; }
     .prev-quick-stats { grid-template-columns: repeat(2, 1fr); }
 
+    /* Archetype + metrics */
+    .prev-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .prev-archetype-label { font-size: 17px; }
+    .prev-metric-value { font-size: 22px; }
+    .rh-right { flex-wrap: wrap; gap: 6px; }
+    .chip-arch, .chip-cons, .chip-tier { font-size: 11px; padding: 4px 10px; }
+
     /* Accessibility */
     .a11y-pair { flex-wrap: wrap; gap: 8px; }
     .a11y-names { width: 100%; order: 3; }
@@ -946,7 +1016,9 @@
       <div class="rh-right">
         <div class="chip" id="cTech">React</div>
         <div class="chip">Scanned just now</div>
-        <div class="score" id="cScore">Design Score 94</div>
+        <div class="chip chip-arch" id="cArchetype">–</div>
+        <div class="chip chip-cons" id="cConsistency">–</div>
+        <div class="chip chip-tier" id="cMaturity">–</div>
       </div>
     </div>
 
@@ -982,20 +1054,22 @@
             <div class="clabel" style="margin-bottom:10px">Site Preview</div>
             <div class="prev-tags" id="prevTags"></div>
           </div>
-          <div class="prev-score-row">
-            <div class="prev-score-ring">
-              <svg viewBox="0 0 76 76">
-                <circle class="ring-bg" cx="38" cy="38" r="31"/>
-                <circle class="ring-fg" id="ringFg" cx="38" cy="38" r="31"/>
-              </svg>
-              <div class="prev-score-num">
-                <span id="ringScore">—</span>
-                <span class="prev-score-lbl">Score</span>
-              </div>
+          <div class="prev-archetype">
+            <div class="prev-archetype-label" id="prevArchetype">—</div>
+            <div class="prev-archetype-desc" id="prevArchetypeDesc">Analyzing design personality…</div>
+          </div>
+          <div class="prev-metrics">
+            <div class="prev-metric">
+              <div class="prev-metric-label">Consistency Index</div>
+              <div class="prev-metric-value" id="prevConsVal">—</div>
+              <div class="prev-metric-bar"><div class="prev-metric-fill" id="prevConsFill"></div></div>
+              <div class="prev-metric-sub" id="prevConsSub">token + spacing regularity</div>
             </div>
-            <div class="prev-score-desc">
-              <div class="prev-score-title" id="prevScoreTitle">Design Quality</div>
-              <div class="prev-score-sub" id="prevScoreSub">Analyzing visual consistency, hierarchy and polish.</div>
+            <div class="prev-metric">
+              <div class="prev-metric-label">Design Maturity</div>
+              <div class="prev-tier-name" id="prevTierName">—</div>
+              <div class="tier-dots" id="prevTierDots"></div>
+              <div class="prev-metric-sub" id="prevTierSub">—</div>
             </div>
           </div>
           <div class="prev-quick-stats" id="prevStats"></div>
@@ -1005,15 +1079,7 @@
       <!-- INSTRUMENT STRIP -->
       <div class="instr-strip">
 
-        <!-- 1: Palette Temperature -->
-        <div class="instr">
-          <div class="instr-label">Color Temp</div>
-          <div class="instr-value sm" id="instrTempVal">—</div>
-          <div class="instr-swatches" id="instrSwatches"></div>
-          <div class="instr-sub" id="instrTempSub">—</div>
-        </div>
-
-        <!-- 2: Complexity Dial -->
+        <!-- Complexity Dial -->
         <div class="instr" style="overflow:visible">
           <div class="instr-label">Complexity</div>
           <div class="instr-value sm" id="instrComplexVal">—</div>
@@ -1021,7 +1087,7 @@
           <div class="instr-sub" id="instrComplexSub">—</div>
         </div>
 
-        <!-- 3: Visual Density Arc -->
+        <!-- Visual Density Arc -->
         <div class="instr">
           <div class="instr-label">Density</div>
           <div class="instr-value sm" id="instrDensityVal">—</div>
@@ -1029,20 +1095,12 @@
           <div class="instr-sub" id="instrDensitySub">—</div>
         </div>
 
-        <!-- 4: Type Weight Spread -->
+        <!-- Type Weight Spread -->
         <div class="instr">
           <div class="instr-label">Weight Spread</div>
           <div class="instr-value sm" id="instrWeightVal">—</div>
           <div class="instr-bars" id="instrWeightBars"></div>
           <div class="instr-sub" id="instrWeightSub">—</div>
-        </div>
-
-        <!-- 5: Border Radius -->
-        <div class="instr">
-          <div class="instr-label">Corner Radius</div>
-          <div class="instr-value sm" id="instrRadiusVal">—</div>
-          <div class="instr-corner" id="instrRadiusCorner"></div>
-          <div class="instr-sub" id="instrRadiusSub">—</div>
         </div>
 
       </div>
@@ -1630,13 +1688,65 @@ function getIconPreviews(style) {
     </svg>`;
 }
 
-// ── SCORE DESCRIPTION ─────────────────────────────────────────────
-function scoreDesc(score, name) {
-  if (score >= 95) return `${name} has exceptional design execution — consistent, intentional and polished.`;
-  if (score >= 85) return `${name} demonstrates strong visual identity with high attention to detail.`;
-  if (score >= 70) return `${name} shows a solid design foundation with room to sharpen consistency.`;
-  return `${name} has foundational design work in place with notable areas to evolve.`;
+// ── DESIGN SIGNAL COMPUTATIONS ────────────────────────────────────
+
+function computeArchetype(d) {
+  const pers = d.pers || [];
+  const minimal = 100 - (pers[0]?.v ?? 50);   // high = more minimal
+  const serious = pers[1]?.v ?? 50;            // high = more serious
+  const cool    = pers[2]?.v ?? 50;            // high = more cool
+  const modern  = pers[3]?.v ?? 50;            // high = more modern
+  const playful = 100 - serious;
+  const warm    = 100 - cool;
+
+  if (minimal > 70 && serious > 65 && modern > 75)
+    return { label: 'Surgical Modernist',   desc: 'Stripped back, precise, and uncompromisingly forward-looking' };
+  if (minimal > 65 && serious > 65 && cool > 55)
+    return { label: 'Restrained Authority', desc: 'Confident and disciplined — every decision deliberate' };
+  if (minimal > 60 && cool > 60)
+    return { label: 'Digital Minimalist',   desc: 'Clean systems and functional elegance above all' };
+  if (serious > 70 && cool > 65)
+    return { label: 'Corporate Precision',  desc: 'Trust-forward, structured, and data-driven' };
+  if (playful > 55 && warm > 55 && minimal < 40)
+    return { label: 'Expressive Brand',     desc: 'Bold, human, and emotionally resonant' };
+  if (warm > 55 && serious < 55)
+    return { label: 'Warm Studio',          desc: 'Approachable, layered, community-first' };
+  if (modern > 80)
+    return { label: 'Avant-Garde',          desc: 'Boundary-pushing, experimental, and distinctly original' };
+  if (serious > 60 && modern > 60)
+    return { label: 'Editorial Refined',    desc: 'Considered hierarchy, deliberate pacing, content-led' };
+  return   { label: 'Balanced Studio',      desc: 'Versatile, considered, and audience-aware' };
 }
+
+function computeConsistency(d) {
+  // Derive from spacing regularity, color economy, and font discipline
+  const colorPenalty  = Math.max(0, (d.colors.length - 5) * 4);
+  const fontPenalty   = Math.max(0, (d.fonts.length  - 3) * 6);
+  // More fp detail = higher consistency signal
+  const fpBonus       = Math.min(8, (d.fp?.length || 0) * 2);
+  const base          = d.score ? Math.round(d.score * 0.88 + 8) : 74;
+  const pct           = Math.min(99, Math.max(42, base - colorPenalty - fontPenalty + fpBonus));
+
+  const sub = pct >= 90 ? 'Highly systematic token usage'
+            : pct >= 78 ? 'Strong token + spacing discipline'
+            : pct >= 65 ? 'Good foundation, some variance'
+            :             'Notable inconsistencies detected';
+  return { pct, sub };
+}
+
+function computeMaturity(d) {
+  const score = d.score || 70;
+  const tiers = [
+    { label:'Emerging',     sub:'Design language forming',       min:0  },
+    { label:'Developing',   sub:'Patterns taking shape',         min:60 },
+    { label:'Established',  sub:'Consistent, recognisable voice',min:73 },
+    { label:'Refined',      sub:'Intentional system at scale',   min:85 },
+    { label:'Sophisticated',sub:'Benchmark-level execution',     min:93 },
+  ];
+  const tier = [...tiers].reverse().find(t => score >= t.min) || tiers[0];
+  return { label: tier.label, sub: tier.sub };
+}
+
 
 // ── FAVICON UPGRADE ───────────────────────────────────────────────
 function upgradeFavicon(domain, emoji) {
@@ -1738,30 +1848,7 @@ async function loadSitePreview(domain, emoji) {
 // ── INSTRUMENT STRIP ─────────────────────────────────────────────
 function renderInstruments(d) {
 
-  // ── 1: PALETTE TEMPERATURE ──────────────────────────────────────
-  // Measure warm vs cool by hue analysis of each color
-  function colorTemp(hex) {
-    const [r,,b] = hexToRgb(hex);
-    return r - b; // positive = warm, negative = cool
-  }
-  const temps = d.colors.map(c => colorTemp(c.hex));
-  const avgTemp = temps.reduce((a,b)=>a+b,0) / temps.length;
-  const warmPct = Math.round(((avgTemp + 255) / 510) * 100);
-  const tempLabel = avgTemp > 40 ? 'Warm' : avgTemp < -40 ? 'Cool' : 'Neutral';
-  document.getElementById('instrTempVal').textContent = tempLabel;
-  document.getElementById('instrTempSub').textContent =
-    `${warmPct}% warm · ${100-warmPct}% cool`;
-
-  // Render swatches — top 4 colors, dominant gets taller
-  const topColors = d.colors.slice(0, 4);
-  const maxTemp = Math.max(...topColors.map(c => Math.abs(colorTemp(c.hex))));
-  document.getElementById('instrSwatches').innerHTML = topColors.map((c, i) => {
-    const t = Math.abs(colorTemp(c.hex));
-    const tall = t === maxTemp || i === 0;
-    return `<div class="instr-swatch ${tall ? 'tall' : ''}" style="background:${c.hex}" title="${c.name}"></div>`;
-  }).join('');
-
-  // ── 2: COMPLEXITY DIAL ──────────────────────────────────────────
+  // ── COMPLEXITY DIAL ─────────────────────────────────────────────
   // Complexity = stack size + font count + color count + motion steps
   const raw = (d.stack.length * 8) + (d.fonts.length * 10) + (d.colors.length * 5) + (d.motion.length * 4);
   const complexity = Math.min(100, Math.round(raw));
@@ -1834,30 +1921,6 @@ function renderInstruments(d) {
     return `<div class="instr-bar ${active ? 'active' : ''}" style="height:${Math.round(heightPct * maxH)}px"></div>`;
   }).join('');
 
-  // ── 5: BORDER RADIUS CORNER ─────────────────────────────────────
-  const fpRadius = d.fp.find(f => f.k.toLowerCase().includes('radius') || f.k.toLowerCase().includes('border'));
-  const radiusPx = parseInt(fpRadius?.v) || 8;
-  const radiusLabel = fpRadius?.v || `${radiusPx}px`;
-  const radiusSub = fpRadius?.s || (radiusPx <= 2 ? 'Ultra sharp' : radiusPx <= 6 ? 'Sharp & precise' : radiusPx <= 12 ? 'Softly rounded' : 'Pill-friendly');
-  document.getElementById('instrRadiusVal').textContent = radiusLabel;
-  document.getElementById('instrRadiusSub').textContent = radiusSub;
-
-  // Draw a rectangle with animated corner radius
-  const clamp = Math.min(radiusPx * 2.5, 40); // scale up for visual
-  document.getElementById('instrRadiusCorner').innerHTML = `
-    <svg width="76" height="56" viewBox="0 0 76 56">
-      <rect x="6" y="4" width="64" height="48" rx="${clamp}" ry="${clamp}"
-        fill="none" stroke="var(--bg3)" stroke-width="2"/>
-      <rect x="6" y="4" width="64" height="48" rx="${clamp}" ry="${clamp}"
-        fill="none" stroke="#FFC60B" stroke-width="2.5"
-        stroke-dasharray="224" stroke-dashoffset="224"
-        style="transition:stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1) 0.2s"
-        id="radiusRect"/>
-    </svg>`;
-  setTimeout(() => {
-    const rect = document.getElementById('radiusRect');
-    if (rect) rect.style.strokeDashoffset = '0';
-  }, 200);
 }
 
 // ── RENDER (unchanged shape) ──────────────────────────────────────
@@ -1866,7 +1929,16 @@ function render(d) {
   document.getElementById('sName').textContent  = d.name;
   document.getElementById('sUrl').textContent   = d.url;
   document.getElementById('cTech').textContent  = d.tech;
-  document.getElementById('cScore').textContent = `Design Score ${d.score}`;
+
+  // ── Compute the three signals ──
+  const archetype   = computeArchetype(d);
+  const consistency = computeConsistency(d);
+  const maturity    = computeMaturity(d);
+
+  // Header chips
+  document.getElementById('cArchetype').textContent  = archetype.label;
+  document.getElementById('cConsistency').textContent = consistency.pct + '% consistent';
+  document.getElementById('cMaturity').textContent    = maturity.label;
 
   // Instrument strip
   renderInstruments(d);
@@ -1876,29 +1948,37 @@ function render(d) {
   document.getElementById('prevUrlBar').textContent = domain || 'unknown';
   document.getElementById('prevFallbackEmoji').textContent = d.emoji;
 
-  // Score ring
-  const score = d.score;
-  document.getElementById('ringScore').textContent = score;
-  const circ = 2 * Math.PI * 31;
-  setTimeout(() => {
-    document.getElementById('ringFg').style.strokeDasharray = circ;
-    document.getElementById('ringFg').style.strokeDashoffset = circ * (1 - score / 100);
-  }, 100);
+  // Archetype hero
+  document.getElementById('prevArchetype').textContent     = archetype.label;
+  document.getElementById('prevArchetypeDesc').textContent = archetype.desc;
 
-  // Score desc
-  document.getElementById('prevScoreTitle').textContent = d.name + ' Design Profile';
-  document.getElementById('prevScoreSub').textContent = scoreDesc(score, d.name);
+  // Consistency Index
+  document.getElementById('prevConsVal').textContent  = consistency.pct + '%';
+  document.getElementById('prevConsSub').textContent  = consistency.sub;
+  setTimeout(() => {
+    document.getElementById('prevConsFill').style.width = consistency.pct + '%';
+  }, 120);
+
+  // Maturity Tier
+  document.getElementById('prevTierName').textContent = maturity.label;
+  document.getElementById('prevTierSub').textContent  = maturity.sub;
+  const TIERS = ['Emerging','Developing','Established','Refined','Sophisticated'];
+  const tierIdx = TIERS.indexOf(maturity.label);
+  document.getElementById('prevTierDots').innerHTML = TIERS.map((_, i) => {
+    const cls = i <= tierIdx ? (i === tierIdx ? 'tier-dot lit-accent' : 'tier-dot lit') : 'tier-dot';
+    return `<div class="${cls}" title="${TIERS[i]}"></div>`;
+  }).join('');
 
   // Preview tags
   const tagSources = [d.tech, d.fonts[0]?.name, d.fp[0] ? d.fp[0].v + ' radius' : null, d.icons?.style].filter(Boolean);
   document.getElementById('prevTags').innerHTML = tagSources.map(t => `<span class="prev-tag">${t}</span>`).join('');
 
-  // Quick stats
+  // Quick stats — replace Score with Maturity tier
   document.getElementById('prevStats').innerHTML = [
-    { k:'Colors',  v: d.colors.length },
-    { k:'Fonts',   v: d.fonts.length  },
-    { k:'Stack',   v: d.stack.length  },
-    { k:'Score',   v: score + '/100'  },
+    { k:'Colors',      v: d.colors.length         },
+    { k:'Fonts',       v: d.fonts.length           },
+    { k:'Stack',       v: d.stack.length           },
+    { k:'Consistency', v: consistency.pct + '%'    },
   ].map(s => `<div class="prev-stat"><div class="prev-stat-k">${s.k}</div><div class="prev-stat-v">${s.v}</div></div>`).join('');
 
   // ── ASYNC SCREENSHOT LOADER ─────────────────────────────────────
