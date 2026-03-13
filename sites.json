@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "name": "Linear",
+    "url": "https://linear.app",
+    "category": "Product",
+    "description": "The gold standard for SaaS design — radical simplicity masking profound engineering depth. Dark mode done absolutely right.",
+    "tags": ["dark", "minimal", "motion"],
+    "score": 98,
+    "pages": ["https://linear.app", "https://linear.app/pricing", "https://linear.app/changelog", "https://linear.app/method"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 2,
+    "name": "Vercel",
+    "url": "https://vercel.com",
+    "category": "Developer Tool",
+    "description": "Terminal aesthetics elevated to art. Vercel's site speaks fluent developer while being unmistakably premium.",
+    "tags": ["dark", "editorial", "bold"],
+    "score": 96,
+    "pages": ["https://vercel.com", "https://vercel.com/pricing", "https://vercel.com/templates", "https://vercel.com/blog"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 3,
+    "name": "Stripe",
+    "url": "https://stripe.com",
+    "category": "Product",
+    "description": "A decade of refinement in every pixel. Stripe has defined what world-class fintech design looks and feels like.",
+    "tags": ["gradient", "illustration"],
+    "score": 97,
+    "pages": ["https://stripe.com", "https://stripe.com/payments", "https://stripe.com/pricing", "https://stripe.com/customers"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 4,
+    "name": "Framer",
+    "url": "https://framer.com",
+    "category": "Design Tool",
+    "description": "Eating your own dog food, beautifully. Framer's site is itself a showcase of what Framer can produce.",
+    "tags": ["animation", "3D", "dark"],
+    "score": 95,
+    "pages": ["https://framer.com", "https://framer.com/pricing", "https://framer.com/features", "https://framer.com/templates"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 5,
+    "name": "Notion",
+    "url": "https://notion.so",
+    "category": "Product",
+    "description": "Flexibility without chaos. Notion's marketing site makes infinite customisation feel inevitable, not overwhelming.",
+    "tags": ["light", "editorial"],
+    "score": 93,
+    "pages": ["https://notion.so", "https://notion.so/product", "https://notion.so/pricing", "https://notion.so/templates"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 6,
+    "name": "Arc Browser",
+    "url": "https://arc.net",
+    "category": "Product",
+    "description": "An invitation into a different internet. Arc's site mirrors the bold ambition of its rethink-everything browser.",
+    "tags": ["colorful", "playful", "3D"],
+    "score": 94,
+    "pages": ["https://arc.net", "https://arc.net/max", "https://arc.net/windows"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 7,
+    "name": "Superhuman",
+    "url": "https://superhuman.com",
+    "category": "Product",
+    "description": "Dark luxury meets performance philosophy. Superhuman's aesthetic defined an entire generation of SaaS marketing.",
+    "tags": ["dark", "premium", "motion"],
+    "score": 95,
+    "pages": ["https://superhuman.com", "https://superhuman.com/ai", "https://superhuman.com/blog"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 8,
+    "name": "Craft",
+    "url": "https://craft.do",
+    "category": "Product",
+    "description": "Apple-adjacent refinement — Craft's site is a masterclass in premium software marketing without the arrogance.",
+    "tags": ["light", "3D", "polished"],
+    "score": 91,
+    "pages": ["https://craft.do", "https://craft.do/pricing", "https://craft.do/whats-new"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 9,
+    "name": "Read.cv",
+    "url": "https://read.cv",
+    "category": "Portfolio",
+    "description": "Design restraint as a statement. Read.cv proves that less isn't just more — it's the whole point.",
+    "tags": ["minimal", "editorial", "type"],
+    "score": 93,
+    "pages": ["https://read.cv", "https://read.cv/explore"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 10,
+    "name": "Cosmos",
+    "url": "https://cosmos.so",
+    "category": "Creative",
+    "description": "A moodboard for the entire internet. Cosmos' dark grid aesthetic perfectly mirrors its role as a visual discovery platform.",
+    "tags": ["dark", "grid", "minimal"],
+    "score": 92,
+    "pages": ["https://cosmos.so", "https://cosmos.so/explore"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 11,
+    "name": "Figma",
+    "url": "https://figma.com",
+    "category": "Design Tool",
+    "description": "The design tool that designed its way to dominance — both product and brand identity are lessons in coherence.",
+    "tags": ["colorful", "bold"],
+    "score": 94,
+    "pages": ["https://figma.com", "https://www.figma.com/pricing/", "https://www.figma.com/resource-library/", "https://www.figma.com/community"],
+    "added": "2026-03-13"
+  },
+  {
+    "id": 12,
+    "name": "Resend",
+    "url": "https://resend.com",
+    "category": "Developer Tool",
+    "description": "Developer tooling with editorial sensibility. Resend proves that docs-first products can have world-class visual identity.",
+    "tags": ["dark", "minimal", "mono"],
+    "score": 90,
+    "pages": ["https://resend.com", "https://resend.com/pricing", "https://resend.com/changelog", "https://resend.com/blog"],
+    "added": "2026-03-13"
+  }
+]

@@ -120,6 +120,7 @@ nav {
 }
 .nav-link:hover { color: var(--text); }
 .nav-link.active { color: var(--text); font-weight: 600; }
+.nav-signin { margin-right: 4px; }
 .nav-cta {
   padding: 8px 20px; border-radius: 100px;
   background: var(--text); color: #fff;
@@ -489,10 +490,11 @@ footer {
     </svg>
   </a>
   <div class="nav-r">
-    <a href="index.html" class="nav-link">Home</a>
-    <a href="tool.html" class="nav-link">Tool</a>
+    <a href="index.html#how" class="nav-link">How It Works</a>
+    <a href="index.html#pricing" class="nav-link">Pricing</a>
     <a href="showcase.html" class="nav-link active">Awards</a>
-    <a href="tool.html" class="nav-cta">Try the Tool</a>
+    <a href="#" class="nav-link nav-signin">Sign In</a>
+    <a href="index.html#waitlist" class="nav-cta">Sign Up</a>
   </div>
 </nav>
 
@@ -569,20 +571,26 @@ footer {
 </footer>
 
 <script>
-const SEED_SITES = [
-  { id:1,  name:'Linear',      url:'https://linear.app',       category:'Product',        description:'The gold standard for SaaS design — radical simplicity masking profound engineering depth. Dark mode done absolutely right.', tags:['dark','minimal','motion'],    score:98, pages:['/','https://linear.app/pricing','https://linear.app/changelog','https://linear.app/method'] },
-  { id:2,  name:'Vercel',      url:'https://vercel.com',       category:'Developer Tool',  description:'Terminal aesthetics elevated to art. Vercel\'s site speaks fluent developer while being unmistakably premium.',               tags:['dark','editorial','bold'],    score:96, pages:['/','https://vercel.com/pricing','https://vercel.com/templates','https://vercel.com/blog'] },
-  { id:3,  name:'Stripe',      url:'https://stripe.com',       category:'Product',        description:'A decade of refinement in every pixel. Stripe has defined what world-class fintech design looks and feels like.',              tags:['gradient','illustration'],    score:97, pages:['/','https://stripe.com/payments','https://stripe.com/pricing','https://stripe.com/customers'] },
-  { id:4,  name:'Framer',      url:'https://framer.com',       category:'Design Tool',    description:'Eating your own dog food, beautifully. Framer\'s site is itself a showcase of what Framer can produce.',                      tags:['animation','3D','dark'],      score:95, pages:['/','https://framer.com/pricing','https://framer.com/features','https://framer.com/templates'] },
-  { id:5,  name:'Notion',      url:'https://notion.so',        category:'Product',        description:'Flexibility without chaos. Notion\'s marketing site makes infinite customisation feel inevitable, not overwhelming.',           tags:['light','editorial'],          score:93, pages:['/','https://notion.so/product','https://notion.so/pricing','https://notion.so/templates'] },
-  { id:6,  name:'Arc Browser', url:'https://arc.net',          category:'Product',        description:'An invitation into a different internet. Arc\'s site mirrors the bold ambition of its rethink-everything browser.',             tags:['colorful','playful','3D'],   score:94, pages:['/','https://arc.net/max','https://arc.net/windows'] },
-  { id:7,  name:'Superhuman',  url:'https://superhuman.com',   category:'Product',        description:'Dark luxury meets performance philosophy. Superhuman\'s aesthetic defined an entire generation of SaaS marketing.',            tags:['dark','premium','motion'],   score:95, pages:['/','https://superhuman.com/ai','https://superhuman.com/blog'] },
-  { id:8,  name:'Craft',       url:'https://craft.do',         category:'Product',        description:'Apple-adjacent refinement — Craft\'s site is a masterclass in premium software marketing without the arrogance.',              tags:['light','3D','polished'],     score:91, pages:['/','https://craft.do/pricing','https://craft.do/whats-new'] },
-  { id:9,  name:'Read.cv',     url:'https://read.cv',          category:'Portfolio',      description:'Design restraint as a statement. Read.cv proves that less isn\'t just more — it\'s the whole point.',                          tags:['minimal','editorial','type'],score:93, pages:['/','https://read.cv/explore'] },
-  { id:10, name:'Cosmos',      url:'https://cosmos.so',        category:'Creative',       description:'A moodboard for the entire internet. Cosmos\' dark grid aesthetic perfectly mirrors its role as a visual discovery platform.',  tags:['dark','grid','minimal'],     score:92, pages:['/','https://cosmos.so/explore'] },
-  { id:11, name:'Figma',       url:'https://figma.com',        category:'Design Tool',    description:'The design tool that designed its way to dominance — both product and brand identity are lessons in coherence.',               tags:['colorful','bold'],           score:94, pages:['/','https://www.figma.com/pricing/','https://www.figma.com/resource-library/','https://www.figma.com/community'] },
-  { id:12, name:'Resend',      url:'https://resend.com',       category:'Developer Tool', description:'Developer tooling with editorial sensibility. Resend proves that docs-first products can have world-class visual identity.',   tags:['dark','minimal','mono'],     score:90, pages:['/','https://resend.com/pricing','https://resend.com/changelog','https://resend.com/blog'] },
+// ── DATA ─────────────────────────────────────────────────────────
+// Sites are loaded from sites.json — curated daily by Cowork.
+// SEED_DATA is an inline fallback for local/offline use.
+const SEED_DATA = [
+  { id:1,  name:'Linear',      url:'https://linear.app',       category:'Product',        description:'The gold standard for SaaS design — radical simplicity masking profound engineering depth. Dark mode done absolutely right.', tags:['dark','minimal','motion'],    score:98, pages:['https://linear.app','https://linear.app/pricing','https://linear.app/changelog','https://linear.app/method'], added:'2026-03-13' },
+  { id:2,  name:'Vercel',      url:'https://vercel.com',       category:'Developer Tool',  description:'Terminal aesthetics elevated to art. Vercel\'s site speaks fluent developer while being unmistakably premium.',               tags:['dark','editorial','bold'],    score:96, pages:['https://vercel.com','https://vercel.com/pricing','https://vercel.com/templates','https://vercel.com/blog'], added:'2026-03-13' },
+  { id:3,  name:'Stripe',      url:'https://stripe.com',       category:'Product',        description:'A decade of refinement in every pixel. Stripe has defined what world-class fintech design looks and feels like.',              tags:['gradient','illustration'],    score:97, pages:['https://stripe.com','https://stripe.com/payments','https://stripe.com/pricing','https://stripe.com/customers'], added:'2026-03-13' },
+  { id:4,  name:'Framer',      url:'https://framer.com',       category:'Design Tool',    description:'Eating your own dog food, beautifully. Framer\'s site is itself a showcase of what Framer can produce.',                      tags:['animation','3D','dark'],      score:95, pages:['https://framer.com','https://framer.com/pricing','https://framer.com/features','https://framer.com/templates'], added:'2026-03-13' },
+  { id:5,  name:'Notion',      url:'https://notion.so',        category:'Product',        description:'Flexibility without chaos. Notion\'s marketing site makes infinite customisation feel inevitable, not overwhelming.',           tags:['light','editorial'],          score:93, pages:['https://notion.so','https://notion.so/product','https://notion.so/pricing','https://notion.so/templates'], added:'2026-03-13' },
+  { id:6,  name:'Arc Browser', url:'https://arc.net',          category:'Product',        description:'An invitation into a different internet. Arc\'s site mirrors the bold ambition of its rethink-everything browser.',             tags:['colorful','playful','3D'],   score:94, pages:['https://arc.net','https://arc.net/max','https://arc.net/windows'], added:'2026-03-13' },
+  { id:7,  name:'Superhuman',  url:'https://superhuman.com',   category:'Product',        description:'Dark luxury meets performance philosophy. Superhuman\'s aesthetic defined an entire generation of SaaS marketing.',            tags:['dark','premium','motion'],   score:95, pages:['https://superhuman.com','https://superhuman.com/ai','https://superhuman.com/blog'], added:'2026-03-13' },
+  { id:8,  name:'Craft',       url:'https://craft.do',         category:'Product',        description:'Apple-adjacent refinement — Craft\'s site is a masterclass in premium software marketing without the arrogance.',              tags:['light','3D','polished'],     score:91, pages:['https://craft.do','https://craft.do/pricing','https://craft.do/whats-new'], added:'2026-03-13' },
+  { id:9,  name:'Read.cv',     url:'https://read.cv',          category:'Portfolio',      description:'Design restraint as a statement. Read.cv proves that less isn\'t just more — it\'s the whole point.',                          tags:['minimal','editorial','type'],score:93, pages:['https://read.cv','https://read.cv/explore'], added:'2026-03-13' },
+  { id:10, name:'Cosmos',      url:'https://cosmos.so',        category:'Creative',       description:'A moodboard for the entire internet. Cosmos\' dark grid aesthetic perfectly mirrors its role as a visual discovery platform.',  tags:['dark','grid','minimal'],     score:92, pages:['https://cosmos.so','https://cosmos.so/explore'], added:'2026-03-13' },
+  { id:11, name:'Figma',       url:'https://figma.com',        category:'Design Tool',    description:'The design tool that designed its way to dominance — both product and brand identity are lessons in coherence.',               tags:['colorful','bold'],           score:94, pages:['https://figma.com','https://www.figma.com/pricing/','https://www.figma.com/resource-library/','https://www.figma.com/community'], added:'2026-03-13' },
+  { id:12, name:'Resend',      url:'https://resend.com',       category:'Developer Tool', description:'Developer tooling with editorial sensibility. Resend proves that docs-first products can have world-class visual identity.',   tags:['dark','minimal','mono'],     score:90, pages:['https://resend.com','https://resend.com/pricing','https://resend.com/changelog','https://resend.com/blog'], added:'2026-03-13' },
 ];
+
+let allSites = [];
+let activeFilter = 'all';
 
 const CAT_COLORS = {
   'Product':       { bg:'rgba(99,102,241,0.1)',  text:'#5558D9' },
@@ -611,7 +619,8 @@ function formatDomain(url) {
   try { return new URL(url).hostname.replace('www.',''); } catch(e) { return url; }
 }
 function getSiteOfDay() {
-  return SEED_SITES[Math.floor(Date.now()/86400000) % SEED_SITES.length];
+  // Rotate daily through all loaded sites
+  return allSites[Math.floor(Date.now()/86400000) % allSites.length];
 }
 function formatDate() {
   return new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
@@ -652,8 +661,6 @@ function renderHero(site) {
 }
 
 // ── GALLERY ───────────────────────────────────────────────────────
-let allSites = [...SEED_SITES];
-let activeFilter = 'all';
 
 function renderCard(site, delay = 0) {
   const domain = formatDomain(site.url);
@@ -762,33 +769,30 @@ document.getElementById('modal-backdrop').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ── CURATION (silent) ─────────────────────────────────────────────
-async function loadCuration() {
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1200,
-        messages: [{ role: 'user', content: `Return a JSON array of exactly 6 real live websites with outstanding design. Only return the JSON array, no markdown fences:\n[{"id":101,"name":"Brand","url":"https://example.com","category":"Product","description":"Why exceptional (max 140 chars).","tags":["tag1"],"score":94,"pages":["https://example.com","https://example.com/pricing"]}]\nCategories: Product, Agency, Portfolio, Design Tool, Developer Tool, Creative, E-commerce, Fintech, Productivity\nAvoid: linear.app, vercel.com, stripe.com, framer.com, notion.so, arc.net, superhuman.com, craft.do, read.cv, cosmos.so, figma.com, resend.com\nInclude 2-4 real page URLs per site in the pages array.` }]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content?.find(b => b.type==='text')?.text || '[]';
-    const sites = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    if (Array.isArray(sites) && sites.length > 0) {
-      sites.forEach((s,i) => { s.id = 200 + i; if (!s.pages) s.pages = [s.url]; });
-      allSites = [...allSites, ...sites];
-      renderGallery(activeFilter);
-    }
-  } catch(e) { /* silent */ }
+// ── INIT ─────────────────────────────────────────────────────────
+async function init() {
+  // Try to load sites.json (works on GitHub Pages / any web server)
+  // Falls back to inline SEED_DATA when opened as a local file
+  if (location.protocol !== 'file:') {
+    try {
+      const res = await fetch('sites.json');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          allSites = data;
+        }
+      }
+    } catch(e) { /* silent — fall through to seed data */ }
+  }
+
+  // Always fall back to seed data if fetch failed or was skipped
+  if (allSites.length === 0) allSites = SEED_DATA;
+
+  renderHero(getSiteOfDay());
+  renderGallery();
 }
 
-// ── INIT ─────────────────────────────────────────────────────────
-renderHero(getSiteOfDay());
-renderGallery();
-loadCuration();
+init();
 </script>
 </body>
 </html>
