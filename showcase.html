@@ -456,9 +456,58 @@ footer {
 .foot-links a:hover { color: var(--text2); }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; padding: 6px; cursor: pointer;
+  background: none; border: none; border-radius: 8px;
+  transition: background .15s;
+}
+.hamburger:hover { background: rgba(0,0,0,0.05); }
+.hamburger span {
+  display: block; width: 18px; height: 1.5px; background: var(--text);
+  border-radius: 2px; transition: all .25s ease; transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Mobile dropdown menu */
+.nav-mobile-menu {
+  display: none; position: fixed; top: var(--nav-h); left: 0; right: 0;
+  background: rgba(252,252,250,0.97); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  flex-direction: column; padding: 12px 20px 20px; gap: 4px;
+  z-index: 999;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+  transform: translateY(-8px); opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+}
+.nav-mobile-menu.open {
+  display: flex; opacity: 1; transform: translateY(0); pointer-events: all;
+}
+.nav-mobile-link {
+  padding: 13px 12px; font-size: 15px; font-weight: 500;
+  color: var(--text2); text-decoration: none; border-radius: 10px;
+  transition: background .15s, color .15s; display: block;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.nav-mobile-link:last-of-type { border-bottom: none; }
+.nav-mobile-link:hover, .nav-mobile-link.active { color: var(--text); background: rgba(0,0,0,0.03); }
+.nav-mobile-cta {
+  margin-top: 8px; padding: 14px; background: var(--text); color: #fff;
+  font-size: 14px; font-weight: 700; border-radius: 12px;
+  text-decoration: none; text-align: center; display: block;
+  transition: background .15s;
+}
+.nav-mobile-cta:hover { background: #222; }
+
 @media (max-width: 768px) {
   nav { padding: 0 20px; }
+  .nav-r { display: none; }
+  .hamburger { display: flex; }
   .page-header { padding: 14px 20px; }
   .page-header-center { display: none; }
   .sotd { grid-template-columns: 1fr; min-height: unset; }
@@ -496,7 +545,19 @@ footer {
     <a href="#" class="nav-link nav-signin">Sign In</a>
     <a href="index.html#waitlist" class="nav-cta">Sign Up</a>
   </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE NAV DROPDOWN -->
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="index.html#how"      class="nav-mobile-link">How It Works</a>
+  <a href="index.html#pricing"  class="nav-mobile-link">Pricing</a>
+  <a href="showcase.html"       class="nav-mobile-link active">Awards</a>
+  <a href="#"                   class="nav-mobile-link">Sign In</a>
+  <a href="index.html#waitlist" class="nav-mobile-cta">Sign Up</a>
+</div>
 
 <!-- PAGE HEADER -->
 <div class="page-header">
@@ -791,6 +852,34 @@ async function init() {
   renderHero(getSiteOfDay());
   renderGallery();
 }
+
+// ── HAMBURGER MENU ───────────────────────────────────────────────
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('nav-mobile-menu');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+// Close on link tap
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+// Close on outside tap
+document.addEventListener('click', e => {
+  if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
 
 init();
 </script>
