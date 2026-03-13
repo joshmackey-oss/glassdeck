@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassdeck Awards — Outstanding Web Design</title>
+
+<meta property="og:type"         content="website" />
+<meta property="og:url"          content="https://glassdeck.io/showcase" />
+<meta property="og:title"        content="Glassdeck Awards — Outstanding Web Design" />
+<meta property="og:description"  content="A curated showcase of the most beautifully designed websites on the internet." />
+<meta property="og:image"        content="https://glassdeck.io/og-image.png" />
+<meta property="og:image:width"  content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:site"        content="@glassdeck" />
+<meta name="twitter:title"       content="Glassdeck Awards — Outstanding Web Design" />
+<meta name="twitter:description" content="A curated showcase of the most beautifully designed websites on the internet." />
+<meta name="twitter:image"       content="https://glassdeck.io/og-image.png" />
+<meta name="description"         content="A curated showcase of the most beautifully designed websites on the internet." />
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyMTYgMjE2Ij4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMzAuMS4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjEgQnVpbGQgMTM2KSAgLS0+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNmZWJlMTA7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxyZWN0IGNsYXNzPSJzdDAiIHdpZHRoPSIyMTYiIGhlaWdodD0iMjE2Ii8+CiAgPHBhdGggZD0iTTE0NC4wOCwxMDUuNzRjLS42OC04LjM0LTQuOTYtMTYuNDctMTEuMTItMjIuNjItNi4zMi02LjI0LTE0LjQ0LTEwLjUyLTIyLjcxLTExLjIxLjY4LDguMzQsNC45NiwxNi4zOCwxMS4xMiwyMi41NSw2LjI0LDYuMjQsMTQuNDQsMTAuNTksMjIuNywxMS4yOFpNNzEuOTIsMTEwLjI1Yy42OCw4LjM0LDQuOTYsMTYuMzgsMTEuMTIsMjIuNTUsNi4yNCw2LjI0LDE0LjQ0LDEwLjU5LDIyLjcsMTEuMjgtLjY4LTguMzQtNC45Ni0xNi40Ny0xMS4yMS0yMi42Mi02LjI0LTYuMjQtMTQuMzUtMTAuNTItMjIuNjItMTEuMjFaTTExMC4yNiwxNDQuMDhjOC4yNy0uNjgsMTYuMzktNS4wNCwyMi43MS0xMS4yOCw2LjE3LTYuMTcsMTAuNDUtMTQuMjEsMTEuMTItMjIuNTUtOC4yNy42OC0xNi40Nyw0Ljk2LTIyLjcsMTEuMjEtNi4xNyw2LjE3LTEwLjQ1LDE0LjI4LTExLjEyLDIyLjYyWk03MS45MiwxMDUuNzRjOC4yNy0uNzUsMTYuMzktNS4wNCwyMi42Mi0xMS4yOCw2LjI0LTYuMTcsMTAuNTItMTQuMjEsMTEuMjEtMjIuNTUtOC4yNy42OC0xNi40Nyw0Ljk2LTIyLjcsMTEuMjEtNi4xNyw2LjE3LTEwLjQ1LDE0LjI4LTExLjEyLDIyLjYyWiIvPgo8L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #FFC60B;
+  --gold-d: #9A7200;
+  --gold-m: #FFF3C4;
+  --text: #0A0A0A;
+  --text2: #5A5A5A;
+  --text3: #9A9A9A;
+  --bg: #FAFAF8;
+  --bg2: #F2F2F0;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.12);
+  --nav-h: 59px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── ETHEREAL BLOB BACKGROUND ── */
+.blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+.blob-1 {
+  width: 750px; height: 750px;
+  top: -250px; left: -150px;
+  background: radial-gradient(circle, rgba(240,214,255,0.9) 0%, rgba(220,185,255,0.5) 40%, transparent 70%);
+  animation: b1 20s ease-in-out infinite;
+}
+.blob-2 {
+  width: 650px; height: 650px;
+  top: -100px; right: -100px;
+  background: radial-gradient(circle, rgba(190,230,255,0.85) 0%, rgba(160,215,255,0.45) 40%, transparent 70%);
+  animation: b2 25s ease-in-out infinite;
+}
+.blob-3 {
+  width: 560px; height: 560px;
+  top: 38%; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255,245,180,0.75) 0%, rgba(255,230,130,0.4) 40%, transparent 70%);
+  animation: b3 30s ease-in-out infinite;
+}
+.blob-4 {
+  width: 480px; height: 480px;
+  bottom: 8%; right: -60px;
+  background: radial-gradient(circle, rgba(180,245,210,0.8) 0%, rgba(140,230,180,0.4) 40%, transparent 70%);
+  animation: b4 22s ease-in-out infinite;
+}
+.blob-5 {
+  width: 380px; height: 380px;
+  bottom: 18%; left: 2%;
+  background: radial-gradient(circle, rgba(255,210,205,0.75) 0%, rgba(255,185,180,0.4) 40%, transparent 70%);
+  animation: b5 27s ease-in-out infinite;
+}
+@keyframes b1 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(50px,35px)} 66%{transform:translate(-25px,55px)} }
+@keyframes b2 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-45px,25px)} 66%{transform:translate(18px,-38px)} }
+@keyframes b3 { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-55px)} }
+@keyframes b4 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-38px,-45px)} }
+@keyframes b5 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(45px,-28px)} }
+
+nav, .page-header, .sotd, .gallery-section, footer { position: relative; z-index: 1; }
+
+/* ── NAV ── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: var(--nav-h);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,250,248,0.80);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.nav-r { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  text-decoration: none; padding: 6px 14px; border-radius: 100px; transition: color .15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text); font-weight: 600; }
+.nav-cta {
+  padding: 8px 20px; border-radius: 100px;
+  background: var(--text); color: #fff;
+  font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+  transition: all .15s; text-decoration: none; margin-left: 6px;
+}
+.nav-cta:hover { background: #222; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 48px; border-bottom: 1px solid var(--border); gap: 16px;
+}
+.page-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text3);
+}
+.page-header-center {
+  font-size: 12px; color: var(--text3); letter-spacing: 0.04em;
+  font-family: 'Geist Mono', monospace;
+}
+.page-header-right { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text3); }
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #22C55E;
+  animation: blink 2.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* ── SOTD ── */
+.sotd {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border); min-height: 520px;
+}
+.sotd-meta {
+  padding: 56px 52px; display: flex; flex-direction: column; gap: 20px;
+  border-right: 1px solid var(--border);
+}
+.sotd-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold-d);
+  background: var(--gold-m); border: 1px solid #E8D87A;
+  border-radius: 100px; padding: 5px 14px; align-self: flex-start;
+}
+.sotd-date {
+  font-size: 11px; color: var(--text3);
+  font-family: 'Geist Mono', monospace; letter-spacing: 0.06em; margin-top: -10px;
+}
+.sotd-domain {
+  font-family: 'Geist Mono', monospace;
+  font-size: clamp(28px, 3.8vw, 52px);
+  font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; color: var(--text);
+}
+.sotd-name { font-size: 13px; color: var(--text3); margin-top: 2px; }
+.sotd-desc { font-size: 15px; line-height: 1.7; color: var(--text2); max-width: 400px; }
+.sotd-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  padding: 4px 12px; border-radius: 100px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.7);
+  font-size: 11px; color: var(--text2);
+}
+.sotd-actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.btn-dark {
+  padding: 11px 24px; background: var(--text); color: #fff;
+  font-size: 13px; font-weight: 600; border: none; border-radius: 100px;
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s; white-space: nowrap;
+}
+.btn-dark:hover { background: #222; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.14); }
+.btn-ghost {
+  padding: 11px 24px; background: rgba(255,255,255,0.7); color: var(--text2);
+  font-size: 13px; font-weight: 500; border: 1px solid var(--border);
+  border-radius: 100px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s; white-space: nowrap; backdrop-filter: blur(8px);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); background: rgba(255,255,255,0.92); }
+.sotd-img-wrap {
+  position: relative; overflow: hidden; background: var(--bg2);
+}
+.sotd-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .8s ease;
+}
+.sotd-img-wrap:hover img { transform: scale(1.03); }
+.sotd-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 80px; font-weight: 300;
+  color: #C8C8C4; background: linear-gradient(135deg, #F0F0EE, #E8E8E4);
+}
+.sotd-score {
+  position: absolute; bottom: 20px; right: 20px;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+  border: 1px solid rgba(0,0,0,0.07); border-radius: 10px;
+  padding: 8px 16px; font-family: 'Geist Mono', monospace;
+  font-size: 11px; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.score-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* ── GALLERY ── */
+.gallery-section { padding: 44px 48px 100px; }
+.gallery-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
+}
+.gallery-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text3);
+}
+.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-pill {
+  padding: 5px 14px; border-radius: 100px; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.65); font-size: 12px; font-weight: 500;
+  color: var(--text2); cursor: pointer; transition: all .15s;
+  font-family: 'Geist', sans-serif; backdrop-filter: blur(8px);
+}
+.filter-pill:hover { color: var(--text); border-color: var(--border2); background: rgba(255,255,255,0.92); }
+.filter-pill.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* ── GRID ── */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.card {
+  background: rgba(255,255,255,0.72); backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: all .22s ease; color: inherit;
+  animation: fadeUp .45s ease forwards; opacity: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.09);
+  border-color: rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.92);
+}
+.card-img {
+  aspect-ratio: 16/9; overflow: hidden; background: var(--bg2);
+  position: relative; cursor: pointer;
+}
+.card-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .5s ease;
+}
+.card:hover .card-img img { transform: scale(1.06); }
+.card-img-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 36px; font-weight: 300;
+  color: #C8C8C4; background: linear-gradient(135deg, #F0F0EE, #E8E8E4);
+}
+.card-body { padding: 16px 18px 0; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.card-domain { font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.card-desc {
+  font-size: 12px; line-height: 1.6; color: var(--text2); flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* ── CARD ACTIONS ── */
+.card-actions {
+  display: flex; gap: 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  margin-top: 12px;
+}
+.card-action {
+  flex: 1; padding: 11px 6px;
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Geist', sans-serif; letter-spacing: 0.02em;
+  transition: all .15s; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
+.card-action:last-child { border-right: none; }
+.card-action:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+.card-action.primary { color: var(--text); font-weight: 700; }
+.card-action.primary:hover { color: #000; background: rgba(0,0,0,0.04); }
+
+/* card score inline */
+.card-score-row {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; color: var(--text3); font-family: 'Geist Mono', monospace;
+  padding-bottom: 2px;
+}
+.score-dot-sm { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* ── DETAIL MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: rgba(252,252,250,0.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 20px;
+  width: 100%; max-width: 1060px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(20px) scale(0.98);
+  transition: transform .35s cubic-bezier(.16,1,.3,1);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.18);
+}
+.modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  position: sticky; top: 0; background: rgba(252,252,250,0.95);
+  backdrop-filter: blur(12px); z-index: 10; border-radius: 20px 20px 0 0;
+}
+.modal-header-left { display: flex; flex-direction: column; gap: 4px; }
+.modal-domain {
+  font-family: 'Geist Mono', monospace; font-size: 22px; font-weight: 500;
+  letter-spacing: -0.01em; color: var(--text); line-height: 1.2;
+}
+.modal-meta { display: flex; align-items: center; gap: 8px; }
+.modal-name { font-size: 13px; color: var(--text3); }
+.modal-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.8);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text2); transition: all .15s;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: rgba(0,0,0,0.06); color: var(--text); }
+
+.modal-hero {
+  width: 100%; aspect-ratio: 16/7; overflow: hidden; background: var(--bg2);
+  position: relative;
+}
+.modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.modal-hero-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace; font-size: 80px; font-weight: 300; color: #C8C8C4;
+}
+.modal-score-badge {
+  position: absolute; bottom: 16px; right: 16px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+  border: 1px solid rgba(0,0,0,0.08); border-radius: 8px;
+  padding: 7px 14px; font-family: 'Geist Mono', monospace;
+  font-size: 11px; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.modal-body { padding: 28px; display: flex; flex-direction: column; gap: 24px; }
+
+.modal-desc-section { display: flex; flex-direction: column; gap: 12px; }
+.modal-desc { font-size: 15px; line-height: 1.75; color: var(--text2); }
+.modal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Key Pages */
+.modal-pages-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 12px;
+}
+.modal-pages-scroll {
+  display: flex; gap: 12px;
+  overflow-x: auto; padding-bottom: 6px;
+  scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+.modal-pages-scroll::-webkit-scrollbar { height: 4px; }
+.modal-pages-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 2px; }
+.modal-page-thumb {
+  flex-shrink: 0; width: 260px; border-radius: 10px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.07); background: var(--bg2);
+  transition: transform .2s; cursor: pointer;
+}
+.modal-page-thumb:hover { transform: scale(1.02); }
+.modal-page-img { aspect-ratio: 16/9; overflow: hidden; background: var(--bg2); }
+.modal-page-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.modal-page-img-ph {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: #C8C8C4;
+  background: linear-gradient(135deg, #F0F0EE, #E8E8E4);
+}
+.modal-page-label {
+  padding: 8px 10px; font-size: 11px; color: var(--text3);
+  font-family: 'Geist Mono', monospace;
+}
+
+/* Modal footer actions */
+.modal-footer {
+  display: flex; gap: 10px; padding: 0 28px 28px; flex-wrap: wrap;
+}
+.btn-modal-primary {
+  padding: 12px 26px; background: var(--text); color: #fff;
+  font-size: 13px; font-weight: 600; border: none; border-radius: 100px;
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-modal-primary:hover { background: #222; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.14); }
+.btn-modal-ghost {
+  padding: 12px 26px; background: transparent; color: var(--text2);
+  font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border2); border-radius: 100px;
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-modal-ghost:hover { color: var(--text); border-color: rgba(0,0,0,0.22); }
+
+/* ── CAT PILL ── */
+.cat-pill {
+  display: inline-block; padding: 3px 10px; border-radius: 100px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; white-space: nowrap;
+}
+
+/* ── FOOTER ── */
+footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 48px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text3); gap: 16px; flex-wrap: wrap;
+  background: rgba(250,250,248,0.65); backdrop-filter: blur(12px);
+}
+.foot-links { display: flex; gap: 20px; }
+.foot-links a { color: var(--text3); text-decoration: none; transition: color .15s; }
+.foot-links a:hover { color: var(--text2); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .page-header { padding: 14px 20px; }
+  .page-header-center { display: none; }
+  .sotd { grid-template-columns: 1fr; min-height: unset; }
+  .sotd-img-wrap { aspect-ratio: 16/9; order: -1; }
+  .sotd-meta { padding: 32px 20px 28px; }
+  .sotd-domain { font-size: 28px; }
+  .gallery-section { padding: 28px 20px 60px; }
+  .gallery-header { flex-direction: column; align-items: flex-start; }
+  .grid { grid-template-columns: 1fr; gap: 14px; }
+  footer { padding: 20px; flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="blob blob-5"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html">
+    <svg height="51" viewBox="0 0 648 216" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#0A0A0A" d="M257.75,106.52c-3.36-2.63-8.86-4.35-16.48-5.15l-15.03-1.51c-1.98-.24-3.57-.55-4.78-.91-1.21-.36-2.07-.83-2.57-1.4-.5-.57-.75-1.27-.75-2.11v-.05c0-1.07.4-1.96,1.2-2.65.8-.69,1.98-1.24,3.54-1.64,1.56-.4,3.47-.6,5.72-.6,3.64,0,6.51.51,8.61,1.53,2.1,1.02,3.3,2.42,3.61,4.19l.05.36h19.97l-.05-.47c-.24-3.67-1.65-6.89-4.21-9.65-2.57-2.76-6.21-4.9-10.95-6.42-4.73-1.52-10.48-2.29-17.24-2.29s-12.17.74-16.85,2.21c-4.68,1.47-8.27,3.61-10.76,6.4-2.5,2.79-3.74,6.16-3.74,10.11v.1c0,3.12.78,5.84,2.34,8.16,1.56,2.32,3.91,4.22,7.05,5.69,3.14,1.47,7.08,2.47,11.83,2.99l14.56,1.46c3.12.35,5.27.85,6.45,1.51,1.18.66,1.77,1.63,1.77,2.91v.05c0,1.04-.41,1.92-1.22,2.63-.81.71-2.02,1.25-3.61,1.61-1.6.36-3.54.55-5.82.55-4.02,0-7.17-.46-9.44-1.38-2.27-.92-3.67-2.37-4.19-4.34l-.1-.31h-21.22l.05.47c.42,3.74,2.03,7,4.84,9.77,2.81,2.77,6.72,4.9,11.73,6.37,5.01,1.47,11.08,2.21,18.23,2.21,6.76,0,12.57-.78,17.42-2.34,4.85-1.56,8.59-3.79,11.21-6.68,2.62-2.89,3.93-6.39,3.93-10.48v-.05c0-4.61-1.68-8.23-5.04-10.87ZM66.65,89.25h-.36c-1.28-2.22-3-4.2-5.15-5.95-2.15-1.75-4.7-3.11-7.64-4.08-2.95-.97-6.22-1.46-9.83-1.46-5.72,0-10.72,1.16-15,3.48-4.28,2.32-7.63,5.62-10.04,9.88s-3.61,9.34-3.61,15.24v.05c0,5.65,1.2,10.53,3.59,14.64,2.39,4.11,5.73,7.29,10.01,9.54,4.28,2.25,9.26,3.38,14.95,3.38,3.64,0,6.94-.45,9.91-1.35s5.53-2.12,7.7-3.67c2.17-1.54,3.87-3.34,5.12-5.38h.36v7.33c0,3.71-1.26,6.55-3.77,8.53-2.51,1.98-6.33,2.97-11.46,2.97-3.5,0-6.34-.47-8.5-1.41-2.17-.94-3.65-2.1-4.45-3.48l-.21-.26h-21.48l.1.42c.69,3.5,2.51,6.59,5.46,9.26,2.95,2.67,6.86,4.76,11.75,6.27,4.89,1.51,10.62,2.26,17.21,2.26,7.87,0,14.58-1,20.12-2.99,5.55-1.99,9.78-4.9,12.71-8.71,2.93-3.81,4.39-8.42,4.39-13.83v-50.75h-21.89v10.09ZM66.7,106.67c0,2.84-.61,5.29-1.82,7.33-1.21,2.05-2.94,3.61-5.17,4.71-2.24,1.09-4.85,1.64-7.83,1.64s-5.48-.54-7.7-1.61c-2.22-1.07-3.94-2.63-5.17-4.68s-1.85-4.52-1.85-7.44v-.05c0-2.91.61-5.37,1.85-7.38,1.23-2.01,2.96-3.56,5.17-4.65,2.22-1.09,4.78-1.64,7.7-1.64s5.58.56,7.8,1.66c2.22,1.11,3.94,2.69,5.17,4.73,1.23,2.05,1.85,4.49,1.85,7.33v.05ZM95.82,135.58h21.89V60.55h-21.89v75.03ZM175.56,80.36c-4.91-1.73-10.72-2.6-17.45-2.6s-11.93.81-16.43,2.44c-4.51,1.63-8.07,3.89-10.68,6.79-2.62,2.89-4.26,6.28-4.91,10.17l-.1.62h20.33l.1-.42c.48-1.66,1.65-3,3.48-4,1.84-1.01,4.37-1.51,7.59-1.51,3.74,0,6.59.7,8.53,2.11,1.94,1.4,2.91,3.37,2.91,5.9v1.37l-19.92.5c-6.1.14-11.06.92-14.87,2.34-3.81,1.42-6.6,3.39-8.37,5.9-1.77,2.51-2.65,5.45-2.65,8.81v.05c0,3.71.98,6.86,2.94,9.46,1.96,2.6,4.74,4.6,8.35,6,3.6,1.41,7.83,2.11,12.69,2.11,3.36,0,6.42-.38,9.18-1.15,2.76-.76,5.16-1.87,7.23-3.33,2.06-1.46,3.75-3.17,5.07-5.15h.36v8.79h21.84v-35.88c0-4.58-1.31-8.51-3.93-11.8-2.62-3.29-6.38-5.81-11.28-7.54ZM168.93,113.49c0,1.98-.6,3.71-1.79,5.2-1.2,1.49-2.89,2.64-5.07,3.46s-4.77,1.22-7.75,1.22-5.38-.49-7.2-1.46c-1.82-.97-2.73-2.46-2.73-4.47v-.05c0-1.56.67-2.79,2-3.69,1.33-.9,3.46-1.39,6.37-1.46l16.17-.43v1.68ZM605.62,102.9l25.91-23.84h-25.01l-22.98,21.32h-.31v-39.83h-21.84v75.03h21.84v-16.69l5.75-4.96,18.27,21.65h25.74l-27.37-32.68ZM327.33,106.52c-3.36-2.63-8.86-4.35-16.48-5.15l-15.03-1.51c-1.98-.24-3.57-.55-4.78-.91s-2.07-.83-2.57-1.4c-.5-.57-.75-1.27-.75-2.11v-.05c0-1.07.4-1.96,1.2-2.65s1.98-1.24,3.54-1.64c1.56-.4,3.47-.6,5.72-.6,3.64,0,6.51.51,8.61,1.53,2.1,1.02,3.3,2.42,3.61,4.19l.05.36h19.97l-.05-.47c-.24-3.67-1.65-6.89-4.21-9.65-2.56-2.76-6.21-4.9-10.94-6.42-4.73-1.52-10.48-2.29-17.24-2.29s-12.17.74-16.85,2.21c-4.68,1.47-8.27,3.61-10.76,6.4-2.5,2.79-3.75,6.16-3.75,10.11v.1c0,3.12.78,5.84,2.34,8.16,1.56,2.32,3.91,4.22,7.05,5.69,3.14,1.47,7.08,2.47,11.83,2.99l14.56,1.46c3.12.35,5.27.85,6.45,1.51,1.18.66,1.77,1.63,1.77,2.91v.05c0,1.04-.41,1.92-1.22,2.63-.82.71-2.02,1.25-3.61,1.61-1.6.36-3.54.55-5.83.55-4.02,0-7.17-.46-9.44-1.38s-3.67-2.37-4.18-4.34l-.1-.31h-21.22l.05.47c.42,3.74,2.03,7,4.83,9.77,2.81,2.77,6.72,4.9,11.73,6.37,5.01,1.47,11.08,2.21,18.23,2.21,6.76,0,12.56-.78,17.42-2.34,4.85-1.56,8.59-3.79,11.2-6.68,2.62-2.89,3.93-6.39,3.93-10.48v-.05c0-4.61-1.68-8.23-5.04-10.87ZM535.59,113.02c-.69,2.88-2.19,5.09-4.5,6.63-2.31,1.54-5.14,2.31-8.5,2.31-2.98,0-5.55-.57-7.7-1.72-2.15-1.14-3.79-2.81-4.91-4.99s-1.69-4.8-1.69-7.85v-.05c0-3.12.57-5.75,1.72-7.9,1.15-2.15,2.77-3.8,4.89-4.94s4.66-1.72,7.64-1.72c3.4,0,6.25.77,8.55,2.31,2.3,1.54,3.8,3.74,4.5,6.58l.05.47h20.64l-.1-.57c-.45-4.82-2.17-9.02-5.15-12.61s-6.95-6.35-11.91-8.29-10.68-2.91-17.16-2.91c-7.32,0-13.66,1.19-19.03,3.56-5.37,2.38-9.53,5.76-12.45,10.17-2.93,4.4-4.39,9.66-4.39,15.76v.05c0,6.14,1.46,11.42,4.37,15.86,2.91,4.44,7.06,7.84,12.45,10.22,5.39,2.37,11.76,3.56,19.11,3.56,6.55,0,12.31-1,17.26-2.99,4.96-1.99,8.91-4.78,11.86-8.35s4.63-7.73,5.04-12.48l.16-.57h-20.64l-.1.47ZM386.97,89.41h-.42c-1.25-2.32-2.96-4.37-5.15-6.14-2.18-1.77-4.74-3.13-7.67-4.08-2.93-.95-6.23-1.43-9.9-1.43-5.72,0-10.74,1.2-15.06,3.59-4.32,2.39-7.67,5.8-10.06,10.22-2.39,4.42-3.59,9.65-3.59,15.68v.1c0,6.03,1.19,11.27,3.56,15.7,2.38,4.44,5.73,7.86,10.06,10.27,4.33,2.41,9.34,3.61,15.03,3.61,3.67,0,7-.48,9.98-1.43,2.98-.95,5.54-2.31,7.67-4.06,2.13-1.75,3.84-3.75,5.12-6h.42v10.14h21.79V60.55h-21.79v28.86ZM386.87,107.4c0,2.91-.61,5.43-1.82,7.54-1.21,2.11-2.94,3.74-5.17,4.86-2.24,1.13-4.85,1.69-7.82,1.69s-5.58-.55-7.77-1.66c-2.2-1.11-3.91-2.73-5.12-4.86-1.21-2.13-1.82-4.67-1.82-7.62v-.1c0-2.91.61-5.43,1.82-7.54,1.21-2.11,2.92-3.73,5.12-4.84,2.2-1.11,4.79-1.66,7.77-1.66s5.59.56,7.82,1.69c2.24,1.13,3.96,2.75,5.17,4.86,1.21,2.11,1.82,4.63,1.82,7.54v.1ZM466.22,81.51c-5.27-2.5-11.51-3.74-18.72-3.74-7.07-.03-13.29,1.14-18.64,3.51-5.36,2.37-9.52,5.79-12.48,10.24-2.96,4.46-4.45,9.78-4.45,15.99v.05c0,6.17,1.46,11.45,4.39,15.83s7.1,7.74,12.51,10.06c5.41,2.32,11.86,3.48,19.34,3.48,4.64,0,8.87-.46,12.69-1.38,3.81-.92,7.16-2.24,10.04-3.95,2.88-1.72,5.25-3.74,7.12-6.06s3.19-4.85,3.95-7.59l.1-.57h-19.97l-.16.26c-.63,1.07-1.57,2.05-2.83,2.91-1.27.87-2.76,1.55-4.5,2.05-1.73.5-3.66.75-5.77.75-3.23,0-6.03-.49-8.43-1.48-2.39-.99-4.24-2.53-5.54-4.63-.93-1.49-1.51-3.32-1.77-5.43h49.64v-4.11c0-6.03-1.44-11.28-4.32-15.76-2.88-4.47-6.95-7.96-12.22-10.45ZM433.42,101.11c.3-1.23.74-2.36,1.32-3.38,1.2-2.08,2.91-3.65,5.15-4.71,2.24-1.06,4.95-1.59,8.14-1.59s5.65.54,7.8,1.61c2.15,1.07,3.8,2.63,4.94,4.68.58,1.03,1.01,2.16,1.29,3.38h-28.64Z"/>
+    </svg>
+  </a>
+  <div class="nav-r">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="tool.html" class="nav-link">Tool</a>
+    <a href="showcase.html" class="nav-link active">Awards</a>
+    <a href="tool.html" class="nav-cta">Try the Tool</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <span class="page-title">Glassdeck Awards</span>
+  <span class="page-header-center">Outstanding Web Design</span>
+  <div class="page-header-right">
+    <span class="live-dot"></span>
+    <span id="site-count">12 sites</span>
+  </div>
+</div>
+
+<!-- SITE OF THE DAY -->
+<section class="sotd">
+  <div class="sotd-meta" id="sotd-meta"></div>
+  <div class="sotd-img-wrap" id="sotd-img"></div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section">
+  <div class="gallery-header">
+    <span class="gallery-label">Recent Awards</span>
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-pill active" data-cat="all">All</button>
+      <button class="filter-pill" data-cat="Product">Product</button>
+      <button class="filter-pill" data-cat="Agency">Agency</button>
+      <button class="filter-pill" data-cat="Portfolio">Portfolio</button>
+      <button class="filter-pill" data-cat="Design Tool">Design Tool</button>
+      <button class="filter-pill" data-cat="Developer Tool">Dev Tool</button>
+      <button class="filter-pill" data-cat="Creative">Creative</button>
+    </div>
+  </div>
+  <div class="grid" id="gallery-grid"></div>
+</section>
+
+<!-- DETAIL MODAL -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-domain" id="modal-domain"></div>
+        <div class="modal-meta">
+          <span class="modal-name" id="modal-name"></span>
+          <span id="modal-cat-pill"></span>
+        </div>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-hero" id="modal-hero"></div>
+    <div class="modal-body">
+      <div class="modal-desc-section">
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="modal-tags" id="modal-tags"></div>
+      </div>
+      <div>
+        <div class="modal-pages-label">Key Pages</div>
+        <div class="modal-pages-scroll" id="modal-pages"></div>
+      </div>
+    </div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2026 Glassdeck · <a href="index.html" style="color:var(--text3);text-decoration:none">glassdeck.io</a></div>
+  <div class="foot-links">
+    <a href="index.html">Home</a>
+    <a href="tool.html">Analyze a Site</a>
+    <a href="showcase.html">Awards</a>
+  </div>
+  <div>Built for designers, by a designer.</div>
+</footer>
+
+<script>
+const SEED_SITES = [
+  { id:1,  name:'Linear',      url:'https://linear.app',       category:'Product',        description:'The gold standard for SaaS design — radical simplicity masking profound engineering depth. Dark mode done absolutely right.', tags:['dark','minimal','motion'],    score:98, pages:['/','https://linear.app/pricing','https://linear.app/changelog','https://linear.app/method'] },
+  { id:2,  name:'Vercel',      url:'https://vercel.com',       category:'Developer Tool',  description:'Terminal aesthetics elevated to art. Vercel\'s site speaks fluent developer while being unmistakably premium.',               tags:['dark','editorial','bold'],    score:96, pages:['/','https://vercel.com/pricing','https://vercel.com/templates','https://vercel.com/blog'] },
+  { id:3,  name:'Stripe',      url:'https://stripe.com',       category:'Product',        description:'A decade of refinement in every pixel. Stripe has defined what world-class fintech design looks and feels like.',              tags:['gradient','illustration'],    score:97, pages:['/','https://stripe.com/payments','https://stripe.com/pricing','https://stripe.com/customers'] },
+  { id:4,  name:'Framer',      url:'https://framer.com',       category:'Design Tool',    description:'Eating your own dog food, beautifully. Framer\'s site is itself a showcase of what Framer can produce.',                      tags:['animation','3D','dark'],      score:95, pages:['/','https://framer.com/pricing','https://framer.com/features','https://framer.com/templates'] },
+  { id:5,  name:'Notion',      url:'https://notion.so',        category:'Product',        description:'Flexibility without chaos. Notion\'s marketing site makes infinite customisation feel inevitable, not overwhelming.',           tags:['light','editorial'],          score:93, pages:['/','https://notion.so/product','https://notion.so/pricing','https://notion.so/templates'] },
+  { id:6,  name:'Arc Browser', url:'https://arc.net',          category:'Product',        description:'An invitation into a different internet. Arc\'s site mirrors the bold ambition of its rethink-everything browser.',             tags:['colorful','playful','3D'],   score:94, pages:['/','https://arc.net/max','https://arc.net/windows'] },
+  { id:7,  name:'Superhuman',  url:'https://superhuman.com',   category:'Product',        description:'Dark luxury meets performance philosophy. Superhuman\'s aesthetic defined an entire generation of SaaS marketing.',            tags:['dark','premium','motion'],   score:95, pages:['/','https://superhuman.com/ai','https://superhuman.com/blog'] },
+  { id:8,  name:'Craft',       url:'https://craft.do',         category:'Product',        description:'Apple-adjacent refinement — Craft\'s site is a masterclass in premium software marketing without the arrogance.',              tags:['light','3D','polished'],     score:91, pages:['/','https://craft.do/pricing','https://craft.do/whats-new'] },
+  { id:9,  name:'Read.cv',     url:'https://read.cv',          category:'Portfolio',      description:'Design restraint as a statement. Read.cv proves that less isn\'t just more — it\'s the whole point.',                          tags:['minimal','editorial','type'],score:93, pages:['/','https://read.cv/explore'] },
+  { id:10, name:'Cosmos',      url:'https://cosmos.so',        category:'Creative',       description:'A moodboard for the entire internet. Cosmos\' dark grid aesthetic perfectly mirrors its role as a visual discovery platform.',  tags:['dark','grid','minimal'],     score:92, pages:['/','https://cosmos.so/explore'] },
+  { id:11, name:'Figma',       url:'https://figma.com',        category:'Design Tool',    description:'The design tool that designed its way to dominance — both product and brand identity are lessons in coherence.',               tags:['colorful','bold'],           score:94, pages:['/','https://www.figma.com/pricing/','https://www.figma.com/resource-library/','https://www.figma.com/community'] },
+  { id:12, name:'Resend',      url:'https://resend.com',       category:'Developer Tool', description:'Developer tooling with editorial sensibility. Resend proves that docs-first products can have world-class visual identity.',   tags:['dark','minimal','mono'],     score:90, pages:['/','https://resend.com/pricing','https://resend.com/changelog','https://resend.com/blog'] },
+];
+
+const CAT_COLORS = {
+  'Product':       { bg:'rgba(99,102,241,0.1)',  text:'#5558D9' },
+  'Developer Tool':{ bg:'rgba(14,165,233,0.1)',  text:'#0284C7' },
+  'Agency':        { bg:'rgba(244,63,94,0.1)',   text:'#E11D48' },
+  'Portfolio':     { bg:'rgba(16,185,129,0.1)',  text:'#059669' },
+  'Design Tool':   { bg:'rgba(236,72,153,0.1)',  text:'#DB2777' },
+  'Creative':      { bg:'rgba(234,179,8,0.12)',  text:'#92600A' },
+  'E-commerce':    { bg:'rgba(249,115,22,0.1)',  text:'#EA580C' },
+  'Fintech':       { bg:'rgba(139,92,246,0.1)',  text:'#7C3AED' },
+  'Productivity':  { bg:'rgba(20,184,166,0.1)',  text:'#0D9488' },
+};
+const defaultColor = { bg:'rgba(0,0,0,0.05)', text:'#777' };
+
+function catStyle(cat) {
+  const c = CAT_COLORS[cat] || defaultColor;
+  return `background:${c.bg};color:${c.text};`;
+}
+function screenshotUrl(url) {
+  return `https://image.thum.io/get/width/1200/crop/675/noanimate/${url}`;
+}
+function analyzeUrl(url) {
+  return `tool.html?url=${encodeURIComponent(url)}`;
+}
+function formatDomain(url) {
+  try { return new URL(url).hostname.replace('www.',''); } catch(e) { return url; }
+}
+function getSiteOfDay() {
+  return SEED_SITES[Math.floor(Date.now()/86400000) % SEED_SITES.length];
+}
+function formatDate() {
+  return new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+function pageLabel(url) {
+  try {
+    const u = new URL(url);
+    const p = u.pathname.replace(/\/$/, '') || '/';
+    return p === '/' ? 'Home' : p.split('/').filter(Boolean).join(' / ');
+  } catch(e) { return url; }
+}
+
+// ── HERO ─────────────────────────────────────────────────────────
+function renderHero(site) {
+  const domain = formatDomain(site.url);
+  document.getElementById('sotd-meta').innerHTML = `
+    <span class="sotd-label">◆ Site of the Day</span>
+    <div class="sotd-date">${formatDate()}</div>
+    <div>
+      <div class="sotd-domain">${domain}</div>
+      <div class="sotd-name">${site.name}</div>
+    </div>
+    <p class="sotd-desc">${site.description}</p>
+    <div class="sotd-tags">${site.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <div class="sotd-actions">
+      <a href="${analyzeUrl(site.url)}" class="btn-dark">Analyze Design ↗</a>
+      <button class="btn-ghost" onclick="openModal(${site.id})">See More</button>
+      <a href="${site.url}" target="_blank" rel="noopener" class="btn-ghost">Visit Site ↗</a>
+    </div>
+  `;
+  const imgWrap = document.getElementById('sotd-img');
+  imgWrap.innerHTML = `<div class="sotd-img-placeholder">${domain[0].toUpperCase()}</div><div class="sotd-score"><span class="score-dot"></span>Design Score: ${site.score}/100</div>`;
+  const img = new Image();
+  img.src = screenshotUrl(site.url);
+  img.onload = () => {
+    imgWrap.innerHTML = `<img src="${img.src}" alt="${site.name}" style="cursor:pointer" onclick="openModal(${site.id})"><div class="sotd-score"><span class="score-dot"></span>Design Score: ${site.score}/100</div>`;
+  };
+}
+
+// ── GALLERY ───────────────────────────────────────────────────────
+let allSites = [...SEED_SITES];
+let activeFilter = 'all';
+
+function renderCard(site, delay = 0) {
+  const domain = formatDomain(site.url);
+  return `
+    <div class="card" style="animation-delay:${delay}ms">
+      <div class="card-img" onclick="openModal(${site.id})">
+        <img src="${screenshotUrl(site.url)}" alt="${site.name}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="card-img-placeholder" style="display:none">${domain[0].toUpperCase()}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-domain">${domain}</div>
+          <span class="cat-pill" style="${catStyle(site.category)}">${site.category}</span>
+        </div>
+        <p class="card-desc">${site.description}</p>
+        <div class="card-score-row"><span class="score-dot-sm"></span>${site.score}/100</div>
+      </div>
+      <div class="card-actions">
+        <a class="card-action primary" href="${analyzeUrl(site.url)}">Analyze ↗</a>
+        <button class="card-action" onclick="openModal(${site.id})">See More</button>
+        <a class="card-action" href="${site.url}" target="_blank" rel="noopener">Visit ↗</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderGallery(filter='all') {
+  const sotd = getSiteOfDay();
+  const filtered = allSites.filter(s => (filter==='all' || s.category===filter) && s.id!==sotd.id);
+  document.getElementById('gallery-grid').innerHTML = filtered.map((s,i) => renderCard(s, i*40)).join('');
+  document.getElementById('site-count').textContent = `${allSites.length} sites`;
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────
+document.getElementById('filter-bar').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.cat;
+  renderGallery(activeFilter);
+});
+
+// ── MODAL ─────────────────────────────────────────────────────────
+function openModal(siteId) {
+  const site = allSites.find(s => s.id === siteId);
+  if (!site) return;
+  const domain = formatDomain(site.url);
+  const pages = site.pages || [site.url];
+
+  // header
+  document.getElementById('modal-domain').textContent = domain;
+  document.getElementById('modal-name').textContent = site.name;
+  document.getElementById('modal-cat-pill').innerHTML = `<span class="cat-pill" style="${catStyle(site.category)}">${site.category}</span>`;
+
+  // hero
+  const hero = document.getElementById('modal-hero');
+  hero.innerHTML = `<div class="modal-hero-placeholder">${domain[0].toUpperCase()}</div><div class="modal-score-badge"><span class="score-dot"></span>Design Score: ${site.score}/100</div>`;
+  const heroImg = new Image();
+  heroImg.src = screenshotUrl(site.url);
+  heroImg.onload = () => {
+    hero.innerHTML = `<img src="${heroImg.src}" alt="${site.name}"><div class="modal-score-badge"><span class="score-dot"></span>Design Score: ${site.score}/100</div>`;
+  };
+
+  // body
+  document.getElementById('modal-desc').textContent = site.description;
+  document.getElementById('modal-tags').innerHTML = site.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+
+  // key pages
+  const pagesEl = document.getElementById('modal-pages');
+  pagesEl.innerHTML = pages.map(p => {
+    const label = pageLabel(p === '/' ? site.url : p);
+    const fullUrl = p === '/' ? site.url : p;
+    return `
+      <a class="modal-page-thumb" href="${fullUrl}" target="_blank" rel="noopener">
+        <div class="modal-page-img">
+          <img src="${screenshotUrl(fullUrl)}" alt="${label}" loading="lazy"
+            onerror="this.style.display='none';this.parentNode.querySelector('.modal-page-img-ph').style.display='flex'">
+          <div class="modal-page-img-ph" style="display:none">↗</div>
+        </div>
+        <div class="modal-page-label">/${label === 'Home' ? '' : label}</div>
+      </a>
+    `;
+  }).join('');
+
+  // footer actions
+  document.getElementById('modal-footer').innerHTML = `
+    <a class="btn-modal-primary" href="${analyzeUrl(site.url)}">Analyze in Glassdeck ↗</a>
+    <a class="btn-modal-ghost" href="${site.url}" target="_blank" rel="noopener">Visit Site ↗</a>
+  `;
+
+  // open
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+
+function closeModal() {
+  document.body.style.overflow = '';
+  document.getElementById('modal-backdrop').classList.remove('open');
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-backdrop')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── CURATION (silent) ─────────────────────────────────────────────
+async function loadCuration() {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: `Return a JSON array of exactly 6 real live websites with outstanding design. Only return the JSON array, no markdown fences:\n[{"id":101,"name":"Brand","url":"https://example.com","category":"Product","description":"Why exceptional (max 140 chars).","tags":["tag1"],"score":94,"pages":["https://example.com","https://example.com/pricing"]}]\nCategories: Product, Agency, Portfolio, Design Tool, Developer Tool, Creative, E-commerce, Fintech, Productivity\nAvoid: linear.app, vercel.com, stripe.com, framer.com, notion.so, arc.net, superhuman.com, craft.do, read.cv, cosmos.so, figma.com, resend.com\nInclude 2-4 real page URLs per site in the pages array.` }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.find(b => b.type==='text')?.text || '[]';
+    const sites = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if (Array.isArray(sites) && sites.length > 0) {
+      sites.forEach((s,i) => { s.id = 200 + i; if (!s.pages) s.pages = [s.url]; });
+      allSites = [...allSites, ...sites];
+      renderGallery(activeFilter);
+    }
+  } catch(e) { /* silent */ }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+renderHero(getSiteOfDay());
+renderGallery();
+loadCuration();
+</script>
+</body>
+</html>
