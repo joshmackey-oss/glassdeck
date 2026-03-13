@@ -326,31 +326,35 @@
 
   .rh-right { display: flex; align-items: center; gap: 8px; }
 
-  .chip {
-    padding: 5px 12px; border-radius: 100px;
-    background: var(--bg2); border: 1px solid var(--border);
-    font-family: 'Geist Mono', monospace; font-size: 11px;
-    color: var(--text2); font-weight: 400;
+  /* ── HEADER ACTION BUTTONS ── */
+  .rh-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 100px;
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .18s;
+    white-space: nowrap; border: none; flex-shrink: 0;
+    letter-spacing: -0.01em;
   }
+  .rh-btn-icon { font-size: 14px; line-height: 1; }
 
-  .chip-arch {
-    padding: 5px 14px; border-radius: 100px;
-    background: #FFFBEA; border: 1px solid #F5D860;
-    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-size: 12px;
-    font-weight: 700; color: #92700A;
+  .rh-btn-track {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text2);
   }
-  .chip-cons {
-    padding: 5px 14px; border-radius: 100px;
-    background: var(--green-l); border: 1px solid #BBF7D0;
-    font-family: 'Geist Mono', monospace; font-size: 11px;
-    font-weight: 600; color: var(--green);
+  .rh-btn-track:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); transform: translateY(-1px); box-shadow: var(--sh-sm); }
+  .rh-btn-track.tracking { background: #F0F4FF; border-color: #C7D4FF; color: #3B54D4; }
+
+  .rh-btn-save {
+    background: #0A0A0A;
+    color: #fff;
   }
-  .chip-tier {
-    padding: 5px 14px; border-radius: 100px;
-    background: #F0F4FF; border: 1px solid #C7D4FF;
-    font-family: 'Geist Mono', monospace; font-size: 11px;
-    font-weight: 600; color: #3B54D4;
-  }
+  .rh-btn-save:hover { background: #2a2a2a; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.22); }
+  .rh-btn-save.saved { background: var(--green); }
+
+  /* keep old chip IDs working but hidden (JS still sets their text) */
+  .chip, .chip-arch, .chip-cons, .chip-tier { display: none; }
 
   /* ── GRID ── */
   /* Mobile-first grid: single column stack by default */
@@ -593,6 +597,73 @@
     transition: background 0.15s;
   }
   .share-btn:hover { background: var(--accent2); }
+
+  /* ── SAVE MODAL ── */
+  .save-modal-backdrop {
+    position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .save-modal-backdrop.open { display: flex; }
+  .save-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%; max-width: 400px;
+    box-shadow: var(--sh-lg);
+    animation: sm-in .2s ease;
+  }
+  @keyframes sm-in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .save-modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .save-modal-sub { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+  .save-col-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; max-height: 200px; overflow-y: auto; }
+  .save-col-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border);
+    cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text2);
+    transition: all .15s; background: none; width: 100%; text-align: left;
+    font-family: inherit;
+  }
+  .save-col-item:hover { border-color: var(--accent); background: var(--accent-l); color: var(--text); }
+  .save-col-item.selected { border-color: var(--accent); background: var(--accent-l); color: var(--text); }
+  .save-col-item .sci-icon { font-size: 16px; flex-shrink: 0; }
+  .save-col-new {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    border: 1.5px dashed var(--border2);
+    background: none; cursor: pointer; width: 100%;
+    font-size: 13px; color: var(--text3); font-family: inherit;
+    transition: all .15s;
+  }
+  .save-col-new:hover { border-color: var(--accent); color: var(--text); background: var(--accent-l); }
+  .save-new-input {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--accent);
+    border-radius: 10px; font-family: inherit;
+    font-size: 13.5px; color: var(--text); background: var(--bg);
+    outline: none; margin-bottom: 12px;
+  }
+  .save-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+  .save-modal-cancel {
+    padding: 9px 18px; background: var(--bg3);
+    border: 1px solid var(--border2); border-radius: 9px;
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--text2); cursor: pointer; transition: all .15s;
+  }
+  .save-modal-cancel:hover { color: var(--text); }
+  .save-modal-confirm {
+    padding: 9px 18px; background: var(--text);
+    border: none; border-radius: 9px;
+    font-family: inherit; font-size: 13.5px; font-weight: 600;
+    color: #fff; cursor: pointer; transition: all .15s;
+  }
+  .save-modal-confirm:hover { background: #333; }
 
   /* ── SITE PREVIEW CARD ── */
   .prev-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
@@ -1075,8 +1146,7 @@
       -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px;
     }
     .rh-right::-webkit-scrollbar { display: none; }
-    .chip, .chip-arch, .chip-cons, .chip-tier { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
-    .chip:nth-child(2) { display: none; }
+    .chip, .chip-arch, .chip-cons, .chip-tier { display: none !important; }
 
     /* Grid + prev-card: now mobile-first, no override needed */
     .card { padding: 16px; border-radius: 14px; overflow: hidden; }
@@ -1175,6 +1245,7 @@
   <div class="nav-right">
     <a href="index.html#pricing" class="nav-link">Pricing</a>
     <a href="showcase.html" class="nav-link">Awards</a>
+    <a href="collections.html" class="nav-link">Collections</a>
     <a href="#" class="nav-link nav-signin">Log In</a>
     <a href="index.html#waitlist" class="nav-cta">Join for free</a>
   </div>
@@ -1252,11 +1323,18 @@
         </div>
       </div>
       <div class="rh-right">
-        <div class="chip" id="cTech">React</div>
-        <div class="chip">Scanned just now</div>
-        <div class="chip chip-arch" id="cArchetype">–</div>
-        <div class="chip chip-cons" id="cConsistency">–</div>
-        <div class="chip chip-tier" id="cMaturity">–</div>
+        <!-- Hidden chips — IDs kept so JS doesn't break -->
+        <div class="chip" id="cTech"></div>
+        <div class="chip" id="cArchetype"></div>
+        <div class="chip chip-cons" id="cConsistency"></div>
+        <div class="chip chip-tier" id="cMaturity"></div>
+
+        <button class="rh-btn rh-btn-track" id="trackBtn" onclick="toggleTrack(this)">
+          <span class="rh-btn-icon">◎</span> Track Site
+        </button>
+        <button class="rh-btn rh-btn-save" id="saveBtn" onclick="openSaveModal()" style="display:none">
+          <span class="rh-btn-icon">＋</span> Save to Collection
+        </button>
       </div>
     </div>
 
@@ -1935,76 +2013,22 @@ function computeArchetype(d) {
   const playful = 100 - serious;
   const warm    = 100 - cool;
 
-  // — Most specific conditions first —
-
-  // Neo-Brutalist: raw, dense, confrontationally modern
-  if (minimal < 30 && modern > 65)
-    return { label: 'Neo-Brutalist',        desc: 'Raw, confrontational, and deliberately unpolished' };
-
-  // Surgical Modernist: extreme minimal + serious + very modern
   if (minimal > 70 && serious > 65 && modern > 75)
     return { label: 'Surgical Modernist',   desc: 'Stripped back, precise, and uncompromisingly forward-looking' };
-
-  // Quiet Luxury: minimal + warm + serious — understated premium
-  if (minimal > 60 && warm > 55 && serious > 60)
-    return { label: 'Quiet Luxury',         desc: 'Understated, premium, and effortlessly tasteful' };
-
-  // Restrained Authority: minimal + serious + cool
   if (minimal > 65 && serious > 65 && cool > 55)
     return { label: 'Restrained Authority', desc: 'Confident and disciplined — every decision deliberate' };
-
-  // Classic Prestige: serious + not modern — rooted in tradition
-  if (serious > 65 && modern < 45)
-    return { label: 'Classic Prestige',     desc: 'Rooted in tradition, built to last generations' };
-
-  // Craft Heritage: warm + serious + not modern — artisan, tactile
-  if (warm > 55 && serious > 55 && modern < 50)
-    return { label: 'Craft Heritage',       desc: 'Tactile, storied, and made with intention' };
-
-  // Corporate Precision: serious + cool
-  if (serious > 70 && cool > 65)
-    return { label: 'Corporate Precision',  desc: 'Trust-forward, structured, and data-driven' };
-
-  // Digital Minimalist: minimal + cool
   if (minimal > 60 && cool > 60)
     return { label: 'Digital Minimalist',   desc: 'Clean systems and functional elegance above all' };
-
-  // Techno Optimist: modern + cool + some playfulness
-  if (modern > 65 && cool > 60 && playful > 50)
-    return { label: 'Techno Optimist',      desc: 'Kinetic, ambitious, and wired for the future' };
-
-  // Playful Digital: playful + modern + not too dense
-  if (playful > 60 && modern > 60 && minimal > 45)
-    return { label: 'Playful Digital',      desc: 'Energetic, irreverent, and impossible to ignore' };
-
-  // Creative Agency: modern + playful + dense/expressive
-  if (modern > 60 && playful > 50 && minimal < 50)
-    return { label: 'Creative Agency',      desc: 'Opinionated, portfolio-first, and visually loud' };
-
-  // Indie Collective: playful + warm + dense — DIY community energy
-  if (playful > 60 && warm > 60 && minimal < 55)
-    return { label: 'Indie Collective',     desc: 'Community-driven, DIY spirit, and warmly chaotic' };
-
-  // Expressive Brand: playful + warm + dense
+  if (serious > 70 && cool > 65)
+    return { label: 'Corporate Precision',  desc: 'Trust-forward, structured, and data-driven' };
   if (playful > 55 && warm > 55 && minimal < 40)
     return { label: 'Expressive Brand',     desc: 'Bold, human, and emotionally resonant' };
-
-  // Organic Studio: warm + not modern + dense — earthy, natural
-  if (warm > 65 && modern < 55 && minimal < 50)
-    return { label: 'Organic Studio',       desc: 'Earthy, tactile, and rooted in the natural world' };
-
-  // Warm Studio: warm + not too serious
   if (warm > 55 && serious < 55)
     return { label: 'Warm Studio',          desc: 'Approachable, layered, community-first' };
-
-  // Avant-Garde: very modern
   if (modern > 80)
     return { label: 'Avant-Garde',          desc: 'Boundary-pushing, experimental, and distinctly original' };
-
-  // Editorial Refined: serious + modern
   if (serious > 60 && modern > 60)
     return { label: 'Editorial Refined',    desc: 'Considered hierarchy, deliberate pacing, content-led' };
-
   return   { label: 'Balanced Studio',      desc: 'Versatile, considered, and audience-aware' };
 }
 
@@ -2224,6 +2248,11 @@ function render(d) {
   const archetype   = computeArchetype(d);
   const consistency = computeConsistency(d);
   const maturity    = computeMaturity(d);
+
+  // Expose to save modal
+  if (typeof setCurrentAnalysisForSave === 'function') {
+    setCurrentAnalysisForSave(d, archetype, consistency, maturity);
+  }
 
   // Header chips
   document.getElementById('cArchetype').textContent  = archetype.label;
@@ -2523,6 +2552,167 @@ render = function(d) { _render(d); setTimeout(applyMobileLayout, 50); };
     a.addEventListener('click', closeMenu);
   });
 })();
+</script>
+
+<!-- SAVE TO COLLECTION MODAL -->
+<div class="save-modal-backdrop" id="saveModalBackdrop">
+  <div class="save-modal">
+    <div class="save-modal-title">Save to collection</div>
+    <div class="save-modal-sub" id="saveModalSub">Choose a collection or create a new one</div>
+    <div class="save-col-list" id="saveColList"></div>
+    <div id="saveNewWrap">
+      <button class="save-col-new" id="saveNewBtn" onclick="showNewColInput()">
+        <span style="font-size:16px">+</span> New collection
+      </button>
+      <input class="save-new-input" id="saveNewInput" type="text" placeholder="Collection name…" maxlength="60" style="display:none" />
+    </div>
+    <div class="save-modal-actions">
+      <button class="save-modal-cancel" onclick="closeSaveModal()">Cancel</button>
+      <button class="save-modal-confirm" onclick="confirmSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── COLLECTIONS: Storage ──────────────────────────────────────────────
+const GD_ANALYSES    = 'gd_analyses';
+const GD_COLLECTIONS = 'gd_collections';
+function gdGetAnalyses()    { try { return JSON.parse(localStorage.getItem(GD_ANALYSES)||'[]'); } catch { return []; } }
+function gdGetCollections() { try { return JSON.parse(localStorage.getItem(GD_COLLECTIONS)||'[]'); } catch { return []; } }
+function gdSaveAnalyses(a)  { localStorage.setItem(GD_ANALYSES, JSON.stringify(a)); }
+function gdSaveCollections(c){ localStorage.setItem(GD_COLLECTIONS, JSON.stringify(c)); }
+function gdUid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+let _currentAnalysisData = null; // set after render()
+let _selectedColId = null;
+
+// Called from render() after analysis completes — stores the normalized data
+function setCurrentAnalysisForSave(d, archetype, consistency, maturity) {
+  _currentAnalysisData = { d, archetype, consistency, maturity };
+  const btn = document.getElementById('saveBtn');
+  if (btn) btn.style.display = 'inline-block';
+}
+
+function openSaveModal() {
+  _selectedColId = null;
+  renderSaveColList();
+  document.getElementById('saveNewInput').style.display = 'none';
+  document.getElementById('saveNewBtn').style.display = 'flex';
+  document.getElementById('saveModalBackdrop').classList.add('open');
+  setTimeout(() => {}, 50);
+}
+
+function closeSaveModal() {
+  document.getElementById('saveModalBackdrop').classList.remove('open');
+}
+
+function renderSaveColList() {
+  const cols = gdGetCollections();
+  const list = document.getElementById('saveColList');
+  if (cols.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:4px 2px">No collections yet — create one below.</div>';
+    return;
+  }
+  list.innerHTML = cols.map(c => `
+    <button class="save-col-item ${_selectedColId === c.id ? 'selected' : ''}" onclick="selectSaveCol('${c.id}')">
+      <span class="sci-icon">📁</span> ${escSave(c.name)}
+    </button>`).join('');
+}
+
+function selectSaveCol(id) {
+  _selectedColId = id;
+  renderSaveColList();
+}
+
+function showNewColInput() {
+  document.getElementById('saveNewBtn').style.display = 'none';
+  const inp = document.getElementById('saveNewInput');
+  inp.style.display = 'block';
+  inp.value = '';
+  inp.focus();
+}
+
+function confirmSave() {
+  if (!_currentAnalysisData) { closeSaveModal(); return; }
+
+  // Handle new collection creation inline
+  const newInp = document.getElementById('saveNewInput');
+  if (newInp.style.display !== 'none' && newInp.value.trim()) {
+    const newCol = { id: gdUid(), name: newInp.value.trim(), createdAt: Date.now() };
+    const cols = gdGetCollections();
+    cols.push(newCol);
+    gdSaveCollections(cols);
+    _selectedColId = newCol.id;
+  }
+
+  const { d, archetype, consistency, maturity } = _currentAnalysisData;
+  const domain = (d.url||'').replace(/^https?:\/\//,'').split('/')[0];
+
+  // Check if already saved (by URL)
+  let analyses = gdGetAnalyses();
+  let existing = analyses.find(a => a.url === domain);
+
+  if (existing) {
+    // Update collectionIds
+    if (_selectedColId && !existing.collectionIds.includes(_selectedColId)) {
+      existing.collectionIds.push(_selectedColId);
+    }
+    gdSaveAnalyses(analyses);
+  } else {
+    const entry = {
+      id: gdUid(),
+      savedAt: Date.now(),
+      name: d.name || domain,
+      url: domain,
+      emoji: d.emoji || '🌐',
+      tech: d.tech || '',
+      colors: (d.colors||[]).slice(0,6).map(c => ({ hex: c.hex || c })),
+      fonts: (d.fonts||[]).slice(0,3).map(f => ({ name: f.name||f, role: f.role||'sans' })),
+      archetype,
+      consistency,
+      maturity,
+      collectionIds: _selectedColId ? [_selectedColId] : [],
+    };
+    analyses.push(entry);
+    gdSaveAnalyses(analyses);
+  }
+
+  closeSaveModal();
+
+  // Flash saved state on button
+  const btn = document.getElementById('saveBtn');
+  if (btn) {
+    btn.innerHTML = '<span class="rh-btn-icon">✓</span> Saved';
+    btn.classList.add('saved');
+    setTimeout(() => {
+      btn.innerHTML = '<span class="rh-btn-icon">＋</span> Save to Collection';
+      btn.classList.remove('saved');
+    }, 2500);
+  }
+}
+
+function escSave(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── TRACK SITE (stub — toggles UI state, backend wires up later) ──────
+function toggleTrack(btn) {
+  const isTracking = btn.classList.toggle('tracking');
+  if (isTracking) {
+    btn.innerHTML = '<span class="rh-btn-icon">●</span> Tracking';
+  } else {
+    btn.innerHTML = '<span class="rh-btn-icon">◎</span> Track Site';
+  }
+}
+
+// Close on backdrop click
+document.getElementById('saveModalBackdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSaveModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSaveModal();
+  if (e.key === 'Enter' && document.getElementById('saveModalBackdrop').classList.contains('open')) confirmSave();
+});
 </script>
 </body>
 </html>
