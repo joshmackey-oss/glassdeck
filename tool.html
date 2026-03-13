@@ -1401,7 +1401,7 @@ function loadDemo(k) {
 }
 
 // ── MAIN ANALYSIS ────────────────────────────────────────────────
-async function runAnalysis(demoKey) {
+async function runAnalysis(demoKey, skipScroll = false) {
   const rawUrl = document.getElementById('urlInput').value.trim();
   if (!rawUrl) return;
 
@@ -1415,16 +1415,16 @@ async function runAnalysis(demoKey) {
   // If API is configured AND this isn't a demo button click, hit the real API
   const isDemo = typeof demoKey === 'string' && DEMOS[demoKey];
   if (API_URL && !isDemo) {
-    await runLiveAnalysis(rawUrl, ldr);
+    await runLiveAnalysis(rawUrl, ldr, skipScroll);
   } else {
     // Use demo data (pre-API or demo button)
     const key = isDemo ? demoKey : (Object.keys(DEMOS).find(k => rawUrl.includes(DEMOS[k].url)) || 'linear');
-    await runDemoAnalysis(DEMOS[key] || DEMOS.linear, ldr);
+    await runDemoAnalysis(DEMOS[key] || DEMOS.linear, ldr, skipScroll);
   }
 }
 
 // ── LIVE API PATH ────────────────────────────────────────────────
-async function runLiveAnalysis(url, ldr) {
+async function runLiveAnalysis(url, ldr, skipScroll = false) {
   // Animate steps while API call runs in parallel
   const stepPromise = animateSteps(true); // open-ended — resolves when we tell it to
 
@@ -1447,7 +1447,7 @@ async function runLiveAnalysis(url, ldr) {
       ldr.classList.remove('on');
       render(adaptApiResponse(data));
       document.getElementById('results').classList.add('on');
-      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!skipScroll) document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 300);
 
   } catch (err) {
@@ -1463,13 +1463,13 @@ async function runLiveAnalysis(url, ldr) {
 }
 
 // ── DEMO PATH ────────────────────────────────────────────────────
-async function runDemoAnalysis(d, ldr) {
+async function runDemoAnalysis(d, ldr, skipScroll = false) {
   await animateSteps(false);
   setTimeout(() => {
     ldr.classList.remove('on');
     render(d);
     document.getElementById('results').classList.add('on');
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!skipScroll) document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 280);
 }
 
@@ -2136,7 +2136,7 @@ function render(d) {
 function copy(t) { navigator.clipboard.writeText(t).catch(()=>{}); }
 
 document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key==='Enter') runAnalysis(); });
-window.addEventListener('load', () => setTimeout(() => runAnalysis('linear'), 300));
+window.addEventListener('load', () => setTimeout(() => runAnalysis('linear', true), 300));
 
 // ── MOBILE LAYOUT FIX ──────────────────────────────────────────────
 // CSS media queries unreliable in Safari iOS. Apply directly via JS.
