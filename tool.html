@@ -263,7 +263,20 @@
   }
 
   /* ── GRID ── */
-  .grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 14px; }
+  /* Mobile-first grid: single column stack by default */
+  .grid { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+  .c4,.c5,.c6,.c7,.c8,.c12 { width: 100%; box-sizing: border-box; }
+  /* Desktop only: switch to 12-col grid */
+  @media (min-width: 769px) {
+    .grid { display: grid; grid-template-columns: repeat(12,1fr); }
+    .c7          { grid-column: span 7; }
+    .c5          { grid-column: span 5; }
+    .c6          { grid-column: span 6; }
+    .c8          { grid-column: span 8; }
+    .c4          { grid-column: span 4; }
+    .c12         { grid-column: span 12; }
+    .instr-strip { grid-column: span 12; width: auto; }
+  }
 
   .card {
     background: #fff; border: 1px solid var(--border);
@@ -273,12 +286,7 @@
   }
   .card:hover { box-shadow: var(--sh-md); border-color: var(--border2); }
 
-  .c7 { grid-column: span 7; }
-  .c5 { grid-column: span 5; }
-  .c6 { grid-column: span 6; }
-  .c8 { grid-column: span 8; }
-  .c4 { grid-column: span 4; }
-  .c12 { grid-column: span 12; }
+
 
   .clabel {
     font-family: 'Geist Mono', monospace; font-size: 10px;
@@ -497,12 +505,17 @@
   .share-btn:hover { background: var(--accent2); }
 
   /* ── SITE PREVIEW CARD ── */
-  .prev-card { padding: 0; overflow: hidden; display: flex; min-height: 280px; }
+  .prev-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  @media (min-width: 769px) { .prev-card { flex-direction: row; min-height: 280px; } }
   .prev-shot {
-    width: 40%; flex-shrink: 0;
+    width: 100%; flex-shrink: 0;
     background: var(--bg3); overflow: hidden;
-    position: relative; border-radius: 14px 0 0 14px;
+    position: relative; border-radius: 14px 14px 0 0;
     display: flex; flex-direction: column;
+    min-height: 200px;
+  }
+  @media (min-width: 769px) {
+    .prev-shot { width: 40%; border-radius: 14px 0 0 14px; min-height: unset; }
   }
 
   /* Browser chrome bar */
@@ -754,10 +767,10 @@
 
   /* ── INSTRUMENT STRIP ── */
   .instr-strip {
-    grid-column: span 12;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    width: 100%;
   }
 
   .instr {
@@ -887,21 +900,8 @@
     .chip, .chip-arch, .chip-cons, .chip-tier { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
     .chip:nth-child(2) { display: none; }
 
-    /* Grid — FORCE single column */
-    .grid { grid-template-columns: 1fr !important; gap: 10px; width: 100% !important; }
-    .c7, .c5, .c6, .c8, .c4, .c12 { grid-column: span 1 !important; }
-
-    /* All cards constrained */
-    .card { padding: 16px !important; border-radius: 14px; overflow: hidden; max-width: 100% !important; }
-
-    /* ── SITE PREVIEW: FORCE vertical stack ── */
-    .prev-card { flex-direction: column !important; min-height: unset !important; max-width: 100% !important; }
-    .prev-shot {
-      width: 100% !important; min-width: 0 !important;
-      min-height: 200px; flex-shrink: 0 !important;
-      border-radius: 14px 14px 0 0 !important;
-    }
-    .prev-browser-bar { border-radius: 14px 14px 0 0 !important; }
+    /* Grid + prev-card: now mobile-first, no override needed */
+    .card { padding: 16px; border-radius: 14px; overflow: hidden; }
     .prev-body { padding: 16px !important; gap: 12px; width: 100% !important; box-sizing: border-box; }
     .prev-tags { gap: 5px; flex-wrap: wrap; }
     .prev-tag { font-size: 10px; padding: 3px 9px; }
@@ -2137,6 +2137,77 @@ function copy(t) { navigator.clipboard.writeText(t).catch(()=>{}); }
 
 document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key==='Enter') runAnalysis(); });
 window.addEventListener('load', () => setTimeout(() => runAnalysis('linear'), 300));
+
+// ── MOBILE LAYOUT FIX ──────────────────────────────────────────────
+// CSS media queries unreliable in Safari iOS. Apply directly via JS.
+function applyMobileLayout() {
+  const isMobile = window.innerWidth < 769;
+
+  // Grid: single column
+  const grid = document.querySelector('.grid');
+  if (grid) {
+    grid.style.gridTemplateColumns = isMobile ? '1fr' : '';
+    grid.style.width = isMobile ? '100%' : '';
+  }
+
+  // All column-span cards → full width
+  ['c4','c5','c6','c7','c8','c12'].forEach(cls => {
+    document.querySelectorAll('.'+cls).forEach(el => {
+      el.style.gridColumn = isMobile ? 'span 1' : '';
+    });
+  });
+
+  // Prev card → column stack
+  const prevCard = document.querySelector('.prev-card');
+  if (prevCard) {
+    prevCard.style.flexDirection = isMobile ? 'column' : '';
+    prevCard.style.minHeight = isMobile ? 'unset' : '';
+  }
+
+  // Prev shot → full width
+  const prevShot = document.querySelector('.prev-shot');
+  if (prevShot) {
+    prevShot.style.width = isMobile ? '100%' : '';
+    prevShot.style.minWidth = isMobile ? '0' : '';
+    prevShot.style.borderRadius = isMobile ? '14px 14px 0 0' : '';
+    prevShot.style.flexShrink = isMobile ? '0' : '';
+    prevShot.style.minHeight = isMobile ? '200px' : '';
+  }
+
+  // Results wrapper
+  const rw = document.querySelector('.rw');
+  if (rw) {
+    rw.style.padding = isMobile ? '0 14px 60px' : '';
+    rw.style.width = isMobile ? '100%' : '';
+    rw.style.boxSizing = isMobile ? 'border-box' : '';
+  }
+
+  // Results header
+  const rh = document.querySelector('.rh');
+  if (rh) rh.style.flexDirection = isMobile ? 'column' : '';
+
+  const rhRight = document.querySelector('.rh-right');
+  if (rhRight) {
+    rhRight.style.width = isMobile ? '100%' : '';
+    rhRight.style.overflowX = isMobile ? 'auto' : '';
+    rhRight.style.flexWrap = isMobile ? 'nowrap' : '';
+  }
+
+  // Instrument strip
+  const strip = document.querySelector('.instr-strip');
+  if (strip) strip.style.gridTemplateColumns = isMobile ? 'repeat(3,1fr)' : '';
+
+  // Prevent page overflow
+  document.body.style.overflowX = isMobile ? 'hidden' : '';
+  document.documentElement.style.overflowX = isMobile ? 'hidden' : '';
+}
+
+applyMobileLayout();
+window.addEventListener('resize', applyMobileLayout);
+
+// Re-apply after each render so new DOM gets styled too
+const _render = render;
+render = function(d) { _render(d); setTimeout(applyMobileLayout, 50); };
 </script>
 </body>
 </html>
