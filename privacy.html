@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Glassdeck</title>
+<meta name="description" content="Glassdeck Privacy Policy — how we collect, use, and protect your data." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #FFC60B;
+  --text: #0A0A0A;
+  --text2: #5A5A5A;
+  --text3: #9A9A9A;
+  --bg: #FFFFFF;
+  --border: #EBEBEB;
+  --sh: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+}
+
+/* ── NAV ── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 59px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+}
+
+.nav-r { display: flex; align-items: center; gap: 10px; }
+
+.nav-link {
+  font-size: 14px; font-weight: 500; color: var(--text2);
+  text-decoration: none; padding: 6px 14px; border-radius: 100px;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+
+.nav-cta {
+  padding: 9px 22px; border-radius: 100px;
+  background: var(--text); color: #fff;
+  font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: all 0.15s;
+}
+.nav-cta:hover { background: #222; transform: translateY(-1px); }
+
+/* ── PAGE ── */
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+/* ── HEADER ── */
+.doc-header {
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+
+.doc-title {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.doc-meta {
+  font-size: 14px;
+  color: var(--text3);
+}
+
+.doc-meta strong {
+  color: var(--text2);
+  font-weight: 500;
+}
+
+/* ── CONTENT ── */
+.doc-section {
+  margin-bottom: 48px;
+}
+
+h2 {
+  font-family: -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 14px;
+  margin-top: 0;
+}
+
+p {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+p:last-child { margin-bottom: 0; }
+
+ul {
+  margin: 8px 0 14px 0;
+  padding-left: 20px;
+}
+
+ul li {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.75;
+  margin-bottom: 6px;
+}
+
+a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s;
+}
+a:hover { text-decoration-color: var(--text); }
+
+/* Highlight callout */
+.callout {
+  background: #FFFBEA;
+  border: 1px solid #F5D860;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 48px;
+}
+.callout p {
+  color: #92700A;
+  font-size: 14.5px;
+  margin: 0;
+}
+.callout strong { color: #7A5C00; }
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 48px 0;
+}
+
+/* Contact card */
+.contact-card {
+  background: #F8F8F6;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-top: 16px;
+}
+.contact-card p {
+  margin: 0;
+  font-size: 15px;
+}
+.contact-card a {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text3);
+}
+.foot-right { display: flex; gap: 24px; }
+.foot-link {
+  color: var(--text3);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.foot-link:hover { color: var(--text); }
+
+@media (max-width: 640px) {
+  nav { padding: 0 20px; }
+  .page { padding: 56px 20px 80px; }
+  footer { padding: 24px 20px; flex-direction: column; gap: 16px; text-align: center; }
+  .foot-right { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/">
+    <svg height="28" viewBox="0 0 648 216" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#0A0A0A" d="M54.03,34.95c-.49-5.98-3.55-11.8-7.97-16.21-4.53-4.47-10.35-7.54-16.27-8.03.49,5.98,3.55,11.74,7.97,16.16,4.47,4.47,10.35,7.59,16.27,8.08ZM2.31,38.18c.49,5.98,3.55,11.74,7.97,16.16,4.47,4.47,10.35,7.59,16.27,8.08-.49-5.98-3.55-11.8-8.03-16.21-4.47-4.47-10.29-7.54-16.21-8.03ZM29.79,62.43c5.93-.49,11.74-3.61,16.27-8.08,4.42-4.42,7.49-10.19,7.97-16.16-5.93.49-11.8,3.55-16.27,8.03-4.42,4.42-7.49,10.24-7.97,16.21ZM2.31,34.95c5.93-.54,11.74-3.61,16.21-8.08,4.47-4.42,7.54-10.19,8.03-16.16-5.93.49-11.8,3.55-16.27,8.03-4.42,4.42-7.49,10.24-7.97,16.21Z"/>
+      <path fill="#0A0A0A" d="M214.13,35.24c-1.95-1.52-5.12-2.51-9.52-2.97l-8.69-.87c-1.15-.14-2.07-.32-2.76-.53-.7-.21-1.2-.48-1.49-.81-.29-.33-.44-.73-.44-1.21v-.03c0-.62.23-1.13.69-1.53.46-.4,1.15-.71,2.04-.95.9-.23,2.01-.34,3.31-.34,2.1,0,3.76.29,4.98.89s1.91,1.39,2.09,2.42l.03.21h11.54l-.03-.27c-.14-2.13-.96-3.98-2.44-5.57-1.48-1.59-3.59-2.83-6.33-3.71-2.74-.88-6.05-1.33-9.96-1.33s-7.03.42-9.74,1.27c-2.7.85-4.78,2.08-6.22,3.69s-2.16,3.56-2.16,5.85v.06c0,1.8.45,3.38,1.35,4.72.9,1.34,2.26,2.44,4.07,3.29s4.09,1.43,6.84,1.73l8.41.84c1.8.2,3.05.49,3.73.87.68.38,1.02.94,1.02,1.68v.03c0,.6-.23,1.11-.71,1.52-.47.41-1.17.72-2.08.93-.92.21-2.04.32-3.37.32-2.32,0-4.14-.27-5.45-.79-1.31-.53-2.12-1.37-2.42-2.51l-.06-.18h-12.26l.03.27c.24,2.16,1.17,4.05,2.8,5.65,1.62,1.6,3.88,2.83,6.78,3.69,2.89.85,6.41,1.27,10.53,1.27,3.91,0,7.26-.45,10.06-1.35,2.81-.9,4.96-2.19,6.47-3.86,1.52-1.67,2.26-3.69,2.26-6.05v-.03c0-2.66-.97-4.76-2.91-6.28v-.02Z"/>
+    </svg>
+  </a>
+  <div class="nav-r">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/tool.html" class="nav-cta">Try Glassdeck</a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="page">
+
+  <div class="doc-header">
+    <div class="doc-label">Legal</div>
+    <h1 class="doc-title">Privacy Policy</h1>
+    <p class="doc-meta">
+      <strong>Effective date:</strong> March 14, 2026 &nbsp;·&nbsp;
+      <strong>Last updated:</strong> March 14, 2026
+    </p>
+  </div>
+
+  <div class="callout">
+    <p><strong>Short version:</strong> Glassdeck collects only what's needed to run the product. We don't sell your data. We don't show you ads. We use industry-standard security practices to keep your information safe.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>1. Who we are</h2>
+    <p>Glassdeck ("Glassdeck", "we", "us", or "our") is a design intelligence tool that analyzes the visual design of websites. We're operated by Glassdeck and reachable at <a href="mailto:hello@glassdeck.io">hello@glassdeck.io</a>.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>2. Information we collect</h2>
+    <p>We collect information in the following ways:</p>
+    <ul>
+      <li><strong>Account information</strong> — when you create an account, we collect your name and email address. If you sign in with Google or Apple, we receive your name, email, and profile picture from those services.</li>
+      <li><strong>Usage data</strong> — URLs you analyze, features you use, and how you interact with the product. This helps us improve Glassdeck.</li>
+      <li><strong>Payment information</strong> — if you subscribe to Glassdeck Pro, payment is processed by Stripe. We never store your full card number.</li>
+      <li><strong>Technical data</strong> — browser type, device type, IP address, and access logs. Standard stuff collected by most web services.</li>
+    </ul>
+  </div>
+
+  <div class="doc-section">
+    <h2>3. How we use your information</h2>
+    <p>We use your information to:</p>
+    <ul>
+      <li>Provide and improve the Glassdeck product</li>
+      <li>Send transactional emails (account confirmation, password reset, billing receipts)</li>
+      <li>Notify you of product updates if you've opted in</li>
+      <li>Respond to support requests</li>
+      <li>Detect and prevent abuse or fraudulent activity</li>
+    </ul>
+    <p>We do not sell your personal information to third parties. We do not use your data to serve you advertising.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>4. Data storage and security</h2>
+    <p>Your account data is stored securely using <a href="https://supabase.com" target="_blank">Supabase</a>, which provides industry-standard encryption at rest and in transit. We use Row Level Security (RLS) to ensure users can only access their own data.</p>
+    <p>We take reasonable measures to protect your information, but no internet transmission is 100% secure. Please use a strong, unique password for your account.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>5. Third-party services</h2>
+    <p>Glassdeck uses the following third-party services:</p>
+    <ul>
+      <li><strong>Supabase</strong> — authentication and database hosting</li>
+      <li><strong>Stripe</strong> — payment processing (Pro subscriptions)</li>
+      <li><strong>Google OAuth</strong> — optional sign-in method</li>
+      <li><strong>Apple Sign In</strong> — optional sign-in method</li>
+      <li><strong>Browserless</strong> — headless browser service used to analyze websites you submit</li>
+    </ul>
+    <p>Each of these services has their own privacy policy. We encourage you to review them.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>6. Cookies</h2>
+    <p>Glassdeck uses cookies and local storage to keep you signed in and remember your preferences. We do not use tracking cookies or third-party advertising cookies.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>7. Your rights</h2>
+    <p>You have the right to:</p>
+    <ul>
+      <li>Access the personal data we hold about you</li>
+      <li>Correct inaccurate data</li>
+      <li>Request deletion of your account and associated data</li>
+      <li>Export your data (available from your dashboard settings)</li>
+      <li>Opt out of non-essential communications</li>
+    </ul>
+    <p>To exercise any of these rights, email us at <a href="mailto:hello@glassdeck.io">hello@glassdeck.io</a>.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>8. Data retention</h2>
+    <p>We retain your account data for as long as your account is active. If you delete your account, we remove your personal data within 30 days, except where required to retain it for legal or financial compliance reasons.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>9. Children's privacy</h2>
+    <p>Glassdeck is not directed at children under 13. We do not knowingly collect personal information from children. If you believe a child has provided us with their information, please contact us and we will delete it promptly.</p>
+  </div>
+
+  <div class="doc-section">
+    <h2>10. Changes to this policy</h2>
+    <p>We may update this Privacy Policy from time to time. When we do, we'll update the "Last updated" date at the top of this page. For significant changes, we'll notify you by email or with a notice in the product.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="doc-section">
+    <h2>Questions?</h2>
+    <p>If you have any questions about this Privacy Policy or how we handle your data, we're happy to help.</p>
+    <div class="contact-card">
+      <p>Email us at <a href="mailto:hello@glassdeck.io">hello@glassdeck.io</a> — we typically respond within one business day.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Glassdeck. All rights reserved.</span>
+  <div class="foot-right">
+    <a href="/privacy.html" class="foot-link">Privacy</a>
+    <a href="/terms.html" class="foot-link">Terms</a>
+    <a href="https://www.instagram.com/glassdeck/" class="foot-link" target="_blank">Instagram</a>
+  </div>
+</footer>
+
+</body>
+</html>
